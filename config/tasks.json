@@ -1,0 +1,37 @@
+[
+    {
+        "id": "daily_startup_001",
+        "description": "Check all main circuit breakers and switches",
+        "priority": "urgent",
+        "category": "daily_startup",
+        "active": true
+    },
+    {
+        "id": "daily_startup_002",
+        "description": "Verify all game room lights are functional",
+        "priority": "high",
+        "category": "daily_startup",
+        "active": true
+    },
+    {
+        "id": "daily_startup_003",
+        "description": "Clean front entrance glass and doors",
+        "priority": "medium",
+        "category": "daily_startup",
+        "active": true
+    },
+    {
+        "id": "daily_cleanup_001",
+        "description": "Sweep/vacuum entire game room floor",
+        "priority": "medium",
+        "category": "daily_cleanup",
+        "active": true
+    },
+    {
+        "id": "ad_hoc_001",
+        "description": "Paint wall near Space Raiders (Regional Manager Request)",
+        "priority": "critical",
+        "category": "ad_hoc",
+        "active": true
+    }
+]

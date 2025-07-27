@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arcade Manager Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pe-icon-7-weather.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pe-icon-7-helper.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <header class="main-header">
+            <div class="header-left">
+                <a href="/" class="logo-link">
+                    <div class="logo-area">
+                        <img src="{{ url_for('static', filename='images/chuck_e_cheese_logo.png') }}" alt="Chuck E. Cheese Logo" class="logo-image">
+                        <h1 class="app-title">OPS Manager</h1>
+                    </div>
+                </a>
+                <div class="info-widgets">
+                    <div class="info-item">
+                        <i id="weatherIconHeader" class="pe-7w-cloud"></i>
+                        <span id="weatherTempHeader">--°F</span>
+                        <span id="weatherDescHeader" class="weather-description">Loading...</span>
+                    </div>
+                    
+                    <div class="info-item urgent-issue">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span id="urgentIssue">No Urgent Issues</span> </div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="search-bar">
+                    <input type="text" id="mainSearchBar" placeholder="Search games or issues..." class="search-input">
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+                <button class="icon-button" id="notificationButton"><i class="fas fa-bell"></i></button>
+                <button class="icon-button" id="profileButton"><i class="fas fa-user-circle"></i></button>
+            </div>
+        </header>
+
+        <div class="main-layout-area">
+            <aside class="sidebar">
+    <nav class="sidebar-nav">
+        <ul>
+            <li class="nav-item current">
+                <a href="/">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/tpt_calculator" id="sidebarTptCalculator">
+                    <i class="fas fa-calculator"></i>
+                    <span>TPT Calculator</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/inventory" id="sidebarGameInventory">
+                    <i class="fas fa-gamepad"></i>
+                    <span>Game Inventory</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <div class="sidebar-bottom-nav">
+        <div class="nav-item static-display" id="sidebarBottomTptTargetLink">
+            <img src="{{ url_for('static', filename='images/ticket_icon.png') }}" alt="Ticket Icon" class="tpt-sidebar-icon">
+            <span id="sidebarBottomTptTargetValue">Target: N/A</span>
+        </div>
+    </div>
+</aside>
+            <main class="main-content">
+               <div class="content-header">
+                    <div class="content-header-left">
+                        <h2>Arcade Operations Overview</h2>
+                        <p id="currentDayDate">Sunday, July 27, 2025</p>
+                    </div>
+                    </div>
+
+                <div class="dashboard-grid">
+                    <div class="dashboard-card action-card color-green" id="startOpeningChecklist"></div>
+                    <div class="dashboard-card action-card color-purple" id="inspectArcadeGame"></div>
+                    <div class="dashboard-card action-card color-blue" id="viewDailyTasks"></div>
+                    <div class="dashboard-card info-card color-red" id="brokenGamesSummary"></div>
+                    <div class="dashboard-card info-card color-orange" id="partsOnOrderSummary"></div>
+                    <div class="dashboard-card info-card color-yellow" id="ticketPayoutSummary"></div>
+                    
+                    <div class="dashboard-card info-card color-yellow" id="filler"></div>
+                    <div class="dashboard-card info-card color-yellow" id="filler2"></div>
+                </div>
+
+            </main>
+        </div>
+        <div id="customPopup" class="popup-overlay">
+            <div class="popup-content">
+                <h2 id="popupTitle"></h2>
+                <p id="popupMessage"></p>
+                <div id="popupActions"></div>
+            </div>
+        </div>
+
+        <div id="issueSummaryPopup" class="popup-overlay">
+            <div class="popup-content">
+                <h2>Daily Issues Summary</h2>
+                <ul id="issueList"></ul>
+                <button id="closeSummaryBtn">Close Summary</button>
+            </div>
+        </div>
+
+        <div id="openingChecklistModal" class="popup-overlay">
+            <div class="popup-content">
+                <div class="modal-header">
+                    <h2 id="checklistModalTitle">Daily Opening Checklist</h2>
+                    <span class="step-counter" id="checklistStepCounter">Step 1 of X</span>
+                    <button id="closeChecklistModalButton" class="icon-button close-modal-button" title="Close Checklist">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p class="checklist-step-text" id="checklistStepText"></p>
+                    <div class="checklist-response-area" id="checklistResponseArea">
+                        </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="checklistBackButton" class="popup-button cancel-button"><i class="fas fa-chevron-left"></i> Back</button>
+                    <button id="checklistNextButton" class="popup-button"><i class="fas fa-chevron-right"></i> Next Step</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

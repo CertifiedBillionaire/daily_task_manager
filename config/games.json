@@ -1,0 +1,25 @@
+[
+    {
+        "id": "space_raiders_001",
+        "name": "Space Raiders (Unit #001)",
+        "type": "arcade",
+        "active": true,
+        "checks": [
+            {"id": "sr_light", "description": "All cabinet lights working?", "priority": "high"},
+            {"id": "sr_glass", "description": "Glass clean and smudge-free?", "priority": "medium"},
+            {"id": "sr_dust", "description": "Cabinet interior/exterior dust-free?", "priority": "low"},
+            {"id": "sr_controls", "description": "Joystick & buttons responsive?", "priority": "high"}
+        ]
+    },
+    {
+        "id": "pinball_wizard_002",
+        "name": "Pinball Wizard (Unit #002)",
+        "type": "pinball",
+        "active": true,
+        "checks": [
+            {"id": "pw_flippers", "description": "Flippers strong and responsive?", "priority": "high"},
+            {"id": "pw_plunger", "description": "Plunger spring tension good?", "priority": "medium"},
+            {"id": "pw_playfield", "description": "Playfield clean and clear?", "priority": "low"}
+        ]
+    }
+]

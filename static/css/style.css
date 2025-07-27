@@ -1,0 +1,1540 @@
+/* style.css */
+
+/* --- CSS Variables (Define your theme colors and sizes here!) --- */
+/* These make it easy to change your app's look globally. */
+:root {
+    --primary-color: #2196F3; /* Google Blue */
+    --accent-color: #2196F3; /* Often same as primary, or different highlight color */
+    --secondary-accent-color: #F9B32F; /* Chuck E. Cheese Yellow-Orange */
+    --text-color: #333333; /* Default dark text */
+    --text-color-dark: #222222; /* Even darker text for headings */
+    --text-color-light: #666666; /* Lighter text for descriptions/subheadings */
+    --background-color-light: #F0F4F8; /* Light background for body/app-container */
+    --background-color-medium: #F7F8FC; /* Slightly darker background for main-content */
+    --card-background-color: #FFFFFF; /* White background for most cards */
+    --card-background-color-secondary: #F8FAFC; /* Slightly off-white for some sections */
+    --border-color: #D0D0D0; /* Light grey border */
+    --border-color-light: #E0E0E0; /* Even lighter grey border */
+    --input-background-color: #F8FAFC; /* Light background for inputs */
+    --border-radius: 15px; /* Standard border-radius for cards/elements */
+    --border-radius-small: 8px; /* Smaller border-radius for inputs/buttons */
+    --shadow-small: 0 2px 8px rgba(0,0,0,0.08);
+    --shadow-medium: 0 6px 20px rgba(0,0,0,0.1);
+    --shadow-large: 0 12px 35px rgba(0,0,0,0.2);
+}
+
+/* --- Universal Box-Sizing & Base Font --- */
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    margin: 4px;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--background-color-light); /* Using variable */
+    color: var(--text-color); /* Using variable */
+}
+
+/* --- Main App Container (Overall Layout & Background) --- */
+.app-container {
+    display: flex;
+    flex-direction: column;
+    /* FIX FOR SCROLLING: Ensures container fills screen and controls overflow */
+    height: 100vh;
+    overflow: hidden; /* Prevents unwanted body scrollbars, app-container manages its own */
+
+    background: linear-gradient(to bottom right, #EBF2F8, #DDE7F0);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
+    animation: fadeInScale 0.3s ease-out forwards;
+    /* REMOVED: overflow-y: auto; from here, as inner content areas will handle their own scrolling */
+    position: relative;
+}
+
+.app-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('../images/background_graphics/wave_graphic.png');
+    background-repeat: no-repeat;
+    background-position: bottom right;
+    background-size: 30%;
+    opacity: 0.08;
+    z-index: -1;
+    pointer-events: none;
+}
+
+@keyframes fadeInScale {
+    from { opacity: 0; transform: scale(0.98); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* --- Main Header Section --- */
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 35px;
+    background-color: var(--card-background-color); /* Using variable */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    border-bottom: 1px solid var(--border-color-light); /* Using variable */
+    flex-wrap: wrap;
+    gap: 20px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.header-left, .header-right {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    flex-wrap: wrap;
+}
+
+.logo-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.logo-image {
+    width: 150px;
+    height: auto;
+    transition: transform 0.2s ease;
+}
+
+.logo-image:hover {
+    transform: scale(1.05);
+}
+
+.app-title {
+    font-size: 2em;
+    font-weight: 700;
+    color: var(--text-color-dark); /* Using variable */
+    margin: 0;
+    letter-spacing: -0.5px;
+}
+
+.info-item #weatherIconHeader {
+    font-size: 1.5em;
+    color: black; /* Specific color, not a variable */
+    margin-right: 8px;
+}
+
+.info-item #weatherTempHeader {
+    font-weight: 600;
+    color: var(--text-color); /* Using variable */
+    margin-right: 5px;
+}
+
+.info-item #weatherDescHeader {
+    color: var(--text-color-light); /* Using variable */
+    font-size: 0.9em;
+}
+
+.info-widgets {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    font-size: 1em;
+    color: var(--text-color-light); /* Using variable */
+    font-weight: 500;
+}
+
+.info-item i {
+    margin-right: 10px;
+    color: var(--primary-color); /* Using variable */
+    font-size: 1.2em;
+}
+
+.urgent-issue {
+    color: #F44336;
+    font-weight: 600;
+    animation: pulseRed 1.5s infinite alternate;
+    background-color: rgba(244, 67, 54, 0.15);
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 1px solid rgba(244, 67, 54, 0.5);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.urgent-issue i {
+    font-size: 1.3em;
+    color: #F44336;
+}
+
+.urgent-issue span {
+    font-size: 1.05em;
+}
+
+@keyframes pulseRed {
+    from { color: #F44336; transform: scale(1); }
+    to { color: #D32F2F; transform: scale(1.02); }
+}
+
+.search-bar {
+    position: relative;
+    width: 320px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px 18px 12px 45px;
+    border: 1px solid var(--border-color); /* Using variable */
+    border-radius: 30px;
+    font-size: 1em;
+    background-color: var(--input-background-color); /* Using variable */
+    transition: all 0.3s ease;
+    outline: none;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.search-input:focus {
+    border-color: var(--primary-color); /* Using variable */
+    box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.25);
+    background-color: var(--card-background-color); /* Using variable */
+}
+
+.search-icon {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #AAAAAA;
+    font-size: 1.2em;
+}
+
+.icon-button {
+    background: none;
+    border: none;
+    padding: 12px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.25s ease, color 0.25s ease, transform 0.1s ease;
+    color: #666666;
+    font-size: 1.3em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-button:hover {
+    background-color: #E0E7FF;
+    color: var(--primary-color); /* Using variable */
+    transform: translateY(-2px);
+}
+
+.icon-button:active {
+    transform: translateY(0);
+}
+
+/* --- Main Layout Area: Sidebar + Content --- */
+.main-layout-area {
+    display: flex;
+    flex-grow: 1;
+    /* FIX FOR SCROLLING: Crucial for flex items to correctly calculate their height/overflow */
+    min-height: 0;
+    /* If you never want main-layout-area to scroll itself: */
+    overflow: hidden;
+}
+
+/* --- Sidebar Navigation --- */
+.sidebar {
+    width: 240px;
+    min-width: 240px;
+    background-color: var(--card-background-color); /* Using variable */
+    box-shadow: 3px 0 15px rgba(0, 0, 0, 0.04);
+    padding: 25px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow-y: auto;
+    border-right: 1px solid var(--border-color-light); /* Using variable */
+}
+
+.sidebar-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-item {
+    margin-bottom: 8px;
+}
+
+.nav-item a {
+    display: flex;
+    align-items: center;
+    padding: 14px 25px;
+    color: #555555;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1em;
+    transition: all 0.25s ease;
+    border-radius: 0 30px 30px 0;
+}
+
+.nav-item a i {
+    font-size: 1.2em;
+    margin-right: 18px;
+    color: #999999;
+    transition: color 0.25s ease;
+}
+
+/* Styles for navigation items when your mouse hovers over them. */
+.nav-item a:hover {
+    /* CHANGED: Make hover a subtle grayish */
+    background-color: #F8F8F8; /* A very light grey background */
+    color: #444444; /* Dark grey text */
+}
+
+/* Styles for icons within navigation items when their parent link is hovered. */
+.nav-item a:hover i {
+    /* CHANGED: Make hover icon color a subtle grey */
+    color: #666666; /* Medium grey icon */
+}
+
+/* Styles for the currently active/selected navigation item. */
+.nav-item.current a {
+    /* CHANGED: Red-themed background, text, and left border to match alert style */
+    background-color: #FFEBEE; /* Very light red background */
+    color: #D32F2F; /* Darker red text */
+    font-weight: 600;
+    box-shadow: inset 4px 0 0 #D32F2F; /* A thick red line on the left side */
+
+    /* Ensure consistency with transitions on hover */
+    transition: all 0.25s ease;
+}
+
+/* Styles for the icon within the currently selected navigation item. */
+.nav-item.current a i {
+    /* CHANGED: Icon color to match the red theme */
+    color: #D32F2F; /* Red icon for the current item */
+}
+
+/* NEW: Styles for the TPT Target icon within the sidebar nav item */
+.tpt-sidebar-icon {
+    width: 25px; /* Adjust size as needed for the ticket icon */
+    height: auto;
+    margin-right: 18px; /* Match spacing of other nav icons */
+    object-fit: contain;
+    flex-shrink: 0;
+    vertical-align: middle; /* FIX: Aligns the image's baseline with the middle of the text */
+}
+
+/* Optional: Adjust main .nav-item a if needed to account for image vs font icon */
+.nav-item a {
+    /* Ensure vertical alignment if icon is an image */
+    align-items: center;
+}
+/* Style for static nav items (e.g., TPT Target when not a link) */
+/* Style for static nav items (e.g., TPT Target when not a link) */
+.nav-item.static-display {
+    /* NEW: Red Ribbon Styling */
+    background-color: #D32F2F; /* A strong, dark red for the ribbon */
+    color: #FFFFFF; /* White text for contrast */
+    border-radius: 8px; /* Slightly rounded corners for a clean ribbon look */
+    padding: 10px 20px; /* Adjust padding to give it a good ribbon shape */
+                           /* (Original nav-items have 14px 25px, adjusted for ribbon feel) */
+    margin: 0 auto 10px auto; /* Adjust margin to position it neatly at the bottom.
+                               Top/Right/Bottom/Left. 15px left margin to align with main nav text. */
+
+    display: flex; /* Ensure flex behavior for icon and text inside */
+    align-items: center; /* Vertically center icon and text */
+    gap: 8px; /* Space between icon and text */
+
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2); /* Add a noticeable shadow to make it pop */
+    transition: all 0.2s ease; /* Smooth transitions for any visual changes */
+
+    cursor: default; /* Keep cursor as default arrow */
+    pointer-events: auto; /* Allow text selection/copying if needed */
+
+    /* Ensure no unwanted hover effects from .nav-item a:hover */
+    /* These !important tags are here to forcefully override if necessary */
+    background-color: #D32F2F !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2) !important;
+    transform: none !important;
+}
+
+/* Adjust the icon within the red ribbon */
+.nav-item.static-display .tpt-sidebar-icon {
+    width: 20px; /* Slightly smaller icon to fit the ribbon */
+    height: auto;
+    margin-right: 0; /* No extra margin here as gap handles it */
+    vertical-align: middle;
+    /* If the icon needs a specific color change on the red, you can add filter: invert(1) hue-rotate(180deg); etc. */
+    /* For a PNG, it will retain its original colors on the red background. */
+}
+
+/* Suppress any default hover from parent .nav-item a:hover if it somehow leaks */
+/* This rule should be placed AFTER .nav-item a:hover */
+.nav-item.static-display:hover {
+    background-color: #D32F2F !important; /* Keep it solid red on hover */
+    color: #FFFFFF !important; /* Keep text white on hover */
+    box-shadow: 0 6px 15px rgba(0,0,0,0.3) !important; /* Slightly more pronounced shadow on hover */
+    transform: translateY(-2px) !important; /* Give it a subtle lift on hover */
+}
+
+.nav-item.static-display:hover .tpt-sidebar-icon {
+    /* Ensure icon doesn't change on hover unexpectedly */
+    filter: none !important;
+}
+
+.nav-item.static-display .tpt-sidebar-icon {
+    /* Ensure icon color/style remains consistent */
+    filter: none !important; /* If any image filters on hover exist */
+}
+
+/* Important: Make sure .nav-item a:hover doesn't accidentally style this */
+/* If you have .nav-item:hover, make sure it applies to 'a' specifically or be overridden. */
+/* --- Main Content Area --- */
+.main-content {
+    flex-grow: 1;
+    padding: 35px;
+    background-color: var(--background-color-medium); /* Using variable */
+    overflow-y: auto; /* This should now correctly enable scrolling within the main content */
+    /* FIX FOR SCROLLING: Crucial for allowing flex items to correctly calculate their height/overflow */
+    min-height: 0;
+    /* For smoother scrolling on iOS devices */
+    -webkit-overflow-scrolling: touch;
+}
+
+.content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 35px;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.content-header-left {
+    /* No specific styles needed here for now, it will grow as needed by default */
+}
+
+/* Basic styling for the custom checkbox group */
+.form-group-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Space between checkbox and label */
+    grid-column: span 2; /* Make it span both columns in the grid */
+    margin-top: 15px; /* Space above this setting */
+    margin-bottom: 5px; /* Space below this setting */
+}
+
+.form-group-checkbox input[type="checkbox"] {
+    /* Reuse task checkbox styles for consistency */
+    margin-right: 0; /* Remove default margin from task checkbox style */
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--border-color);
+    border-radius: 5px;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+.form-group-checkbox input[type="checkbox"]:checked {
+    background-color: #4CAF50; /* Green when checked */
+    border-color: #4CAF50;
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+}
+
+.form-group-checkbox input[type="checkbox"]:checked::after {
+    content: '\2713';
+    font-size: 16px;
+    color: white;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.form-group-checkbox label {
+    font-size: 1em; /* Adjust label size */
+    color: var(--text-color);
+    cursor: pointer;
+    margin-bottom: 0; /* Override any default label margin-bottom */
+}
+.tpt-display {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #C72C1C;
+    padding: 8px 15px;
+    border-radius: 15px;
+    font-weight: 600;
+    color: var(--secondary-accent-color); /* Using variable */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    white-space: nowrap;
+}
+
+.tpt-icon {
+    width: 100px;
+    height: auto;
+    object-fit: contain;
+}
+
+.tpt-value {
+    font-size: 1.1em;
+}
+
+.content-header h2 {
+    font-size: 2em;
+    font-weight: 600;
+    color: var(--text-color-dark); /* Using variable */
+    margin-bottom: 8px;
+}
+
+.content-header p {
+    font-size: 1.1em;
+    color: var(--text-color-light); /* Using variable */
+    margin-top: 0;
+}
+
+/* --- Dashboard Grid Container --- */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-bottom: 50px;
+}
+
+/* --- Individual Dashboard Card Styling --- */
+.dashboard-card {
+    background-color: var(--card-background-color); /* Using variable */
+    padding: 30px;
+    border-radius: var(--border-radius); /* Using variable */
+    box-shadow: var(--shadow-medium); /* Using variable */
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.3s ease;
+    cursor: pointer;
+    border: 1px solid var(--border-color-light); /* Using variable */
+    position: relative;
+    overflow: hidden;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-large); /* Using variable */
+}
+
+.card-icon {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2em;
+    color: #FFFFFF;
+    margin-bottom: 18px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+.dashboard-card.color-green .card-icon { background-color: #66BB6A; }
+.dashboard-card.color-purple .card-icon { background-color: #9C27B0; }
+.dashboard-card.color-blue .card-icon { background-color: var(--primary-color); } /* Using variable */
+.dashboard-card.color-red .card-icon { background-color: #F44336; }
+.dashboard-card.color-orange .card-icon { background-color: #FF9800; }
+.dashboard-card.color-yellow .card-icon { background-color: #FFC107; }
+
+.dashboard-card h3 {
+    font-size: 1.3em;
+    font-weight: 600;
+    color: var(--text-color-dark); /* Using variable */
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.card-description {
+    font-size: 0.95em;
+    color: var(--text-color-light); /* Using variable */
+    margin-bottom: 20px;
+    flex-grow: 1;
+}
+
+.card-value {
+    font-size: 2.8em;
+    font-weight: 700;
+    color: var(--text-color); /* Using variable */
+    margin-bottom: 12px;
+}
+
+.card-action-button {
+    background-color: var(--primary-color); /* Using variable */
+    color: #FFFFFF;
+    border: none;
+    padding: 12px 20px;
+    border-radius: var(--border-radius-small); /* Using variable */
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+    align-self: flex-start;
+    box-shadow: 0 3px 8px rgba(33, 150, 243, 0.2);
+}
+
+.card-action-button:hover {
+    background-color: #1976D2;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(33, 150, 243, 0.3);
+}
+
+.card-action-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(33, 150, 243, 0.2);
+}
+
+/* --- Section Card (for Daily Tasks, etc.) --- */
+.section-card {
+    background-color: var(--card-background-color); /* Using variable */
+    padding: 35px;
+    border-radius: var(--border-radius); /* Using variable */
+    box-shadow: var(--shadow-medium); /* Using variable */
+    margin-top: 35px;
+    border: 1px solid var(--border-color-light); /* Using variable */
+}
+
+.section-card h2 {
+    font-size: 2em;
+    font-weight: 600;
+    color: var(--text-color-dark); /* Using variable */
+    margin-bottom: 25px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #F0F0F0;
+}
+
+/* --- TPT Calculator Page Specific Styles (Consolidated & Refined) --- */
+
+/* Container for the "Upload" text/input and the Settings toggle icon */
+.tpt-upload-and-settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end; /* Align items to the bottom, useful if text and button have different heights */
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.tpt-upload-elements {
+    flex-grow: 1;
+}
+
+.tpt-upload-elements h3 {
+    margin-top: 0;
+    margin-bottom: 5px;
+    font-size: 1.2em;
+    color: var(--text-color-dark);
+}
+
+.tpt-upload-elements .form-group {
+    margin-bottom: 0;
+}
+
+.tpt-upload-elements .form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 0.9em;
+    color: var(--text-color-light);
+}
+
+.tpt-upload-elements .form-group input[type="file"] {
+    display: block;
+    width: 100%;
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-small);
+    background-color: var(--input-background-color);
+    color: var(--text-color);
+    cursor: pointer;
+}
+
+.file-name-display { /* This class is for a potential <p> or <span> for the file name */
+    font-size: 0.85em;
+    color: var(--text-color-light);
+    margin-top: 5px;
+    word-break: break-all;
+}
+
+.tpt-settings-toggle-area {
+    flex-shrink: 0;
+}
+
+.tpt-settings-toggle-area .icon-button {
+    /* Existing icon-button styles apply here too */
+    font-size: 1.8em; /* Specific size for this icon */
+    color: var(--accent-color);
+}
+
+.tpt-settings-toggle-area .icon-button:hover {
+    transform: scale(1.1);
+}
+
+/* TPT Settings Menu (Collapsible Section) - Base styles for the menu when it's open */
+.tpt-settings-container {
+    max-height: 500px; /* Max height when expanded (should be large enough for content) */
+    overflow: hidden;
+    transition: max-height 0.3s ease-out, opacity 0.3s ease-out, padding 0.3s ease-out, border 0.3s ease-out, box-shadow 0.3s ease-out; /* Smooth transition for all properties */
+    opacity: 1; /* Fully visible when expanded */
+    padding: 20px; /* Padding when open */
+    margin-top: 15px;
+    /* FIX FOR BUTTON/RESULTS NESTING: Adds space below the open menu */
+    margin-bottom: 25px; /* Adjust this value for desired space */
+    background-color: var(--card-background-color-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-small);
+    box-sizing: border-box;
+}
+
+/* Style when the container is collapsed (hidden) - applied via JS toggling 'collapsed' class */
+.tpt-settings-container.collapsed {
+    max-height: 0; /* Collapse to 0 height */
+    opacity: 0; /* Fade out */
+    padding-top: 0; /* Remove padding when collapsed */
+    padding-bottom: 0; /* Remove padding when collapsed */
+    border: none; /* Remove border when collapsed */
+    box-shadow: none; /* Remove shadow when collapsed */
+    pointer-events: none; /* Prevent clicks on hidden content */
+    margin-top: 0; /* Remove margin when collapsed to prevent empty space */
+    /* Ensure margin-bottom is also 0 when collapsed */
+    margin-bottom: 0;
+}
+/* Styles for the inputs inside the settings menu */
+.tpt-settings-inputs {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 10px 15px;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.tpt-settings-inputs label {
+    font-size: 0.95em;
+    color: var(--text-color-dark);
+    font-weight: 500;
+}
+
+.tpt-settings-inputs input[type="number"] {
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-small);
+    background-color: var(--input-background-color);
+    color: var(--text-color);
+    font-size: 0.95em;
+    width: 100%;
+}
+
+#saveTptSettingsBtn {
+    margin-top: 10px;
+}
+
+/* --- REMOVED: Old .settings-header, as it's no longer used in the TPT Calculator HTML as per our new structure.
+   If you use .settings-header elsewhere, please re-add it in an appropriate section.
+.settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.settings-header h3 {
+    margin-bottom: 0;
+    font-size: 1.6em;
+    color: #222;
+}
+*/
+
+/* --- General .form-group style for broader use if needed (beyond specific sections) --- */
+/* You might already have this defined elsewhere, if so, this is just a reminder */
+.form-group {
+    margin-bottom: 15px; /* Default spacing for form elements */
+}
+
+
+/* --- Styles for Task Management (Daily Tasks Section) --- */
+.task-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.task-delete-btn {
+    background: none;
+    border: none;
+    color: #888;
+    cursor: pointer;
+    font-size: 0.9em;
+    margin-left: 10px;
+    transition: color 0.2s ease;
+    padding: 5px;
+    border-radius: 50%;
+}
+
+.task-delete-btn:hover {
+    color: #D32F2F;
+    background-color: #fcebeb;
+}
+
+.task-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 0;
+    border-bottom: 1px solid #F0F0F0;
+}
+
+.task-list li:last-child {
+    border-bottom: none;
+}
+
+.task-list li input[type="checkbox"] {
+    margin-right: 18px;
+    width: 22px;
+    height: 22px;
+    border: 2px solid #B0B0B0;
+    border-radius: 5px;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+.task-list li input[type="checkbox"]:checked {
+    background-color: #4CAF50;
+    border-color: #4CAF50;
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+}
+
+.task-list li input[type="checkbox"]:checked::after {
+    content: '\2713';
+    font-size: 16px;
+    color: white;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.task-list li label {
+    flex-grow: 1;
+    font-size: 1.05em;
+    color: #444444;
+    cursor: pointer;
+    padding-right: 20px;
+    transition: color 0.2s ease;
+}
+
+.task-list li input[type="checkbox"]:checked + label {
+    text-decoration: line-through;
+    color: #999999;
+}
+
+.task-priority {
+    font-size: 0.85em;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    white-space: nowrap;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.task-priority.high { background-color: #FFEBEE; color: #F44336; }
+.task-priority.cleanliness { background-color: #E8F5E9; color: #4CAF50; }
+.task-priority.parts { background-color: #FFF3E0; color: #FF9800; }
+.task-priority.facility { background-color: #EDE7F6; color: #7B24FF; }
+
+.add-task-button {
+    background-color: var(--primary-color); /* Using variable */
+    color: #FFFFFF;
+    border: none;
+    padding: 14px 25px;
+    border-radius: var(--border-radius-small); /* Using variable */
+    font-size: 1.05em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+    width: 100%;
+    margin-top: 30px;
+    box-shadow: 0 4px 10px rgba(33, 150, 243, 0.2);
+}
+
+.add-task-button:hover {
+    background-color: #1976D2;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(33, 150, 243, 0.3);
+}
+
+.add-task-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(33, 150, 243, 0.2);
+}
+
+/* --- Pop-up Overlay Styles (Clean Look) --- */
+.popup-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.4s ease-out, visibility 0.4s ease-out;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+.popup-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* --- Pop-up Content Styles (Clean & Rounded) --- */
+.popup-content {
+    background-color: var(--card-background-color); /* Using variable */
+    padding: 40px;
+    border-radius: var(--border-radius); /* Using variable */
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    max-width: 550px;
+    width: 90%;
+    text-align: center;
+    transform: translateY(30px) scale(0.9);
+    opacity: 0;
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.4s ease-out;
+    position: relative;
+    z-index: 1;
+}
+
+.popup-overlay.active .popup-content {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+}
+
+.popup-content h2 {
+    font-size: 2em;
+    color: var(--text-color-dark); /* Using variable */
+    margin-bottom: 20px;
+}
+
+.popup-content p {
+    font-size: 1.1em;
+    color: var(--text-color-light); /* Using variable */
+    margin-bottom: 30px;
+}
+
+.popup-button {
+    background-color: var(--primary-color); /* Using variable */
+    color: #FFFFFF;
+    border: none;
+    padding: 12px 25px;
+    border-radius: var(--border-radius-small); /* Using variable */
+    font-size: 1.05em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.25s ease, transform 0.25s ease;
+    margin: 8px;
+    box-shadow: 0 3px 8px rgba(33, 150, 243, 0.2);
+}
+
+.popup-button:hover {
+    background-color: #1976D2;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(33, 150, 243, 0.3);
+}
+
+.popup-button.cancel-button {
+    background-color: #9E9E9E;
+    box-shadow: 0 3px 8px rgba(158, 158, 158, 0.2);
+}
+
+.popup-button.cancel-button:hover {
+    background-color: #757575;
+    box-shadow: 0 6px 15px rgba(158, 158, 158, 0.3);
+}
+
+.popup-button.delete-button {
+    background-color: #F44336;
+    box-shadow: 0 3px 8px rgba(244, 67, 54, 0.2);
+}
+
+.popup-button.delete-button:hover {
+    background-color: #D32F2F;
+    box-shadow: 0 6px 15px rgba(244, 67, 54, 0.3);
+}
+
+.popup-content textarea {
+    width: calc(100% - 20px);
+    padding: 12px;
+    margin: 20px 0;
+    border: 1px solid #C0C0C0;
+    border-radius: var(--border-radius-small); /* Using variable */
+    font-size: 1.05em;
+    resize: vertical;
+    min-height: 100px;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.08);
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.popup-content textarea:focus {
+    border-color: var(--primary-color); /* Using variable */
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.3);
+}
+
+#issueList {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 25px;
+    text-align: left;
+}
+
+#issueList li {
+    background-color: #F8F8F8;
+    border: 1px solid #E0E0E0;
+    border-radius: var(--border-radius-small); /* Using variable */
+    padding: 15px;
+    margin-bottom: 10px;
+    color: #444444;
+    word-wrap: break-word;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+/* --- NEW: Opening Checklist Modal Specific Styles --- */
+#openingChecklistModal .popup-content {
+    max-width: 650px;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #E0E0E0;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 2em;
+    color: var(--text-color-dark); /* Using variable */
+    flex-grow: 1;
+    text-align: left;
+}
+
+.step-counter {
+    font-size: 1em;
+    color: #888888;
+    font-weight: 500;
+    white-space: nowrap;
+    margin-left: 15px;
+}
+
+.close-modal-button {
+    background: none;
+    border: none;
+    color: #999999;
+    font-size: 1.5em;
+    padding: 5px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    margin-left: 15px;
+}
+
+.close-modal-button:hover {
+    background-color: #F0F0F0;
+    color: #666666;
+}
+
+.modal-body {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.checklist-step-text {
+    font-size: 1.4em;
+    font-weight: 500;
+    color: var(--text-color); /* Using variable */
+    margin-bottom: 30px;
+    line-height: 1.4;
+}
+
+.checklist-response-area {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.checklist-boolean-button {
+    flex-grow: 1;
+    max-width: 200px;
+    padding: 15px 25px;
+    font-size: 1.1em;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.checklist-boolean-button.active-response {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    border: 2px solid;
+}
+
+.checklist-boolean-button.active-response.color-green {
+    border-color: #4CAF50;
+    background-color: #4CAF50;
+}
+
+.checklist-boolean-button.active-response.color-red {
+    border-color: #F44336;
+    background-color: #F44336;
+}
+
+.checklist-action-button {
+    background-color: var(--primary-color); /* Using variable */
+    color: #FFFFFF;
+    padding: 15px 25px;
+    font-size: 1.1em;
+    box-shadow: 0 3px 8px rgba(33, 150, 243, 0.2);
+}
+
+.checklist-action-button:hover {
+    background-color: #1976D2;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(33, 150, 243, 0.3);
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #E0E0E0;
+}
+
+.modal-footer .popup-button {
+    flex-grow: 1;
+    max-width: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.modal-footer .popup-button i {
+    font-size: 1em;
+}
+
+/* --- New Styles for Game Inventory Section --- */
+.game-inventory-section .form-group {
+    margin-bottom: 15px;
+}
+
+.game-inventory-section label {
+    display: block;
+    font-size: 0.95em;
+    color: #555555;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.game-inventory-section input[type="text"],
+.game-inventory-section select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border-color); /* Using variable */
+    border-radius: var(--border-radius-small); /* Using variable */
+    font-size: 1em;
+    background-color: var(--input-background-color); /* Using variable */
+    transition: all 0.2s ease;
+    outline: none;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.game-inventory-section input[type="text"]:focus,
+.game-inventory-section select:focus {
+    border-color: var(--primary-color); /* Using variable */
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.2);
+    background-color: var(--card-background-color); /* Using variable */
+}
+
+.game-input-area {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: var(--input-background-color); /* Using variable */
+    border-radius: var(--border-radius-small); /* Using variable */
+    box-shadow: inset 0 1px 5px rgba(0,0,0,0.05);
+    border: 1px solid var(--border-color-light); /* Using variable */
+    align-items: flex-end;
+}
+
+.game-input-area .form-group {
+    flex: 1;
+    min-width: 200px;
+    margin-bottom: 0;
+}
+
+.game-input-area .button-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 0;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    flex-grow: 1;
+    min-width: 200px;
+}
+
+.game-inventory-section .add-game-button,
+.game-inventory-section .export-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-grow: 1;
+    background-color: #4CAF50;
+    color: #FFFFFF;
+    border: none;
+    padding: 12px 20px;
+    border-radius: var(--border-radius-small); /* Using variable */
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+.game-inventory-section .add-game-button:hover {
+    background-color: #43A047;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+.game-inventory-section .export-button {
+    background-color: #FFC107;
+}
+
+.game-inventory-section .export-button:hover {
+    background-color: #FFA000;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+.game-list-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0;
+    background-color: var(--card-background-color); /* Using variable */
+    border-radius: var(--border-radius-small); /* Using variable */
+    overflow: hidden;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    border: 1px solid var(--border-color-light); /* Using variable */
+    border-top: none;
+}
+
+.game-list-table th,
+.game-list-table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #F0F0F0;
+}
+
+.game-list-table th {
+    background-color: #F8F8F8;
+    font-size: 0.9em;
+    color: var(--text-color-light); /* Using variable */
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.game-list-table td {
+    font-size: 0.95em;
+    color: #444444;
+}
+
+.game-list-table tr:last-child td {
+    border-bottom: none;
+}
+
+.game-list-table .status-new {
+    color: #4CAF50;
+    font-weight: 600;
+}
+
+.game-list-table .status-trashed {
+    color: #F44336;
+    font-weight: 600;
+}
+
+.game-list-table .status-active {
+    color: var(--primary-color); /* Using variable */
+    font-weight: 600;
+}
+
+.game-list-table .action-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.game-list-table .action-buttons button {
+    background: none;
+    border: none;
+    color: #666666;
+    cursor: pointer;
+    font-size: 1.1em;
+    padding: 5px;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.game-list-table .action-buttons button:hover {
+    background-color: #E0E7FF;
+    color: var(--primary-color); /* Using variable */
+    transform: scale(1.1);
+}
+
+.game-list-table .action-buttons .delete-button:hover {
+    background-color: #FFEBEE;
+    color: #F44336;
+}
+
+/* --- Responsive Adjustments for Game Inventory --- */
+@media (max-width: 1024px) {
+    .game-input-area {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+    }
+    .game-input-area .form-group {
+        width: 100%;
+        min-width: unset;
+    }
+    .game-input-area .button-group {
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+    }
+    .game-inventory-section .add-game-button,
+    .game-inventory-section .export-button {
+        width: 100%;
+        flex-grow: unset;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 15px;
+    }
+    .header-left {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+        gap: 10px;
+    }
+    .header-right {
+        width: 100%;
+        justify-content: space-between;
+        margin-top: 15px;
+    }
+    .info-widgets {
+        width: 100%;
+        justify-content: space-between;
+        gap: 10px;
+    }
+    .search-bar {
+        flex-grow: 1;
+        width: auto;
+    }
+    .main-layout-area {
+        flex-direction: column;
+    }
+    .sidebar {
+        width: 100%;
+        min-width: unset;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid #E0E0E0;
+        padding: 15px 0;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+    .sidebar-nav ul {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+    .sidebar-nav .nav-item {
+        margin-bottom: 0;
+    }
+    .sidebar-nav .nav-item a {
+        padding: 8px 12px;
+        font-size: 0.85em;
+        border-radius: 8px;
+        box-shadow: none;
+    }
+    .sidebar-nav .nav-item a i {
+        margin-right: 8px;
+    }
+    .sidebar-nav .nav-item.current a {
+        box-shadow: none;
+    }
+	/* Styles for the navigation items at the bottom of the sidebar. */
+	.sidebar-bottom-nav {
+    	padding-top: 25px; /* Space above this section, separating it from the main nav. */
+    	border-top: 1px solid var(--border-color-light); /* A light grey line separating this section. */
+    	margin-top: auto;  /* Pushes this section to the very bottom of the sidebar. */
+    	display: flex; /* Arrange items in a column by default */
+    	flex-direction: column;
+    	gap: 8px; /* Space between items in the bottom nav */
+    	align-items: center; /* NEW: Centers children horizontally within this flex container */
+
+	}
+    .main-content {
+        padding: 20px;
+    }
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    .dashboard-card {
+        padding: 20px;
+    }
+    .card-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 1.6em;
+    }
+    .card-value {
+        font-size: 2em;
+    }
+    .section-card {
+        padding: 20px;
+    }
+    .section-card h2 {
+        font-size: 1.5em;
+    }
+    .task-list li label {
+        font-size: 0.9em;
+    }
+    .task-priority {
+        font-size: 0.7em;
+        padding: 4px 8px;
+    }
+    .popup-content {
+        padding: 30px;
+    }
+    .popup-content h2 {
+        font-size: 1.8em;
+    }
+    .popup-content p {
+        font-size: 1em;
+    }
+    .popup-button {
+        font-size: 0.9em;
+        padding: 10px 15px;
+        margin: 5px;
+    }
+    .popup-content textarea {
+        padding: 10px;
+        font-size: 0.95em;
+    }
+    #issueList li {
+        padding: 12px;
+    }
+
+    .game-inventory-section .add-game-button,
+    .game-inventory-section .export-button {
+        width: 100%;
+    }
+    .game-list-table, .game-list-table thead, .game-list-table tbody, .game-list-table th, .game-list-table td, .game-list-table tr {
+        display: block;
+    }
+    .game-list-table thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+    .game-list-table tr {
+        border: 1px solid var(--border-color-light); /* Using variable */
+        margin-bottom: 15px;
+        border-radius: var(--border-radius-small); /* Using variable */
+        overflow: hidden;
+    }
+    .game-list-table td {
+        border: none;
+        border-bottom: 1px solid #F0F0F0;
+        position: relative;
+        padding-left: 50%;
+        text-align: right;
+    }
+    .game-list-table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 15px;
+        width: 45%;
+        padding-right: 10px;
+        white-space: nowrap;
+        text-align: left;
+        font-weight: 600;
+        color: var(--text-color-light); /* Using variable */
+    }
+    .game-list-table .action-buttons {
+        justify-content: flex-end;
+    }
+}
+
+/* --- Custom Scrollbar Styles --- */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #e0e7ff;
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb {
+    background: #93c5fd;
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #60a5fa;
+}

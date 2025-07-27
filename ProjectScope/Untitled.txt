@@ -1,0 +1,155 @@
+Arcade Manager App: Project Overview (UPDATED)
+Current Date: Sunday, July 27, 2025 (4:56 PM EDT)
+Primary Developer: You!
+AI Assistant: Gemini
+
+1. Project Goal & Core Vision
+The ultimate goal of this application is to streamline your daily workload as an Arcade Manager at Chuck E. Cheese. It aims to combat disorganization, provide quick access to critical data (like TPT), help track tasks and issues, and eventually serve as a comprehensive digital assistant accessible from your phone.
+
+Key features you envision (Long-Term):
+TPT Analysis & Optimization: Automated calculation of TPT metrics (total, with/without Birthday Blaster, out-of-range games) from corporate reports, with dynamic adjustment suggestions.
+Comprehensive Task Management: Track daily duties, prioritize, and mark completion across various aspects of your work.
+Detailed Game & Facility Tracking: Monitor broken games, parts orders, cleanliness, and general facility issues.
+Vendor Management: Store vendor contacts, links, and passwords securely within the app.
+Data-Driven Decisions: Use insights from TPT and other operational metrics to guide daily adjustments and improvements.
+Mobile Accessibility: The app will be fully functional and user-friendly on a web browser, accessible from any device (desktop, tablet, phone) within or outside the store.
+Future Persistence: All dynamic data (tasks, settings, game inventory, TPT results history) will be saved to a robust database for consistent experience across devices and sessions.
+Automated Prompts/Reminders: For TPT updates, specific tasks, upcoming maintenance, etc.
+2. Current State & Key Features Implemented (Detailed Recap)
+Your app is now a functional web application with a modern UI and several core features implemented across its Flask backend, HTML templates, CSS styling, and JavaScript interactivity.
+
+A. Core Application Setup:
+Flask Backend (app.py): This Python file serves all your web pages (HTML templates) and acts as the central hub for API endpoints, handling data requests from the frontend and integrating with Python logic (like tpt_processor.py).
+HTML Templates (.html files): These files define the structure and content of each distinct page in your web application (e.g., Dashboard, TPT Calculator, Game Inventory).
+Static Assets (.css, .js, images, fonts): These folders contain your styling (style.css), interactive JavaScript (app.js), images (logos, icons, background graphics), and custom fonts.
+Python Virtual Environment (venv): This isolated environment ensures all your project's Python dependencies (like Flask, pandas, requests) are managed separately and don't conflict with other Python installations on your system.
+B. App Layout & Styling (via style.css):
+Google-Inspired Theme: The app maintains a clean, modern aesthetic with subtle gradients, rounded corners, and soft shadows, inspired by Google's Material Design principles.
+Custom Fonts: Uses the 'Inter' font for a contemporary and readable look.
+Subtle Background Graphic: A custom wave_graphic.png (located at daily_task_manager/static/images/background_graphics/wave_graphic.png) is subtly displayed in the background of the main app container using a ::before pseudo-element with low opacity, adding depth without distraction.
+Overall Responsiveness: The layout is designed to adapt smoothly to various screen sizes (desktops, tablets, phones), ensuring usability across devices.
+Main App Container & Scrolling: The main .app-container now uses height: 100vh; and overflow: hidden; to ensure it precisely fills the viewport. Internal scrolling is handled by the .main-content area.
+Sidebar Navigation Item Styling:
+Hover State: When you hover over any navigation item in the sidebar, it shows a subtle light grayish background (#F8F8F8) with dark gray text (#444444) and a medium gray icon (#666666).
+Selected (Current) State: The currently active page (e.g., "Dashboard") is prominently highlighted with a very light red background (#FFEBEE), darker red text (#D32F2F), a matching red icon, and a thick red border (box-shadow: inset 4px 0 0 #D32F2F;) on its left side. This provides a strong visual cue to match the urgent alert color.
+C. Header Bar (main-header):
+Chuck E. Cheese Logo (.logo-link): The logo is a clickable element that always takes you back to the Dashboard homepage (/).
+Dynamic Weather Display: Shows real-time weather information (icon, temperature, description for Margate, FL) by fetching data from the OpenWeatherMap API via your Flask backend. The icons are from the Pe-icon-7-weather font library and dynamically colored.
+Prominent "Urgent Issues" Display (.urgent-issue): Styled as a distinct, pulsing red warning badge to immediately draw attention to critical issues.
+Interactive Search Bar: You can type a search term and press Enter; it currently brings up a custom popup showing your search query. (Full search functionality is a future goal).
+Interactive Notification Bell & Profile Icons: Clicking these buttons brings up custom placeholder modals, indicating where future notification and user profile features will reside.
+D. Sidebar Navigation (sidebar):
+Streamlined Functional Links: The main navigation section (.sidebar-nav) now provides direct links only to the core, currently implemented pages:
+Dashboard (/)
+TPT Calculator (/tpt_calculator)
+Game Inventory (/inventory)
+Removed Placeholder Links: The following placeholder navigation items have been removed from the main sidebar list: Broken Games, Parts Orders, Cleanliness, Facility, Car Orders, and Work Log. This keeps the current navigation clean and focused.
+TPT Target Ribbon (Bottom Left):
+The "Target: X.XX" display has been moved from the main header to the bottom-left corner of the sidebar.
+It's now a static display element (not a clickable link), providing persistent visibility of your target TPT.
+It's styled as a prominent red ribbon with white text, using your custom ticket_icon.png (from daily_task_manager/static/images/ticket_icon.png) as its associated icon.
+The icon's vertical and horizontal alignment within the ribbon has been fine-tuned for visual perfection.
+Removed Bottom Navigation: The entire sidebar-bottom-nav section, which previously contained "Settings," "Help," and "Sign Out" links, has been removed from the HTML for a cleaner aesthetic. (A decision on where to relocate these utility links is still pending).
+E. Main Content Area (main-content) - Dashboard (/):
+Header Clean-up: The old TPT Display (.tpt-display div) has been completely removed from the dashboard's main content header, as the TPT Target is now in the sidebar.
+Dynamic Date: Displays the current day and date (e.g., "Sunday, July 27, 2025").
+Blank Action Cards: The action cards (e.g., "Start Opening Checklist," "Inspect an Arcade Game," "View Daily Tasks") are now empty placeholder divs in index.html. They still have their ids for future dynamic content injection via JavaScript, but no static text, icons, or buttons are hardcoded within them in the HTML. You're ready to build these from scratch.
+Blank Info Cards: Similarly, the info cards (e.g., "Broken Games Summary," "Parts On Order," "Arcade Ticket Payout") are also empty placeholder divs in index.html. Their static values (like "7 Games" or "2,543,120 Tickets") have been removed, ready for dynamic data population.
+Daily Task Tracking (#daily-tasks-section):
+You can add new tasks with descriptions and priorities (High, Cleanliness, Parts Needed, Facility Issue).
+You can mark tasks as complete (checkboxes with line-through).
+You can delete tasks.
+Crucially, tasks persist using your browser's localStorage (meaning they save even if you close and reopen the browser, but not across different devices/browsers). This section is functional.
+F. TPT Calculator Page (/tpt_calculator):
+File Upload: Allows you to select and upload .csv or .xlsx files for TPT calculation.
+TPT Calculation Settings (.tpt-settings-container):
+This section is a collapsible menu, hidden by default behind a hamburger icon (fas fa-bars), which toggles to an 'X' (fas fa-times) when open.
+Persistent Inputs: Input fields for "Lowest Desired TPT," "Highest Desired TPT," and "Target TPT" now load and save their values to your browser's localStorage using the "Save Settings" button. These values are retrieved upon page load.
+Functional Birthday Blaster Toggle: A new checkbox, "Include Birthday Blaster in TPT calculation," has been added. This toggle's state is saved to localStorage and, critically, is passed to the backend to dynamically affect the Total TPT Average calculation.
+Dynamic Results Display: After uploading a file, the page displays:
+Games Out of Range (count and list of names), calculated using your dynamically set Lowest Desired TPT and Highest Desired TPT.
+Total TPT Average, which now dynamically includes or excludes Birthday Blaster games based on your toggle selection.
+TPT (with Birthday Blaster) and TPT (without Birthday Blaster) values are always calculated and displayed, showing the breakdown regardless of the main toggle's effect on the Total TPT Average.
+Individual Game Data Table (NEW!):
+A new section below the summary results displays a detailed table of each game from the uploaded file.
+Columns displayed: Profile, Game Name, TPT (Individual), Total Tickets, and Total Plays.
+This table allows for easy visualization and manual review of individual game data.
+An "Export Individual Games CSV" button is available to download this table data directly to a CSV file.
+G. Game Inventory Page (/inventory):
+You can add new games (Name, Status).
+You can delete existing games.
+You can export your game list to a CSV file.
+Games persist using your browser's localStorage.
+Updated Sidebar: This page's sidebar has been updated to match the streamlined version, consistent with the Dashboard.
+H. Global Modals:
+Custom Popup (#customPopup): A unified, styled popup system used for general alerts, confirmations, and displaying custom content (like search results or "feature coming soon" messages).
+Issue Summary Popup (#issueSummaryPopup): A placeholder for displaying reported issues.
+Opening Checklist Modal (#openingChecklistModal): A multi-step guided checklist. This is functional.
+3. File Structure Overview
+Your project should have the following structure. Remember that all static assets (CSS, JS, images, fonts) are served from the static folder, and HTML pages are served from the templates folder.
+
+daily_task_manager/
+├── app.py                      # Main Flask application, defines web routes and API endpoints.
+├── tpt_processor.py            # Dedicated Python file for TPT calculation logic (uses pandas).
+├── temp_uploads/               # Folder for temporary storage of uploaded TPT files. (MUST EXIST!)
+├── templates/
+│   ├── index.html              # The main dashboard page.
+│   ├── tpt_calculator.html     # The page for TPT calculations, settings, and individual game data.
+│   └── game_inventory.html     # The page for managing your arcade game inventory.
+└── static/
+    ├── css/
+    │   ├── style.css           # Your custom CSS styles for the entire app.
+    │   ├── pe-icon-7-weather.css # CSS for the weather icon font (third-party).
+    │   └── pe-icon-7-helper.css  # CSS for weather icon utility classes (third-party).
+    ├── fonts/                    # Contains the font files (.eot, .woff, .ttf, .svg) for pe-icon-7-weather.
+    ├── images/
+    │   ├── chuck_e_cheese_logo.png # Your Chuck E. Cheese logo.
+    │   ├── ticket_icon.png     # Your custom ticket icon (used in TPT Target ribbon).
+    │   └── background_graphics/
+    │       └── wave_graphic.png  # Your subtle background graphic.
+    └── js/
+        └── app.js              # Your main JavaScript logic for interactivity across pages.
+4. Key Configuration & Setup Notes
+Python Virtual Environment: Always activate your venv (using source venv/bin/activate on macOS/Linux or venv\Scripts\activate on Windows) before running Python commands like python app.py. This ensures all required libraries are used.
+Required Python Libraries: Ensure you've installed them in your venv by running:
+pip install Flask requests pandas openpyxl Werkzeug numpy (Added numpy as a dependency for tpt_processor.py if not already there).
+OpenWeatherMap API Key: Your OPENWEATHER_API_KEY (e.g., f733dbbdf2d7274b20ed5a5d52fbad30) is defined in app.py. Ensure it's correct and activated on OpenWeatherMap's site for weather data to display.
+temp_uploads/ Folder: This folder must exist in your daily_task_manager/ directory (at the same level as app.py). Your app.py automatically creates it if it doesn't, but it's good to confirm.
+Manual File Pre-Processing (TPT Reports - CRITICAL!):
+Daily Reports (PDFs): You MUST manually convert these to .csv or .xlsx files before uploading them to the app. The app cannot currently read PDFs directly.
+All TPT Report Files (.csv or .xlsx): You MUST manually open these files and delete any rows above the actual column headers. Ensure that the very first row of the file you upload is the row containing your column names (e.g., Profile, Game, TPT, TICKETS, Total Plays). This simplifies the Python parsing logic.
+tpt_processor.py Column Names:
+You MUST ensure the column_mapping dictionary and the tickets_col, plays_col, individual_tpt_col, game_col, and PROFILE_CLEAN variables in tpt_processor.py exactly match the cleaned column headers of your reports.
+You MUST populate the bb_game_names list in tpt_processor.py with the exact names of all your Birthday Blaster games as they appear in your reports.
+TPT range thresholds (lowest_tpt_threshold, highest_tpt_threshold) are now dynamically passed from the frontend (from settings saved in localStorage).
+Server Restart: After any changes to Python files (app.py, tpt_processor.py), you MUST restart your Flask server (by pressing CTRL + C then python app.py in your terminal). For HTML, CSS, or JavaScript changes, a simple browser refresh is usually enough.
+5. Future Vision & Roadmap (What's Next)
+Your project is already robust and has incredible potential to significantly simplify your work! Here's a clear roadmap for future enhancements, ordered by typical development flow:
+1. Build Out Dashboard Action Cards (Next Immediate Step!):
+Your Dashboard cards ("Start Opening Checklist," "Inspect an Arcade Game," "View Daily Tasks") are currently blank. We can now add the specific content (icons, titles, descriptions, and buttons) that triggers their functionality directly in index.html.
+The "Start Opening Checklist" already has a working modal; we can make the other buttons trigger placeholder modals as well.
+2. Implement Dynamic TPT Averages on Dashboard:
+This is where your dashboard will start showing real-time insights.
+Goal: Display "Latest Daily TPT" and "Weekly Average TPT" prominently on the Dashboard.
+Requires:
+Backend Persistence: A mechanism to save historical TPT calculation results (e.g., in a simple JSON file or a lightweight SQLite database) each time a file is processed on the TPT Calculator page.
+New Flask API Endpoint: A route in app.py to query this historical data and calculate the "latest daily" and "weekly average" TPTs.
+Frontend Integration (index.html, app.js): New elements on the Dashboard page to display these two numbers, updated by app.js fetching from the new API.
+3. Database Integration (BIG Step!):
+This is the foundational step for true persistence across all devices and for more complex features.
+Start with a simple SQLite database (file-based, easy to set up).
+Migrate all localStorage-based data (tasks, game inventory, TPT settings) to the database.
+This will unlock centralized storage for all your critical data.
+4. Expand Sidebar Features (Database-driven):
+Re-introduce Utility Links: Decide where "Settings," "Help," and "Sign Out" should reside (e.g., within a profile menu in the header, or a new sidebar sub-section).
+Broken Games/Parts Orders/Cleaning/Facility/Work Log: Create dedicated pages or interactive modals that fetch and manage this data from the new database.
+Daily Reports/Analytics: Store more TPT calculation results historically in the database and build dashboard widgets to show trends and custom reports.
+5. Advanced Header Functionality:
+Full Search Bar: Implement backend search queries against your database to search tasks, games, issues, etc.
+Notifications System: Make the bell icon display real-time notifications pulled from a database (e.g., new urgent issues, overdue tasks, parts delivered).
+User Profile & Settings: Manage user accounts, app preferences (like dark/light mode saved in the database), and access to saved vendor details.
+6. Modularize HTML with Jinja2 Includes:
+To simplify maintenance (so you don't have to copy-paste the sidebar to every page), we can create reusable HTML components (like a _sidebar.html file) and include them in your main templates.
+7. Deployment: Learn how to deploy your Flask app to a cloud server (like Render, Heroku, or PythonAnywhere) so it's always online and accessible from anywhere, not just your local network.
+8. Automated PDF Extraction (Long-Term Goal):
+Explore Python libraries like tabula-py to automatically extract data from your daily PDF reports, eliminating the manual conversion step.

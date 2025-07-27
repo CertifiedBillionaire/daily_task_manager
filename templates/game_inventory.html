@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Inventory - Arcade Manager</title>
+    <!-- Google Inter Font for a modern, clean look -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Your custom styles (shared across all pages) -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Main Header Section (Copied from index.html) -->
+        <header class="main-header">
+            <div class="header-left">
+                <div class="logo-area">
+                    <i class="fas fa-gamepad logo-icon"></i> <!-- Arcade icon -->
+                    <h1 class="app-title">Arcade Manager</h1>
+                </div>
+                <div class="info-widgets">
+                    <div class="info-item">
+                        <i class="far fa-calendar-alt"></i>
+                        <span id="currentDate"></span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-cloud-sun"></i>
+                        <span id="currentWeather">72°F Sunny</span> <!-- Placeholder -->
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-ticket-alt"></i>
+                        <span id="currentTPT">TPT: 1.25</span> <!-- Placeholder -->
+                    </div>
+                    <div class="info-item urgent-issue">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span id="urgentIssue">No Urgent Issues</span> <!-- Placeholder -->
+                    </div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="search-bar">
+                    <input type="text" placeholder="Search games or issues..." class="search-input">
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+                <button class="icon-button"><i class="fas fa-bell"></i></button>
+                <button class="icon-button"><i class="fas fa-user-circle"></i></button>
+            </div>
+        </header>
+
+        <!-- Main Layout Area: Sidebar + Content -->
+        <div class="main-layout-area">
+            <!-- Sidebar Navigation (Copied from index.html) -->
+            <aside class="sidebar">
+    <nav class="sidebar-nav">
+        <ul>
+            <li class="nav-item current">
+                <a href="/">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/tpt_calculator" id="sidebarTptCalculator">
+                    <i class="fas fa-calculator"></i>
+                    <span>TPT Calculator</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/inventory" id="sidebarGameInventory">
+                    <i class="fas fa-gamepad"></i>
+                    <span>Game Inventory</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <div class="sidebar-bottom-nav">
+        <div class="nav-item static-display" id="sidebarBottomTptTargetLink">
+            <img src="{{ url_for('static', filename='images/ticket_icon.png') }}" alt="Ticket Icon" class="tpt-sidebar-icon">
+            <span id="sidebarBottomTptTargetValue">Target: N/A</span>
+        </div>
+    </div>
+</aside>
+
+            <!-- Main Content Area for Game Inventory -->
+            <main class="main-content">
+                <div class="content-header">
+                    <h2>Game Inventory Management</h2> <!-- Specific heading for this page -->
+                    <p>Manage your arcade game assets, status, and history.</p>
+                </div>
+
+                <!-- Game Inventory Section -->
+                <section id="game-inventory-section" class="section-card">
+                    <h2>Game Inventory</h2>
+                    <!-- New container for horizontal input fields and buttons -->
+                    <div class="game-input-area">
+                        <div class="form-group">
+                            <label for="gameNameInput">Game Name:</label>
+                            <input type="text" id="gameNameInput" placeholder="e.g., Pac-Man Arcade" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="gameStatusSelect">Status:</label>
+                            <select id="gameStatusSelect">
+                                <option value="active">Active</option>
+                                <option value="new">New</option>
+                                <option value="trashed">Trashed</option>
+                            </select>
+                        </div>
+                        <div class="button-group">
+                            <button class="add-game-button" id="addGameButton"><i class="fas fa-plus-circle"></i> Add Game</button>
+                            <button class="export-button" id="exportGameListButton"><i class="fas fa-file-excel"></i> Export to Excel</button>
+                        </div>
+                    </div>
+
+                    <table class="game-list-table">
+                        <thead>
+                            <tr>
+                                <th>Game Name</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="gameListBody">
+                            <!-- Game items will be dynamically inserted here by JavaScript -->
+                        </tbody>
+                    </table>
+                </section>
+            </main>
+        </div>
+
+        <!-- Popups/Modals (Copied from index.html) -->
+        <div id="customPopup" class="popup-overlay">
+            <div class="popup-content">
+                <h2 id="popupTitle"></h2>
+                <p id="popupMessage"></p>
+                <div id="popupActions"></div>
+            </div>
+        </div>
+
+        <div id="issueSummaryPopup" class="popup-overlay">
+            <div class="popup-content">
+                <h2>Daily Issues Summary</h2>
+                <ul id="issueList"></ul>
+                <button id="closeSummaryBtn">Close Summary</button>
+            </div>
+        </div>
+    </div>
+    <!-- The main app.js script will be loaded, but we'll make it page-aware -->
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <script>
+        // Page-specific JavaScript for current date display (copied from index.html)
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateElement = document.getElementById('currentDate');
+            // Note: currentDayDateElement is not on this page's header, only in main content
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const today = new Date();
+            dateElement.textContent = today.toLocaleDateString('en-US', options);
+            // If you want a date in the main content header for this page:
+            // const contentHeaderDate = document.getElementById('contentHeaderDate');
+            // if (contentHeaderDate) {
+            //     contentHeaderDate.textContent = today.toLocaleDateString('en-US', options);
+            // }
+        });
+    </script>
+</body>
+</html>
