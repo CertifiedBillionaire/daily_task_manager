@@ -73,7 +73,7 @@ def init_db():
                 date_logged TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
             );
         """))
-        
+
     db.commit() # Commit changes to create the table
     print("PostgreSQL database initialized or already exists.")
 
@@ -251,6 +251,10 @@ def save_tpt_settings():
     db.commit()
     
     return jsonify({"message": "TPT settings saved successfully!"})
+
+@app.route('/issues')
+def issues_page():
+    return render_template('issues.html')
 
 # --- Application Entry Point ---
 if __name__ == '__main__':
