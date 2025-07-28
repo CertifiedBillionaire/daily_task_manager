@@ -1,7 +1,7 @@
 # app.py
 import psycopg2
 from psycopg2 import sql
-from flask import Flask, render_template, request, jsonify, g # ADDED 'g' here
+from flask import Flask, render_template, request, jsonify, g
 import requests
 import os
 import json
@@ -61,14 +61,33 @@ def init_db():
                 value TEXT
             );
         """))
+
+                # NEW: Create 'issues' table
+        cur.execute(sql.SQL("""
+            CREATE TABLE IF NOT EXISTS issues (
+                id TEXT PRIMARY KEY,
+                priority TEXT NOT NULL,
+                status TEXT NOT NULL,
+                description TEXT NOT NULL,
+                equipment_location TEXT,
+                date_logged TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+            );
+        """))
+        
     db.commit() # Commit changes to create the table
     print("PostgreSQL database initialized or already exists.")
 
 
 # Call init_db() when the Flask application starts up.
 # This ensures your tables are ready each time app.py is run.
+# CORRECTED INDENTATION HERE:
 with app.app_context():
-    init_db()
+    # Temporarily skip database initialization during local development for weather debug
+    if os.environ.get("SKIP_DB_INIT") != "true":
+        init_db()
+    else:
+        print("Skipping database initialization because SKIP_DB_INIT is set.")
+
 
 # Configuration for OpenWeatherMap API
 OPENWEATHER_API_KEY = os.environ.get('OPENWEATHER_API_KEY', 'f733dbbdf2d7274b20ed5a5d52fbad30') # Using os.environ.get here
@@ -98,13 +117,15 @@ def tpt_calculator_page():
 def get_data():
     return jsonify({"message": "Data fetched from Flask backend (placeholder)"})
 
-@app.route('/api/get_weather', methods=['GET'])
+@app.route('/weather', methods=['GET'])
 def get_weather():
     try:
         url = f"https://api.openweathermap.org/data/2.5/weather?lat={LATITUDE}&lon={LONGITUDE}&appid={OPENWEATHER_API_KEY}&units=imperial"
         response = requests.get(url)
         response.raise_for_status()
         weather_data = response.json()
+
+        print(f"DEBUG: Weather data received from OpenWeatherMap: {weather_data}") # <--- THIS LINE MUST BE HERE
 
         icon_code = weather_data['weather'][0]['icon']
         description = weather_data['weather'][0]['description']
@@ -115,6 +136,14 @@ def get_weather():
             "description": description.capitalize(),
             "temperature": round(temperature)
         })
+
+    except requests.exceptions.RequestException as e:
+        print(f"DEBUG: Error fetching weather data from OpenWeatherMap: {e}") # <--- THIS LINE MUST BE DEBUG
+        return jsonify({"error": "Failed to fetch weather data", "details": str(e)}), 500
+    except KeyError as e:
+        print(f"DEBUG: Key error in weather data response: {e} - Data: {weather_data}") # <--- THIS LINE MUST BE DEBUG
+        return jsonify({"error": "Weather data format error", "details": str(e)}), 500
+
 
     except requests.exceptions.RequestException as e:
         print(f"Error fetching weather data from OpenWeatherMap: {e}")
