@@ -126,23 +126,6 @@ html, body {
     letter-spacing: -0.5px;
 }
 
-.info-item #weatherIconHeader {
-    font-size: 1.5em;
-    color: black; /* Specific color, not a variable */
-    margin-right: 8px;
-}
-
-.info-item #weatherTempHeader {
-    font-weight: 600;
-    color: var(--text-color); /* Using variable */
-    margin-right: 5px;
-}
-
-.info-item #weatherDescHeader {
-    color: var(--text-color-light); /* Using variable */
-    font-size: 0.9em;
-}
-
 .info-widgets {
     display: flex;
     gap: 30px;
