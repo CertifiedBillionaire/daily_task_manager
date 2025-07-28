@@ -16,36 +16,25 @@
         <!-- Main Header Section (Copied from index.html) -->
         <header class="main-header">
             <div class="header-left">
-                <div class="logo-area">
-                    <i class="fas fa-gamepad logo-icon"></i> <!-- Arcade icon -->
-                    <h1 class="app-title">Arcade Manager</h1>
-                </div>
+                <a href="/" class="logo-link">
+                    <div class="logo-area">
+                        <img src="{{ url_for('static', filename='images/chuck_e_cheese_logo.png') }}" alt="Chuck E. Cheese Logo" class="logo-image">
+                        <h1 class="app-title">OPS Manager</h1>
+                    </div>
+                </a>
                 <div class="info-widgets">
-                    <div class="info-item">
-                        <i class="far fa-calendar-alt"></i>
-                        <span id="currentDate"></span>
-                    </div>
-                    <div class="info-item">
-                        <i class="fas fa-cloud-sun"></i>
-                        <span id="currentWeather">72°F Sunny</span> <!-- Placeholder -->
-                    </div>
-                    <div class="info-item">
-                        <i class="fas fa-ticket-alt"></i>
-                        <span id="currentTPT">TPT: 1.25</span> <!-- Placeholder -->
-                    </div>
                     <div class="info-item urgent-issue">
                         <i class="fas fa-exclamation-triangle"></i>
-                        <span id="urgentIssue">No Urgent Issues</span> <!-- Placeholder -->
-                    </div>
+                        <span id="urgentIssue">No Urgent Issues</span> </div>
                 </div>
             </div>
             <div class="header-right">
                 <div class="search-bar">
-                    <input type="text" placeholder="Search games or issues..." class="search-input">
+                    <input type="text" id="mainSearchBar" placeholder="Search games or issues..." class="search-input">
                     <i class="fas fa-search search-icon"></i>
                 </div>
-                <button class="icon-button"><i class="fas fa-bell"></i></button>
-                <button class="icon-button"><i class="fas fa-user-circle"></i></button>
+                <button class="icon-button" id="notificationButton"><i class="fas fa-bell"></i></button>
+                <button class="icon-button" id="profileButton"><i class="fas fa-user-circle"></i></button>
             </div>
         </header>
 
