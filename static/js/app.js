@@ -765,6 +765,11 @@ function initializeTptCalculatorPage() {
 // --- Main Application Initialization ---
 document.addEventListener('DOMContentLoaded', function() {
     updateCurrentDate(); // Update date on any page
+    // --- Weather display elements (Moved to the top of DOMContentLoaded) ---
+    const weatherIconElement = document.getElementById('weatherIconHeader');
+    const weatherTempElement = document.getElementById('weatherTempHeader');
+    const weatherDescElement = document.getElementById('weatherDescHeader');
+
 
     // ... (rest of header element references, unchanged) ...
 
