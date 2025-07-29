@@ -70,7 +70,19 @@ def init_db():
                 status TEXT NOT NULL,
                 description TEXT NOT NULL,
                 equipment_location TEXT,
-                date_logged TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+                date_logged TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP""")
+            );
+                            
+             # NEW: Create 'tasks' table
+        cur.execute(sql.SQL("""
+            CREATE TABLE IF NOT EXISTS tasks (
+                id SERIAL PRIMARY KEY, # SERIAL means auto-incrementing number */
+                description TEXT NOT NULL,
+                priority TEXT NOT NULL,
+                completed BOOLEAN NOT NULL DEFAULT FALSE,
+                due_date DATE, # We'll store just the date for simplicity */
+                is_recurring BOOLEAN NOT NULL DEFAULT FALSE,
+                recurrence_pattern TEXT # e.g., 'weekly_monday', 'daily', 'monthly' */
             );
         """))
 
