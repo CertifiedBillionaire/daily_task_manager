@@ -127,42 +127,6 @@ def tpt_calculator_page():
 @app.route('/api/data', methods=['GET'])
 def get_data():
     return jsonify({"message": "Data fetched from Flask backend (placeholder)"})
-
-@app.route('/weather', methods=['GET'])
-def get_weather():
-    try:
-        url = f"https://api.openweathermap.org/data/2.5/weather?lat={LATITUDE}&lon={LONGITUDE}&appid={OPENWEATHER_API_KEY}&units=imperial"
-        response = requests.get(url)
-        response.raise_for_status()
-        weather_data = response.json()
-
-        print(f"DEBUG: Weather data received from OpenWeatherMap: {weather_data}") # <--- THIS LINE MUST BE HERE
-
-        icon_code = weather_data['weather'][0]['icon']
-        description = weather_data['weather'][0]['description']
-        temperature = weather_data['main']['temp']
-
-        return jsonify({
-            "icon_code": icon_code,
-            "description": description.capitalize(),
-            "temperature": round(temperature)
-        })
-
-    except requests.exceptions.RequestException as e:
-        print(f"DEBUG: Error fetching weather data from OpenWeatherMap: {e}") # <--- THIS LINE MUST BE DEBUG
-        return jsonify({"error": "Failed to fetch weather data", "details": str(e)}), 500
-    except KeyError as e:
-        print(f"DEBUG: Key error in weather data response: {e} - Data: {weather_data}") # <--- THIS LINE MUST BE DEBUG
-        return jsonify({"error": "Weather data format error", "details": str(e)}), 500
-
-
-    except requests.exceptions.RequestException as e:
-        print(f"Error fetching weather data from OpenWeatherMap: {e}")
-        return jsonify({"error": "Failed to fetch weather data", "details": str(e)}), 500
-    except KeyError as e:
-        print(f"Key error in weather data response: {e} - Data: {weather_data}")
-        return jsonify({"error": "Weather data format error", "details": str(e)}), 500
-
 @app.route('/api/calculate_tpt', methods=['POST'])
 def calculate_tpt():
     if 'tpt_file' not in request.files:
@@ -266,6 +230,46 @@ def save_tpt_settings():
 @app.route('/issues')
 def issues_page():
     return render_template('issues.html')
+
+@app.route('/api/issues', methods=['GET'])
+def get_issues():
+    # For now, return a hardcoded list of dummy issues
+    # In a later step, this will fetch real issues from your PostgreSQL database
+    dummy_issues = [
+        {
+            "id": "IS-001",
+            "priority": "IMMEDIATE",
+            "status": "Open",
+            "description": "Coin acceptor jammed on Pac-Man",
+            "equipment_location": "Arcade - Pac-Man",
+            "date_logged": "2025-07-25"
+        },
+        {
+            "id": "IS-002",
+            "priority": "CLEANING",
+            "status": "Open",
+            "description": "Sticky floor around redemption counter",
+            "equipment_location": "Redemption - Floor",
+            "date_logged": "2025-07-26"
+        },
+        {
+            "id": "IS-003",
+            "priority": "High",
+            "status": "Awaiting Part",
+            "description": "Broken joystick on Terminator Salvation",
+            "equipment_location": "Arcade - Terminator",
+            "date_logged": "2025-07-26"
+        },
+        {
+            "id": "IS-004",
+            "priority": "Medium",
+            "status": "In Progress",
+            "description": "Ticket eater #3 is offline",
+            "equipment_location": "Redemption - Ticket Eater",
+            "date_logged": "2025-07-27"
+        }
+    ]
+    return jsonify(dummy_issues)
 
 # --- Application Entry Point ---
 if __name__ == '__main__':
