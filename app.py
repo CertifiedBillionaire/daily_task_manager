@@ -62,7 +62,6 @@ def init_db():
             );
         """))
 
-                # NEW: Create 'issues' table
         cur.execute(sql.SQL("""
             CREATE TABLE IF NOT EXISTS issues (
                 id TEXT PRIMARY KEY,
@@ -70,22 +69,22 @@ def init_db():
                 status TEXT NOT NULL,
                 description TEXT NOT NULL,
                 equipment_location TEXT,
-                date_logged TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP""")
+                date_logged TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
             );
-                            
-             # NEW: Create 'tasks' table
+        """)) # Make sure the """)); is correct and there's no extra comma after CURRENT_TIMESTAMP
+
+        # NEW: Create 'tasks' table (this should be after issues, assuming you added it previously)
         cur.execute(sql.SQL("""
             CREATE TABLE IF NOT EXISTS tasks (
-                id SERIAL PRIMARY KEY, # SERIAL means auto-incrementing number */
+                id SERIAL PRIMARY KEY,
                 description TEXT NOT NULL,
                 priority TEXT NOT NULL,
                 completed BOOLEAN NOT NULL DEFAULT FALSE,
-                due_date DATE, # We'll store just the date for simplicity */
+                due_date DATE,
                 is_recurring BOOLEAN NOT NULL DEFAULT FALSE,
-                recurrence_pattern TEXT # e.g., 'weekly_monday', 'daily', 'monthly' */
+                recurrence_pattern TEXT
             );
-        """))
-
+        """)) # Make sure the """)); is correct here too
     db.commit() # Commit changes to create the table
     print("PostgreSQL database initialized or already exists.")
 
