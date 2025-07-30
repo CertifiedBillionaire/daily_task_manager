@@ -8,6 +8,7 @@ import json
 import pandas as pd
 from werkzeug.utils import secure_filename
 import tpt_processor
+import time
 
 
 # Define the Flask app instance FIRST, right after imports.
@@ -66,10 +67,14 @@ def init_db():
             CREATE TABLE IF NOT EXISTS issues (
                 id TEXT PRIMARY KEY,
                 priority TEXT NOT NULL,
-                status TEXT NOT NULL,
-                description TEXT NOT NULL,
+                ate_logged TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                area TEXT,                 /* NEW COLUMN */
                 equipment_location TEXT,
-                date_logged TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+                description TEXT NOT NULL,
+                notes TEXT,                /* NEW COLUMN */
+                status TEXT NOT NULL,
+                target_date DATE,          /* NEW COLUMN (using DATE type) */
+                assigned_to TEXT           /* NEW COLUMN */
             );
         """)) # Make sure the """)); is correct and there's no extra comma after CURRENT_TIMESTAMP
 
@@ -270,6 +275,74 @@ def get_issues():
         }
     ]
     return jsonify(dummy_issues)
+
+
+@app.route('/api/issues', methods=['GET', 'POST'])
+def handle_issues():
+    db = get_db()
+    cur = db.cursor()
+
+    if request.method == 'GET':
+        try:
+            cur.execute("""
+                SELECT id, priority, date_logged, area, equipment_location, description, notes, status, target_date, assigned_to
+                FROM issues
+                ORDER BY date_logged DESC; -- Order by newest issues first
+            """)
+            issues_from_db = cur.fetchall() # Renamed variable for clarity
+
+            issue_list = []
+            for issue in issues_from_db:
+                issue_list.append({
+                    "id": issue[0],
+                    "priority": issue[1],
+                    "date_logged": issue[2].isoformat() if issue[2] else None, # Convert datetime to string, handle None
+                    "area": issue[3],
+                    "equipment_location": issue[4],
+                    "description": issue[5],
+                    "notes": issue[6],
+                    "status": issue[7],
+                    "target_date": issue[8].isoformat() if issue[8] else None, # Convert date to string, handle None
+                    "assigned_to": issue[9]
+                })
+            return jsonify(issue_list)
+        except Exception as e:
+            print(f"ERROR: Failed to fetch issues from DB: {e}")
+            return jsonify({"error": "Failed to retrieve issues", "details": str(e)}), 500
+
+    elif request.method == 'POST':
+        try:
+            data = request.get_json()
+
+            # Ensure all new columns are expected from the incoming JSON data
+            description = data.get('description')
+            priority = data.get('priority')
+            status = data.get('status')
+            area = data.get('area', '') # Default to empty string if not provided
+            equipment_location = data.get('equipment_location', '')
+            notes = data.get('notes', '')
+            target_date = data.get('target_date') # Can be None if not provided
+            assigned_to = data.get('assigned_to', '')
+
+            if not description or not priority or not status:
+                return jsonify({"error": "Missing required fields: description, priority, status"}), 400
+
+            # Temporary ID generation (will be replaced by DB-generated SERIAL PK later)
+            issue_id = f"IS-{int(time.time())}" # Format to match sheet "IS-XXX"
+
+
+            cur.execute(sql.SQL("""
+                INSERT INTO issues (id, description, priority, status, area, equipment_location, notes, target_date, assigned_to)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
+            """), (issue_id, description, priority, status, area, equipment_location, notes, target_date, assigned_to))
+
+            db.commit()
+
+            return jsonify({"message": "Issue added successfully!", "issue_id": issue_id}), 201
+
+        except Exception as e:
+            print(f"ERROR: Failed to add issue to DB: {e}")
+            return jsonify({"error": "Failed to add issue", "details": str(e)}), 500
 
 # app.py
 
