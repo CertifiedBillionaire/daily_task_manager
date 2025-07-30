@@ -453,13 +453,23 @@ html, body {
 }
 
 /* --- FEATURE: Main Content - Header (Page Title & Description) --- */
+/* This now wraps the dashboard-overview-header for overall spacing */
 .content-header {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start; /* ADJUSTED: Start alignment for the new group */
     align-items: center;
     margin-bottom: 35px;
     flex-wrap: wrap;
-    gap: 20px;
+    gap: 20px; /* Space if content-header-left wraps */
+}
+
+/* NEW: Container for Dashboard Title, Date, and Urgent Issue Badge */
+.dashboard-overview-header {
+    display: flex; /* Make it a flex container */
+    align-items: center; /* Vertically align items */
+    gap: 20px; /* Space between the date/title and the urgent issue badge */
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    flex-grow: 1; /* Allow it to take up space if needed */
 }
 
 
