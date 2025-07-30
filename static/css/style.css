@@ -218,7 +218,8 @@ html, body {
     padding: 10px 15px;                  /* Padding around the text */
     border-radius: var(--border-radius-small); /* Rounded corners */
     border: 1px solid rgba(244, 67, 54, 0.5); /* Subtle red border */
-    display: flex;                       /* Make it a flex container */
+    display: flex;
+    display: none;                       /* Make it a flex container */
     align-items: center;                 /* Vertically align icon and text */
     gap: 8px;                            /* Space between icon and text */
     transition: all 0.3s ease;           /* Smooth transitions for any changes */
