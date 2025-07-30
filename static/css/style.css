@@ -117,44 +117,63 @@ html, body {
 }
 
 
+/* style.css */
+
+/* ... (CSS Variables and Universal Resets remain unchanged above this) ... */
+
+
+/* --- Main App Container (Overall Layout & Background) --- */
+/* ... (This section remains unchanged) ... */
+
+
 /* --- Main Header Section (Top Bar of the App) --- */
 /*
- * Controls the layout and styling of the app's top navigation bar.
+ * Controls the overall layout and styling of the app's top navigation bar.
+ * This is the BASE (Mobile-First) styling for the header.
  */
 .main-header {
-    display: flex;                       /* Enables Flexbox for direct children */
-    justify-content: space-between;      /* Spreads items to the left and right edges */
-    align-items: center;                 /* Vertically centers items */
-    padding: 25px 35px;                  /* ADJUSTED: Increased padding for a taller header */
+    display: flex;                       /* Enables Flexbox for direct children (header-left, header-right) */
+    flex-wrap: wrap;                     /* Allows items to wrap to the next line on mobile */
+    justify-content: space-between;      /* Spreads header-left and header-right sections to edges */
+    align-items: center;                 /* Vertically centers items in the header */
+    padding: 15px 20px;                  /* ADJUSTED: Mobile padding (smaller, was 25px 35px) */
+    height: auto;                        /* Height adjusts to content on mobile (allows wrapping) */
+    gap: 15px;                           /* Space between header-left and header-right sections on mobile */
     background-color: var(--card-background-color); /* White background */
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); /* Subtle shadow at the bottom */
     border-bottom: 1px solid var(--border-color-light); /* Light separator line */
-    flex-wrap: wrap;                     /* Allows items to wrap to the next line on small screens */
-    gap: 20px;                           /* Space between direct children (e.g., header-left and header-right) */
-    position: sticky;                    /* Makes the header stick to the top when scrolling on desktop */
-    top: 0;                              /* Sticks to the very top */
+    position: sticky;                    /* Makes the header stick to the top when scrolling */
+    top: 0;                              /* Sticks to the very top of the viewport */
     z-index: 1000;                       /* Ensures it stays above other content */
 }
 
-/* --- FEATURE: HEADER - Left and Right Sections (for organizing content) --- */
+/* --- FEATURE: HEADER - Left and Right Sections (Containers for Header Elements) --- */
 /*
- * These divs help organize the header's content into logical groups.
+ * These divs (`header-left`, `header-right`) are flex containers that organize specific groups
+ * of elements within the main header (e.g., logo group, info widgets on the left; search, buttons on the right).
  */
 .header-left, .header-right {
     display: flex;                       /* Make them flex containers */
     align-items: center;                 /* Vertically align items within them */
-    gap: 25px;                           /* Space between items in these groups */
-    flex-wrap: wrap;                     /* Allow wrapping on small screens */
+    gap: 15px;                           /* Default spacing between items within these groups (mobile) */
+    flex-wrap: wrap;                     /* Allow wrapping on very small screens */
 }
+.header-right {
+    /* On mobile, search bar and buttons should generally stay horizontal if space allows */
+    justify-content: flex-end; /* Push content to the right edge within its container */
+    flex-grow: 1; /* Allow right side to take up available space on mobile */
+}
+
 
 /* --- FEATURE: HEADER - Logo Area (Logo Image & App Title) --- */
 /*
- * Styles for the Chuck E. Cheese logo and the "OPS Manager" title.
+ * Styles for the container of the Chuck E. Cheese logo image and the "OPS Manager" title.
  */
 .logo-area {
-    display: flex;                       /* Make it a flex container to align logo and title */
-    align-items: center;                 /* Vertically align logo image and title */
-    gap: 12px;                           /* Space between the logo image and the app title */
+    display: flex;                       /* Enables flexbox for image and title */
+    align-items: center;                 /* Vertically centers the logo image and app title */
+    gap: 10px;                           /* Space between the logo image and the app title */
+    flex-shrink: 0;                      /* Prevents the logo group from shrinking too much on mobile */
 }
 
 .logo-link {
@@ -163,7 +182,7 @@ html, body {
 }
 
 .logo-image {
-    width: 180px;                        /* ADJUSTED: Made logo bigger (was 150px) */
+    width: 120px;                        /* ADJUSTED: Mobile logo width (smaller base size) */
     height: auto;                        /* Maintain aspect ratio */
     transition: transform 0.2s ease;     /* Smooth hover effect */
 }
@@ -173,71 +192,75 @@ html, body {
 }
 
 .app-title {
-    font-size: 1.5em;                      /* Large font for main title */
-    font-weight: 700;                    /* Bold font */
-    color: var(--text-color-dark);       /* Use theme variable for dark text */
-    margin: 0;                           /* Remove default margins */
-    letter-spacing: -0.5px;              /* Slight letter spacing adjustment */
+    font-size: 1.3em;                    /* ADJUSTED: Mobile app title font size (smaller base size) */
+    font-weight: 700;
+    color: var(--text-color-dark);
+    margin: 0;
+    letter-spacing: -0.5px;
+    white-space: nowrap;                 /* Prevent title from wrapping awkwardly */
 }
 
-/* --- FEATURE: HEADER - Info Widgets (like Weather - REMOVED, but this was its container) --- */
+
+/* --- FEATURE: HEADER - Info Widgets (General Container for small info items) --- */
 /*
- * This section was previously for displaying dynamic info like weather.
- * The weather display HTML has been removed, so these styles are now for
- * any other .info-item that might be placed here.
+ * This section wraps individual info items like the Urgent Issues badge.
  */
 .info-widgets {
-    display: flex;                       /* Make it a flex container */
-    gap: 30px;                           /* Space between individual info items */
-    flex-wrap: wrap;                     /* Allow wrapping on small screens */
+    display: flex;
+    gap: 15px;                           /* Default space between individual info items (mobile) */
+    flex-wrap: wrap;
 }
 
-.info-item {
-    display: flex;                       /* Make individual info items flex containers */
-    align-items: center;                 /* Vertically align icon and text */
-    font-size: 1em;                      /* Standard font size */
-    color: var(--text-color-light);      /* Light text color */
-    font-weight: 500;                    /* Medium font weight */
+.info-item { /* General style for items within info-widgets (like .urgent-issue) */
+    display: flex;
+    align-items: center;
+    font-size: 0.95em;                   /* Slightly smaller text for info items */
+    color: var(--text-color-light);
+    font-weight: 500;
 }
 
 .info-item i {
-    margin-right: 10px;                  /* Space between icon and text */
-    color: var(--primary-color);         /* Primary theme color for icons */
-    font-size: 1.2em;                    /* Slightly larger icon size */
+    margin-right: 8px;                   /* Space between icon and text */
+    color: var(--primary-color);
+    font-size: 1.1em;
 }
 
 /* --- FEATURE: HEADER - Urgent Issue Badge --- */
 /*
- * Styles for the prominent red warning badge in the header.
+ * Styles for the prominent red warning badge. By default displayed, but JS can hide it.
  */
 .urgent-issue {
-    color: #F44336;                      /* Red text color */
-    font-weight: 600;                    /* Bold font */
+    color: #F44336;
+    font-weight: 600;
     animation: pulseRed 1.5s infinite alternate; /* Pulsing animation for attention */
-    background-color: rgba(244, 67, 54, 0.15); /* Light red background */
-    padding: 10px 15px;                  /* Padding around the text */
-    border-radius: var(--border-radius-small); /* Rounded corners */
-    border: 1px solid rgba(244, 67, 54, 0.5); /* Subtle red border */
-    display: flex;
-    display: none;                       /* Make it a flex container */
-    align-items: center;                 /* Vertically align icon and text */
-    gap: 8px;                            /* Space between icon and text */
-    transition: all 0.3s ease;           /* Smooth transitions for any changes */
+    background-color: rgba(244, 67, 54, 0.15);
+    padding: 8px 12px;                   /* Smaller padding for mobile badge */
+    border-radius: var(--border-radius-small);
+    border: 1px solid rgba(244, 67, 54, 0.5);
+    display: flex;                       /* FIXED: Default to flex (visible). JS will hide it with .hide-badge. */
+    /* REMOVED: Conflicting 'display: none;' */
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+/* This class will be applied by JavaScript to hide the badge when count is 0 */
+.urgent-issue.hide-badge {
+    display: none !important; /* !important ensures it overrides 'display: flex' */
 }
 
 .urgent-issue i {
-    font-size: 1.3em;                    /* Slightly larger icon */
-    color: #F44336;                      /* Red icon color */
+    font-size: 1.2em;                    /* Icon size for badge */
+    color: #F44336;
 }
 
 .urgent-issue span {
-    font-size: 1.05em;                   /* Slightly larger text */
+    font-size: 1em;                      /* Text size for badge */
 }
 
 /* --- Keyframe Animation for Urgent Issue Pulse --- */
 @keyframes pulseRed {
-    from { color: #F44336; transform: scale(1); }    /* Starts normal */
-    to { color: #D32F2F; transform: scale(1.02); } /* Pulses slightly larger and darker red */
+    from { color: #F44336; transform: scale(1); }
+    to { color: #D32F2F; transform: scale(1.02); }
 }
 
 
@@ -246,35 +269,37 @@ html, body {
  * Styles for the interactive search input in the header.
  */
 .search-bar {
-    position: relative;                  /* For positioning the search icon */
-    width: 320px;                        /* Default width for desktop */
+    position: relative;
+    width: 100%;                         /* Full width on mobile by default */
+    max-width: 250px;                    /* Limit max width on mobile */
+    flex-grow: 1;                        /* Allow it to grow to fill space */
 }
 
 .search-input {
-    width: 100%;                         /* Fills its parent container */
-    padding: 12px 18px 12px 45px;        /* Padding, including space for icon */
-    border: 1px solid var(--border-color); /* Light grey border */
-    border-radius: 30px;                 /* Fully rounded ends */
-    font-size: 1em;                      /* Standard text size */
-    background-color: var(--input-background-color); /* Light background */
-    transition: all 0.3s ease;           /* Smooth transitions for focus/hover */
-    outline: none;                       /* Remove default focus outline */
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); /* Subtle inner shadow */
+    width: 100%;
+    padding: 8px 15px 8px 40px;          /* Adjusted padding for mobile header input */
+    border: 1px solid var(--border-color);
+    border-radius: 30px;
+    font-size: 0.9em;
+    background-color: var(--input-background-color);
+    transition: all 0.3s ease;
+    outline: none;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
 }
 
 .search-input:focus {
-    border-color: var(--primary-color);  /* Primary color border on focus */
-    box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.25); /* Glow effect on focus */
-    background-color: var(--card-background-color); /* White background on focus */
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.25);
+    background-color: var(--card-background-color);
 }
 
 .search-icon {
-    position: absolute;                  /* Positioned absolutely within .search-bar */
-    left: 18px;                          /* Aligned from the left */
-    top: 50%;                            /* Vertically centered */
-    transform: translateY(-50%);         /* Precise vertical centering */
-    color: #AAAAAA;                     /* Light grey icon color */
-    font-size: 1.2em;                    /* Icon size */
+    position: absolute;
+    left: 15px;                          /* Adjusted icon position */
+    top: 50%;
+    transform: translateY(-50%);
+    color: #AAAAAA;
+    font-size: 1em;
 }
 
 
@@ -283,30 +308,258 @@ html, body {
  * Styles for the clickable circular icons in the header.
  */
 .icon-button {
-    background: none;                    /* No background fill */
-    border: none;                        /* No border */
-    padding: 12px;                       /* Padding for click area */
-    border-radius: 50%;                  /* Perfect circle */
-    cursor: pointer;                     /* Indicates clickability */
-    transition: background-color 0.25s ease, color 0.25s ease, transform 0.1s ease; /* Smooth hover effects */
-    color: #666666;                      /* Default icon color */
-    font-size: 1.3em;                    /* Icon size */
-    display: flex;                       /* Make it a flex container for centered icon */
-    align-items: center;                 /* Vertically center icon */
-    justify-content: center;             /* Horizontally center icon */
+    background: none;
+    border: none;
+    padding: 8px;                        /* Smaller padding for mobile icons */
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.25s ease, color 0.25s ease, transform 0.1s ease;
+    color: #666666;
+    font-size: 1.1em;                    /* Smaller icon size for mobile */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .icon-button:hover {
-    background-color: #E0E7FF;           /* Light blue background on hover */
-    color: var(--primary-color);         /* Primary color text on hover */
-    transform: translateY(-2px);         /* Slight lift on hover */
+    background-color: #E0E7FF;
+    color: var(--primary-color);
+    transform: translateY(-2px);
 }
 
 .icon-button:active {
-    transform: translateY(0);            /* Returns to original position on click */
+    transform: translateY(0);
 }
 
 
+/* --- Main Layout Area: Sidebar + Content --- */
+/* ... (This section remains unchanged) ... */
+
+
+/* --- Sidebar Navigation (Left-hand menu) --- */
+/* ... (This section remains unchanged) ... */
+
+
+/* --- Main Content Area (Scrollable Section) --- */
+/* ... (This section remains unchanged) ... */
+
+
+/* --- FEATURE: Main Content - Header (Page Title & Description) --- */
+/* ... (This section remains unchanged) ... */
+
+
+/* --- FEATURE: Dashboard Grid Container (for Action & Info Cards) --- */
+/* ... (This section remains unchanged) ... */
+
+
+/* --- Individual Dashboard Card Styling --- */
+/* ... (This section remains unchanged) ... */
+
+
+/* --- Section Card (General Purpose Container for content sections) --- */
+/* ... (This section remains unchanged) ... */
+
+
+/* --- TPT Calculator Page Specific Styles --- */
+/* ... (This section remains unchanged) ... */
+
+
+/* --- General Form Group Style --- */
+/* ... (This section remains unchanged) ... */
+
+
+/* --- Basic Checkbox Group Style (Used in TPT settings, tasks) --- */
+/* ... (This section remains unchanged) ... */
+
+
+/* --- Styles for Task Management (Daily Tasks Section) --- */
+/* ... (This section remains unchanged) ... */
+
+
+/* --- Pop-up Overlay Styles (Clean Look) --- */
+/* ... (This section remains unchanged) ... */
+
+
+/* --- Pop-up Content Styles (Clean & Rounded) --- */
+/* ... (This section remains unchanged) ... */
+
+
+/* --- NEW: Opening Checklist Modal Specific Styles --- */
+/* ... (This section remains unchanged) ... */
+
+
+/* --- New Styles for Game Inventory Section --- */
+/* ... (This section remains unchanged) ... */
+
+
+/* --- Custom Scrollbar Styles --- */
+/* ... (This section remains unchanged) ... */
+
+
+/* --- Responsive Adjustments (Media Queries) --- */
+/*
+ * These media queries ensure your layout adapts to different screen sizes.
+ * Styles defined outside these blocks are the "mobile-first" defaults.
+ */
+
+/* Medium screens (768px and up, tablets and desktops) */
+@media (min-width: 768px) {
+    html {
+        font-size: 90%; /* To make it appear 'more zoomed out' on desktop */
+    }
+    /* HEADER: Desktop/Tablet specific layout adjustments */
+    .main-header {
+        padding: 25px 35px; /* Taller padding for desktop header */
+        height: auto;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        gap: 30px; /* Space between header-left and header-right */
+    }
+
+    /* HEADER: Left and Right Sections */
+    .header-left {
+        flex-grow: 0; /* Don't grow aggressively on desktop */
+        flex-basis: auto;
+        gap: 30px; /* Adjust spacing between logo-group and info-widgets */
+        flex-wrap: nowrap;
+    }
+    .header-right {
+        flex-grow: 1; /* Allow right side to take remaining space */
+        flex-basis: auto;
+        justify-content: flex-end; /* Push content to the right */
+        gap: 25px; /* Space out search, bell, profile */
+        flex-wrap: nowrap;
+    }
+
+    /* HEADER: Logo Area */
+    .logo-image {
+        width: 180px; /* Desktop logo size */
+    }
+    .app-title {
+        font-size: 2em; /* Desktop app title font size */
+    }
+
+    /* Search Bar Desktop Adjustments */
+    .search-bar {
+        width: 320px; /* Restore desktop search bar width */
+        max-width: unset;
+        min-width: unset;
+    }
+    .search-input {
+        padding: 12px 18px 12px 45px;
+        font-size: 1em;
+    }
+    .search-icon {
+        left: 18px;
+        font-size: 1.2em;
+    }
+
+    /* Icon Buttons Desktop Adjustments */
+    .icon-button {
+        padding: 12px;
+        font-size: 1.3em;
+    }
+    .urgent-issue {
+        padding: 10px 15px;
+        font-size: 1.05em;
+    }
+    .info-widgets {
+        gap: 30px; /* Restore desktop spacing for info items */
+    }
+
+
+    /* MAIN LAYOUT: Sidebar and Main Content Area */
+    .main-layout-area {
+        flex-direction: row; /* Sidebar and main content side-by-side */
+        margin-top: 0; /* No top margin if header is sticky */
+    }
+
+    /* SIDEBAR: Desktop/Tablet specific adjustments */
+    .sidebar {
+        width: 240px;
+        min-width: 240px;
+        height: calc(100vh - 80px); /* Adjust sidebar height if header height is fixed */
+        position: sticky;
+        top: 0;
+        border-right: 1px solid var(--border-color-light);
+        box-shadow: 3px 0 15px rgba(0,0,0,0.04);
+        transform: translateX(0);
+    }
+
+    /* MAIN CONTENT: Desktop/Tablet specific adjustments */
+    .main-content {
+        padding: 35px;
+    }
+
+    /* DASHBOARD GRID: Desktop */
+    .dashboard-grid {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+    }
+
+    /* GAME INVENTORY: Desktop */
+    .game-input-area {
+        flex-direction: row;
+        align-items: flex-end;
+        gap: 20px;
+    }
+    .game-input-area .form-group {
+        width: auto;
+        min-width: 200px;
+    }
+    .game-input-area .button-group {
+        flex-direction: row;
+        gap: 15px;
+        flex-grow: 1;
+        justify-content: flex-start;
+    }
+    .game-inventory-section .add-game-button,
+    .game-inventory-section .export-button {
+        width: auto;
+        flex-grow: 1;
+    }
+    .game-list-table {
+        display: table;
+        border-top-left-radius: var(--border-radius-small);
+        border-top-right-radius: var(--border-radius-small);
+    }
+    .game-list-table thead tr {
+        position: static;
+    }
+    .game-list-table th, .game-list-table td {
+        display: table-cell;
+        text-align: left;
+        padding-left: 15px;
+    }
+    .game-list-table td::before {
+        content: none;
+    }
+    .game-list-table tr {
+        border: none;
+        margin-bottom: 0;
+    }
+    .game-list-table .action-buttons {
+        justify-content: flex-start;
+    }
+}
+
+
+/* --- Custom Scrollbar Styles --- */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #e0e7ff;
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb {
+    background: #93c5fd;
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #60a5fa;
+}
 /* --- Main Layout Area: Sidebar + Content --- */
 /*
  * This div acts as the main container for the sidebar and the scrolling content area.
