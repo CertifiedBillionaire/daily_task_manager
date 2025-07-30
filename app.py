@@ -271,6 +271,24 @@ def get_issues():
     ]
     return jsonify(dummy_issues)
 
+# app.py
+
+# ... (existing API Endpoints) ...
+
+@app.route('/api/urgent_issues_count', methods=['GET'])
+def get_urgent_issues_count():
+    # For now, return a hardcoded count.
+    # In a later step, this will query your 'issues' table
+    # for real high-priority, open issues.
+
+    # Let's pretend there are 2 urgent issues for testing the frontend later
+    return jsonify({"count": 2}) 
+
+# ... (rest of your app.py, including calculate_tpt, tpt_settings, issues routes) ...
+
+
+
+
 # --- Application Entry Point ---
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
