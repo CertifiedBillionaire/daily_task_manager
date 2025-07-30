@@ -173,7 +173,7 @@ html, body {
 }
 
 .app-title {
-    font-size: 2em;                      /* Large font for main title */
+    font-size: 1.5em;                      /* Large font for main title */
     font-weight: 700;                    /* Bold font */
     color: var(--text-color-dark);       /* Use theme variable for dark text */
     margin: 0;                           /* Remove default margins */
@@ -1366,41 +1366,24 @@ html, body {
 
 /* Medium screens (768px and up, tablets and desktops) */
 @media (min-width: 768px) {
+    html {
+        font-size: 90%; /* (This was already there for overall desktop zoom) */
+    }
     /* HEADER: Desktop/Tablet specific layout adjustments */
     .main-header {
-        flex-direction: row; /* Arrange main children horizontally */
-        justify-content: space-between; /* Push header-left and header-right to edges */
-        flex-wrap: nowrap; /* Prevent wrapping of header children on desktop */
-        /* Height and padding were adjusted in the global .main-header rule,
-        can be fine-tuned here if needed */
-    }
-
-    /* HEADER: Left and Right Sections */
-    .header-left {
-        flex-grow: 1; /* Allow left side to grow */
-        flex-basis: auto; /* Default basis */
-        gap: 25px; /* Adjust spacing between logo-area and info-widgets */
-        flex-wrap: nowrap; /* Prevent wrapping within header-left */
-    }
-    .header-right {
-        flex-grow: 1; /* Allow right side to grow */
-        flex-basis: auto; /* Default basis */
-        justify-content: flex-end; /* Push content to the right */
-        gap: 25px; /* Adjust spacing between search and buttons */
-        flex-wrap: nowrap; /* Prevent wrapping within header-right */
-    }
-
-    /* HEADER: Logo Area - Adjusting based on the logo's HTML structure */
-    .logo-area {
-        /* If this was stacking, ensure it's row-based */
+        padding: 25px 35px; /* This is now the specific desktop padding (consistent with previous step) */
+        height: auto;
         flex-direction: row;
-        align-items: center; /* Vertically align image and text */
-        gap: 12px; /* Space between logo image and text */
+        flex-wrap: nowrap;
+        gap: 30px;
     }
 
-    /* Adjustments for specific header elements on desktop */
+    /* HEADER: Logo Area */
+    .logo-image {
+        width: 200px; /* ADJUSTED: Desktop logo size (making it a bit larger than 180px now for clarity) */
+    }
     .app-title {
-        font-size: 1.8em; /* Can adjust font size for desktop if 2em is too big */
+        font-size: 2.2em; /* ADJUSTED: Desktop app title font size (slightly larger) */
     }
     .search-bar {
         width: 340px; /* Adjust search bar width for desktop view */
