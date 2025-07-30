@@ -1,407 +1,458 @@
-/* style.css */
+/*
+ * style.css
+ *
+ * This file contains all the CSS (Cascading Style Sheets) rules
+ * that control the visual appearance of your Arcade Manager App.
+ *
+ * It's structured for readability with clear sections, comments,
+ * and generous spacing to help you understand and modify the styles.
+ *
+ * Sections are marked with: /* --- SECTION NAME --- * /
+ * Features within sections are marked with: /* --- FEATURE: FEATURE NAME --- * /
+ * Individual important rules are commented.
+ *
+ * Use your editor's search function (Ctrl+F or Cmd+F) to find specific
+ * features or elements by searching for terms like 'LOGO', 'HEADER', 'SIDEBAR', etc.
+ */
 
-/* --- CSS Variables (Define your theme colors and sizes here!) --- */
-/* These make it easy to change your app's look globally. */
+
+/* --- CSS Variables: Your App's Theme Colors and Sizes --- */
+/*
+ * These variables (prefixed with --) allow you to define your app's
+ * color palette, font sizes, spacing, and shadows in one central place.
+ * Changing a value here will update it everywhere it's used in the CSS.
+ */
 :root {
-    --primary-color: #2196F3; /* Google Blue */
-    --accent-color: #2196F3; /* Often same as primary, or different highlight color */
-    --secondary-accent-color: #F9B32F; /* Chuck E. Cheese Yellow-Orange */
-    --text-color: #333333; /* Default dark text */
-    --text-color-dark: #222222; /* Even darker text for headings */
-    --text-color-light: #666666; /* Lighter text for descriptions/subheadings */
-    --background-color-light: #F0F4F8; /* Light background for body/app-container */
-    --background-color-medium: #F7F8FC; /* Slightly darker background for main-content */
-    --card-background-color: #FFFFFF; /* White background for most cards */
-    --card-background-color-secondary: #F8FAFC; /* Slightly off-white for some sections */
-    --border-color: #D0D0D0; /* Light grey border */
-    --border-color-light: #E0E0E0; /* Even lighter grey border */
-    --input-background-color: #F8FAFC; /* Light background for inputs */
-    --border-radius: 15px; /* Standard border-radius for cards/elements */
-    --border-radius-small: 8px; /* Smaller border-radius for inputs/buttons */
-    --shadow-small: 0 2px 8px rgba(0,0,0,0.08);
-    --shadow-medium: 0 6px 20px rgba(0,0,0,0.1);
-    --shadow-large: 0 12px 35px rgba(0,0,0,0.2);
+    --primary-color: #2196F3;         /* Google Blue - Main interactive color */
+    --accent-color: #2196F3;          /* Often same as primary, or different highlight color */
+    --secondary-accent-color: #F9B32F; /* Chuck E. Cheese Yellow-Orange - For specific highlights */
+
+    --text-color: #333333;             /* Default dark text for body */
+    --text-color-dark: #222222;        /* Even darker text for main headings */
+    --text-color-light: #666666;       /* Lighter text for descriptions, subheadings, helper text */
+
+    --background-color-light: #F0F4F8; /* Very light background for the overall app/body */
+    --background-color-medium: #F7F8FC; /* Slightly darker background for main content areas */
+    --card-background-color: #FFFFFF;  /* Pure white background for cards, popups, and sidebar */
+    --card-background-color-secondary: #F8FAFC; /* Slightly off-white for nested sections within cards */
+
+    --border-color: #D0D0D0;           /* Light grey for general borders */
+    --border-color-light: #E0E0E0;     /* Even lighter grey for subtle separators */
+    --input-background-color: #F8FAFC; /* Light background for input fields */
+
+    --border-radius: 15px;             /* Standard rounded corners for cards and main containers */
+    --border-radius-small: 8px;        /* Smaller rounded corners for buttons, inputs, minor elements */
+
+    /* Shadow definitions for depth and visual separation */
+    --shadow-small: 0 2px 8px rgba(0,0,0,0.08);    /* Subtle shadow for light elements */
+    --shadow-medium: 0 6px 20px rgba(0,0,0,0.1);   /* Standard shadow for cards */
+    --shadow-large: 0 12px 35px rgba(0,0,0,0.2);   /* More pronounced shadow for hover/active states */
 }
 
-/* --- Universal Box-Sizing & Base Font --- */
+
+/* --- Universal Resets and Base Body Styles --- */
+/*
+ * These rules apply globally to ensure consistent rendering across browsers
+ * and define the foundational look of your app's pages.
+ */
 * {
+    /* Ensure padding and border are included in the element's total width and height */
     box-sizing: border-box;
 }
 
 html, body {
-    height: 100%;
-    margin: 4px;
-    padding: 0;
-    font-family: 'Inter', sans-serif;
-    background-color: var(--background-color-light); /* Using variable */
-    color: var(--text-color); /* Using variable */
+    height: 100%;                          /* Essential for correct `vh` (viewport height) calculations */
+    margin: 0;                             /* REMOVED: Unwanted 4px margin around the page edges */
+    padding: 0;                            /* Remove default browser padding */
+    font-family: 'Inter', sans-serif;      /* Apply the custom font globally */
+    background-color: var(--background-color-light); /* Use theme variable for background */
+    color: var(--text-color);              /* Use theme variable for default text color */
+    line-height: 1.6;                      /* Improve readability of text */
+    overflow-x: hidden;                    /* Prevent horizontal scrollbar from layout shifts */
 }
+
 
 /* --- Main App Container (Overall Layout & Background) --- */
+/*
+ * This is the primary container for your entire application interface.
+ * It sets up the main flex layout for the header and the content area.
+ */
 .app-container {
-    display: flex;
-    flex-direction: column;
-    /* FIX FOR SCROLLING: Ensures container fills screen and controls overflow */
-    height: 100vh;
-    overflow: hidden; /* Prevents unwanted body scrollbars, app-container manages its own */
+    display: flex;                       /* Enables Flexbox for direct children (header, content-wrapper) */
+    flex-direction: column;              /* Stacks children vertically: Header on top, then main content */
 
-    background: linear-gradient(to bottom right, #EBF2F8, #DDE7F0);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-    border-radius: 20px;
-    animation: fadeInScale 0.3s ease-out forwards;
-    /* REMOVED: overflow-y: auto; from here, as inner content areas will handle their own scrolling */
-    position: relative;
+    /* REMOVED: height: 100vh; and overflow: hidden;
+     * These were causing scrolling issues and header overlaps.
+     * Scrolling is now managed by individual content areas (e.g., .main-content).
+     * `min-height: 100vh;` ensures the app always fills the screen vertically. */
+    min-height: 100vh;                   /* Ensures app takes at least full viewport height */
+
+    /* Visual styling for the app container */
+    background: linear-gradient(to bottom right, #EBF2F8, #DDE7F0); /* Subtle gradient background */
+    box-shadow: var(--shadow-medium);    /* Apply a medium shadow for depth */
+    border-radius: var(--border-radius); /* Apply standard border-radius for rounded corners */
+    animation: fadeInScale 0.3s ease-out forwards; /* Simple fade-in animation on load */
+    position: relative;                  /* Needed for the pseudo-element background graphic */
 }
 
+/* --- Background Graphic for App Container --- */
 .app-container::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url('../images/background_graphics/wave_graphic.png');
-    background-repeat: no-repeat;
-    background-position: bottom right;
-    background-size: 30%;
-    opacity: 0.08;
-    z-index: -1;
-    pointer-events: none;
+    content: '';                         /* Required for pseudo-elements */
+    position: absolute;                  /* Position relative to .app-container */
+    top: 0; left: 0;                     /* Covers the entire container */
+    width: 100%; height: 100%;           /* Covers the entire container */
+    background-image: url('../images/background_graphics/wave_graphic.png'); /* Your custom wave graphic */
+    background-repeat: no-repeat;        /* Don't tile the image */
+    background-position: bottom right;   /* Position at the bottom right corner */
+    background-size: 30%;                /* Scale the image */
+    opacity: 0.08;                       /* Make it subtle */
+    z-index: -1;                         /* Place it behind content */
+    pointer-events: none;                /* Ensure it doesn't block clicks */
 }
 
+/* --- Keyframe Animation for App Container Fade In --- */
 @keyframes fadeInScale {
-    from { opacity: 0; transform: scale(0.98); }
-    to { opacity: 1; transform: scale(1); }
+    from { opacity: 0; transform: scale(0.98); } /* Starts slightly smaller and transparent */
+    to { opacity: 1; transform: scale(1); }   /* Ends full size and opaque */
 }
 
-/* --- Main Header Section --- */
+
+/* --- Main Header Section (Top Bar of the App) --- */
+/*
+ * Controls the layout and styling of the app's top navigation bar.
+ */
 .main-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 18px 35px;
-    background-color: var(--card-background-color); /* Using variable */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-    border-bottom: 1px solid var(--border-color-light); /* Using variable */
-    flex-wrap: wrap;
-    gap: 20px;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
+    display: flex;                       /* Enables Flexbox for direct children */
+    justify-content: space-between;      /* Spreads items to the left and right edges */
+    align-items: center;                 /* Vertically centers items */
+    padding: 25px 35px;                  /* ADJUSTED: Increased padding for a taller header */
+    background-color: var(--card-background-color); /* White background */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); /* Subtle shadow at the bottom */
+    border-bottom: 1px solid var(--border-color-light); /* Light separator line */
+    flex-wrap: wrap;                     /* Allows items to wrap to the next line on small screens */
+    gap: 20px;                           /* Space between direct children (e.g., header-left and header-right) */
+    position: sticky;                    /* Makes the header stick to the top when scrolling on desktop */
+    top: 0;                              /* Sticks to the very top */
+    z-index: 1000;                       /* Ensures it stays above other content */
 }
 
+/* --- FEATURE: HEADER - Left and Right Sections (for organizing content) --- */
+/*
+ * These divs help organize the header's content into logical groups.
+ */
 .header-left, .header-right {
-    display: flex;
-    align-items: center;
-    gap: 25px;
-    flex-wrap: wrap;
+    display: flex;                       /* Make them flex containers */
+    align-items: center;                 /* Vertically align items within them */
+    gap: 25px;                           /* Space between items in these groups */
+    flex-wrap: wrap;                     /* Allow wrapping on small screens */
 }
 
+/* --- FEATURE: HEADER - Logo Area (Logo Image & App Title) --- */
+/*
+ * Styles for the Chuck E. Cheese logo and the "OPS Manager" title.
+ */
 .logo-area {
-    display: flex;
-    align-items: center;
-    gap: 12px;
+    display: flex;                       /* Make it a flex container to align logo and title */
+    align-items: center;                 /* Vertically align logo image and title */
+    gap: 12px;                           /* Space between the logo image and the app title */
 }
 
 .logo-link {
-    text-decoration: none;
-    color: inherit;
+    text-decoration: none;               /* Remove underline from link */
+    color: inherit;                      /* Inherit text color */
 }
 
 .logo-image {
-    width: 150px;
-    height: auto;
-    transition: transform 0.2s ease;
+    width: 180px;                        /* ADJUSTED: Made logo bigger (was 150px) */
+    height: auto;                        /* Maintain aspect ratio */
+    transition: transform 0.2s ease;     /* Smooth hover effect */
 }
 
 .logo-image:hover {
-    transform: scale(1.05);
+    transform: scale(1.05);              /* Slightly enlarge on hover */
 }
 
 .app-title {
-    font-size: 2em;
-    font-weight: 700;
-    color: var(--text-color-dark); /* Using variable */
-    margin: 0;
-    letter-spacing: -0.5px;
+    font-size: 2em;                      /* Large font for main title */
+    font-weight: 700;                    /* Bold font */
+    color: var(--text-color-dark);       /* Use theme variable for dark text */
+    margin: 0;                           /* Remove default margins */
+    letter-spacing: -0.5px;              /* Slight letter spacing adjustment */
 }
 
+/* --- FEATURE: HEADER - Info Widgets (like Weather - REMOVED, but this was its container) --- */
+/*
+ * This section was previously for displaying dynamic info like weather.
+ * The weather display HTML has been removed, so these styles are now for
+ * any other .info-item that might be placed here.
+ */
 .info-widgets {
-    display: flex;
-    gap: 30px;
-    flex-wrap: wrap;
+    display: flex;                       /* Make it a flex container */
+    gap: 30px;                           /* Space between individual info items */
+    flex-wrap: wrap;                     /* Allow wrapping on small screens */
 }
 
 .info-item {
-    display: flex;
-    align-items: center;
-    font-size: 1em;
-    color: var(--text-color-light); /* Using variable */
-    font-weight: 500;
+    display: flex;                       /* Make individual info items flex containers */
+    align-items: center;                 /* Vertically align icon and text */
+    font-size: 1em;                      /* Standard font size */
+    color: var(--text-color-light);      /* Light text color */
+    font-weight: 500;                    /* Medium font weight */
 }
 
 .info-item i {
-    margin-right: 10px;
-    color: var(--primary-color); /* Using variable */
-    font-size: 1.2em;
+    margin-right: 10px;                  /* Space between icon and text */
+    color: var(--primary-color);         /* Primary theme color for icons */
+    font-size: 1.2em;                    /* Slightly larger icon size */
 }
 
+/* --- FEATURE: HEADER - Urgent Issue Badge --- */
+/*
+ * Styles for the prominent red warning badge in the header.
+ */
 .urgent-issue {
-    color: #F44336;
-    font-weight: 600;
-    animation: pulseRed 1.5s infinite alternate;
-    background-color: rgba(244, 67, 54, 0.15);
-    padding: 10px 15px;
-    border-radius: 8px;
-    border: 1px solid rgba(244, 67, 54, 0.5);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: all 0.3s ease;
+    color: #F44336;                      /* Red text color */
+    font-weight: 600;                    /* Bold font */
+    animation: pulseRed 1.5s infinite alternate; /* Pulsing animation for attention */
+    background-color: rgba(244, 67, 54, 0.15); /* Light red background */
+    padding: 10px 15px;                  /* Padding around the text */
+    border-radius: var(--border-radius-small); /* Rounded corners */
+    border: 1px solid rgba(244, 67, 54, 0.5); /* Subtle red border */
+    display: flex;                       /* Make it a flex container */
+    align-items: center;                 /* Vertically align icon and text */
+    gap: 8px;                            /* Space between icon and text */
+    transition: all 0.3s ease;           /* Smooth transitions for any changes */
 }
 
 .urgent-issue i {
-    font-size: 1.3em;
-    color: #F44336;
+    font-size: 1.3em;                    /* Slightly larger icon */
+    color: #F44336;                      /* Red icon color */
 }
 
 .urgent-issue span {
-    font-size: 1.05em;
+    font-size: 1.05em;                   /* Slightly larger text */
 }
 
+/* --- Keyframe Animation for Urgent Issue Pulse --- */
 @keyframes pulseRed {
-    from { color: #F44336; transform: scale(1); }
-    to { color: #D32F2F; transform: scale(1.02); }
+    from { color: #F44336; transform: scale(1); }    /* Starts normal */
+    to { color: #D32F2F; transform: scale(1.02); } /* Pulses slightly larger and darker red */
 }
 
+
+/* --- FEATURE: HEADER - Search Bar --- */
+/*
+ * Styles for the interactive search input in the header.
+ */
 .search-bar {
-    position: relative;
-    width: 320px;
+    position: relative;                  /* For positioning the search icon */
+    width: 320px;                        /* Default width for desktop */
 }
 
 .search-input {
-    width: 100%;
-    padding: 12px 18px 12px 45px;
-    border: 1px solid var(--border-color); /* Using variable */
-    border-radius: 30px;
-    font-size: 1em;
-    background-color: var(--input-background-color); /* Using variable */
-    transition: all 0.3s ease;
-    outline: none;
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+    width: 100%;                         /* Fills its parent container */
+    padding: 12px 18px 12px 45px;        /* Padding, including space for icon */
+    border: 1px solid var(--border-color); /* Light grey border */
+    border-radius: 30px;                 /* Fully rounded ends */
+    font-size: 1em;                      /* Standard text size */
+    background-color: var(--input-background-color); /* Light background */
+    transition: all 0.3s ease;           /* Smooth transitions for focus/hover */
+    outline: none;                       /* Remove default focus outline */
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); /* Subtle inner shadow */
 }
 
 .search-input:focus {
-    border-color: var(--primary-color); /* Using variable */
-    box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.25);
-    background-color: var(--card-background-color); /* Using variable */
+    border-color: var(--primary-color);  /* Primary color border on focus */
+    box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.25); /* Glow effect on focus */
+    background-color: var(--card-background-color); /* White background on focus */
 }
 
 .search-icon {
-    position: absolute;
-    left: 18px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #AAAAAA;
-    font-size: 1.2em;
+    position: absolute;                  /* Positioned absolutely within .search-bar */
+    left: 18px;                          /* Aligned from the left */
+    top: 50%;                            /* Vertically centered */
+    transform: translateY(-50%);         /* Precise vertical centering */
+    color: #AAAAAA;                     /* Light grey icon color */
+    font-size: 1.2em;                    /* Icon size */
 }
 
+
+/* --- FEATURE: HEADER - Icon Buttons (Notification Bell, Profile) --- */
+/*
+ * Styles for the clickable circular icons in the header.
+ */
 .icon-button {
-    background: none;
-    border: none;
-    padding: 12px;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: background-color 0.25s ease, color 0.25s ease, transform 0.1s ease;
-    color: #666666;
-    font-size: 1.3em;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    background: none;                    /* No background fill */
+    border: none;                        /* No border */
+    padding: 12px;                       /* Padding for click area */
+    border-radius: 50%;                  /* Perfect circle */
+    cursor: pointer;                     /* Indicates clickability */
+    transition: background-color 0.25s ease, color 0.25s ease, transform 0.1s ease; /* Smooth hover effects */
+    color: #666666;                      /* Default icon color */
+    font-size: 1.3em;                    /* Icon size */
+    display: flex;                       /* Make it a flex container for centered icon */
+    align-items: center;                 /* Vertically center icon */
+    justify-content: center;             /* Horizontally center icon */
 }
 
 .icon-button:hover {
-    background-color: #E0E7FF;
-    color: var(--primary-color); /* Using variable */
-    transform: translateY(-2px);
+    background-color: #E0E7FF;           /* Light blue background on hover */
+    color: var(--primary-color);         /* Primary color text on hover */
+    transform: translateY(-2px);         /* Slight lift on hover */
 }
 
 .icon-button:active {
-    transform: translateY(0);
+    transform: translateY(0);            /* Returns to original position on click */
 }
+
 
 /* --- Main Layout Area: Sidebar + Content --- */
+/*
+ * This div acts as the main container for the sidebar and the scrolling content area.
+ */
 .main-layout-area {
-    display: flex;
-    flex-grow: 1;
-    /* FIX FOR SCROLLING: Crucial for flex items to correctly calculate their height/overflow */
-    min-height: 0;
-    /* If you never want main-layout-area to scroll itself: */
-    overflow: hidden;
+    display: flex;                       /* Enables Flexbox for sidebar and main-content */
+    flex-grow: 1;                        /* Allows it to take up remaining vertical space below the header */
+    min-height: 0;                       /* Crucial for flex items to correctly calculate their height/overflow */
+    overflow: hidden;                    /* Prevents main-layout-area from scrolling itself; children manage scroll */
 }
 
-/* --- Sidebar Navigation --- */
+
+/* --- Sidebar Navigation (Left-hand menu) --- */
+/*
+ * Controls the appearance and behavior of the main navigation sidebar.
+ */
 .sidebar {
-    width: 240px;
-    min-width: 240px;
-    background-color: var(--card-background-color); /* Using variable */
-    box-shadow: 3px 0 15px rgba(0, 0, 0, 0.04);
-    padding: 25px 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    overflow-y: auto;
-    border-right: 1px solid var(--border-color-light); /* Using variable */
+    width: 240px;                        /* Fixed width for the sidebar */
+    min-width: 240px;                    /* Prevents it from shrinking below this width */
+    background-color: var(--card-background-color); /* White background */
+    box-shadow: 3px 0 15px rgba(0, 0, 0, 0.04); /* Subtle shadow on the right edge */
+    padding: 25px 0;                     /* Vertical padding inside sidebar */
+    display: flex;                       /* Make it a flex container */
+    flex-direction: column;              /* Stacks nav items vertically */
+    justify-content: space-between;      /* Pushes content to top and bottom (e.g., nav vs. TPT target) */
+    overflow-y: auto;                    /* Allows content to scroll if it overflows vertically */
+    border-right: 1px solid var(--border-color-light); /* Light border on the right */
 }
 
 .sidebar-nav ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+    list-style: none;                    /* Remove bullet points from list */
+    padding: 0;                          /* Remove default list padding */
+    margin: 0;                           /* Remove default list margin */
 }
 
 .nav-item {
-    margin-bottom: 8px;
+    margin-bottom: 8px;                  /* Space between navigation links */
 }
 
 .nav-item a {
-    display: flex;
-    align-items: center;
-    padding: 14px 25px;
-    color: #555555;
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 1em;
-    transition: all 0.25s ease;
-    border-radius: 0 30px 30px 0;
+    display: flex;                       /* Make link content flex */
+    align-items: center;                 /* Vertically align icon and text */
+    padding: 14px 25px;                  /* Padding around link content */
+    color: #555555;                      /* Default link text color */
+    text-decoration: none;               /* Remove underline */
+    font-weight: 500;                    /* Medium font weight */
+    font-size: 1em;                      /* Standard font size */
+    transition: all 0.25s ease;          /* Smooth transitions for hover/active states */
+    border-radius: 0 30px 30px 0;        /* Rounded right edge for highlight */
 }
 
 .nav-item a i {
-    font-size: 1.2em;
-    margin-right: 18px;
-    color: #999999;
-    transition: color 0.25s ease;
+    font-size: 1.2em;                    /* Icon size */
+    margin-right: 18px;                  /* Space between icon and text */
+    color: #999999;                      /* Default icon color */
+    transition: color 0.25s ease;        /* Smooth icon color transition */
 }
 
-/* Styles for navigation items when your mouse hovers over them. */
+/* --- FEATURE: SIDEBAR - Navigation Item Hover State --- */
 .nav-item a:hover {
-    /* CHANGED: Make hover a subtle grayish */
-    background-color: #F8F8F8; /* A very light grey background */
-    color: #444444; /* Dark grey text */
+    background-color: #F8F8F8;           /* A very light grey background on hover */
+    color: #444444;                      /* Dark grey text on hover */
 }
 
-/* Styles for icons within navigation items when their parent link is hovered. */
 .nav-item a:hover i {
-    /* CHANGED: Make hover icon color a subtle grey */
-    color: #666666; /* Medium grey icon */
+    color: #666666;                      /* Medium grey icon on hover */
 }
 
-/* Styles for the currently active/selected navigation item. */
+/* --- FEATURE: SIDEBAR - Navigation Item Selected (Current Page) State --- */
 .nav-item.current a {
-    /* CHANGED: Red-themed background, text, and left border to match alert style */
-    background-color: #FFEBEE; /* Very light red background */
-    color: #D32F2F; /* Darker red text */
-    font-weight: 600;
-    box-shadow: inset 4px 0 0 #D32F2F; /* A thick red line on the left side */
-
-    /* Ensure consistency with transitions on hover */
-    transition: all 0.25s ease;
+    background-color: #FFEBEE;           /* Very light red background for active page */
+    color: #D32F2F;                      /* Darker red text for active page */
+    font-weight: 600;                    /* Bolder text for active page */
+    box-shadow: inset 4px 0 0 #D32F2F;   /* A thick red line on the left side */
+    transition: all 0.25s ease;          /* Ensure consistency with transitions */
 }
 
-/* Styles for the icon within the currently selected navigation item. */
 .nav-item.current a i {
-    /* CHANGED: Icon color to match the red theme */
-    color: #D32F2F; /* Red icon for the current item */
+    color: #D32F2F;                      /* Red icon for the current item */
 }
 
-/* NEW: Styles for the TPT Target icon within the sidebar nav item */
-.tpt-sidebar-icon {
-    width: 25px; /* Adjust size as needed for the ticket icon */
-    height: auto;
-    margin-right: 18px; /* Match spacing of other nav icons */
-    object-fit: contain;
-    flex-shrink: 0;
-    vertical-align: middle; /* FIX: Aligns the image's baseline with the middle of the text */
+
+/* --- FEATURE: SIDEBAR - TPT Target Ribbon (Bottom Left) --- */
+/*
+ * Styles for the static TPT target display at the bottom of the sidebar.
+ */
+.sidebar-bottom-nav { /* This is the container for your ribbon */
+    padding-top: 25px;                   /* Space above this section */
+    border-top: 1px solid var(--border-color-light); /* Separator line */
+    margin-top: auto;                    /* Pushes this section to the very bottom of the sidebar */
+    display: flex;                       /* Enable flex for its content */
+    flex-direction: column;              /* Stack content vertically */
+    gap: 8px;                            /* Space between items in the bottom nav */
+    align-items: center;                 /* Center children horizontally */
 }
 
-/* Optional: Adjust main .nav-item a if needed to account for image vs font icon */
-.nav-item a {
-    /* Ensure vertical alignment if icon is an image */
-    align-items: center;
-}
-/* Style for static nav items (e.g., TPT Target when not a link) */
-/* Style for static nav items (e.g., TPT Target when not a link) */
 .nav-item.static-display {
-    /* NEW: Red Ribbon Styling */
-    background-color: #D32F2F; /* A strong, dark red for the ribbon */
-    color: #FFFFFF; /* White text for contrast */
-    border-radius: 8px; /* Slightly rounded corners for a clean ribbon look */
-    padding: 10px 20px; /* Adjust padding to give it a good ribbon shape */
-                           /* (Original nav-items have 14px 25px, adjusted for ribbon feel) */
-    margin: 0 auto 10px auto; /* Adjust margin to position it neatly at the bottom.
-                               Top/Right/Bottom/Left. 15px left margin to align with main nav text. */
+    background-color: #D32F2F;           /* Strong, dark red for the ribbon */
+    color: #FFFFFF;                      /* White text for contrast */
+    border-radius: var(--border-radius-small); /* Slightly rounded corners */
+    padding: 10px 20px;                  /* Padding for the ribbon shape */
+    margin: 0 auto 10px auto;            /* Center the ribbon horizontally and add bottom margin */
+    display: flex;                       /* Enable flex for icon and text inside */
+    align-items: center;                 /* Vertically center icon and text */
+    gap: 8px;                            /* Space between icon and text */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2); /* Noticeable shadow */
+    transition: all 0.2s ease;           /* Smooth transitions */
+    cursor: default;                     /* Keep cursor as default arrow */
+    pointer-events: auto;                /* Allow text selection/copying */
 
-    display: flex; /* Ensure flex behavior for icon and text inside */
-    align-items: center; /* Vertically center icon and text */
-    gap: 8px; /* Space between icon and text */
-
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2); /* Add a noticeable shadow to make it pop */
-    transition: all 0.2s ease; /* Smooth transitions for any visual changes */
-
-    cursor: default; /* Keep cursor as default arrow */
-    pointer-events: auto; /* Allow text selection/copying if needed */
-
-    /* Ensure no unwanted hover effects from .nav-item a:hover */
-    /* These !important tags are here to forcefully override if necessary */
+    /* Force overrides to prevent unwanted inherited hover effects */
     background-color: #D32F2F !important;
     color: #FFFFFF !important;
     box-shadow: 0 4px 10px rgba(0,0,0,0.2) !important;
     transform: none !important;
 }
 
-/* Adjust the icon within the red ribbon */
-.nav-item.static-display .tpt-sidebar-icon {
-    width: 20px; /* Slightly smaller icon to fit the ribbon */
-    height: auto;
-    margin-right: 0; /* No extra margin here as gap handles it */
-    vertical-align: middle;
-    /* If the icon needs a specific color change on the red, you can add filter: invert(1) hue-rotate(180deg); etc. */
-    /* For a PNG, it will retain its original colors on the red background. */
-}
-
-/* Suppress any default hover from parent .nav-item a:hover if it somehow leaks */
-/* This rule should be placed AFTER .nav-item a:hover */
 .nav-item.static-display:hover {
-    background-color: #D32F2F !important; /* Keep it solid red on hover */
-    color: #FFFFFF !important; /* Keep text white on hover */
-    box-shadow: 0 6px 15px rgba(0,0,0,0.3) !important; /* Slightly more pronounced shadow on hover */
-    transform: translateY(-2px) !important; /* Give it a subtle lift on hover */
+    background-color: #D32F2F !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.3) !important;
+    transform: translateY(-2px) !important;
 }
 
-.nav-item.static-display:hover .tpt-sidebar-icon {
-    /* Ensure icon doesn't change on hover unexpectedly */
-    filter: none !important;
+.tpt-sidebar-icon {
+    width: 20px;                         /* Slightly smaller icon for the ribbon */
+    height: auto;                        /* Maintain aspect ratio */
+    margin-right: 0;                     /* Gap handles spacing */
+    vertical-align: middle;              /* Aligns with text */
+    filter: none !important;             /* Prevent unintended image filters */
 }
 
-.nav-item.static-display .tpt-sidebar-icon {
-    /* Ensure icon color/style remains consistent */
-    filter: none !important; /* If any image filters on hover exist */
-}
 
-/* Important: Make sure .nav-item a:hover doesn't accidentally style this */
-/* If you have .nav-item:hover, make sure it applies to 'a' specifically or be overridden. */
-/* --- Main Content Area --- */
+/* --- Main Content Area (Scrollable Section) --- */
+/*
+ * This is the primary area for the content of each page (Dashboard, Issues, etc.).
+ */
 .main-content {
-    flex-grow: 1;
-    padding: 35px;
-    background-color: var(--background-color-medium); /* Using variable */
-    overflow-y: auto; /* This should now correctly enable scrolling within the main content */
-    /* FIX FOR SCROLLING: Crucial for allowing flex items to correctly calculate their height/overflow */
-    min-height: 0;
-    /* For smoother scrolling on iOS devices */
-    -webkit-overflow-scrolling: touch;
+    flex-grow: 1;                        /* Allows it to take up all available horizontal space */
+    padding: 35px;                       /* Standard padding for content */
+    background-color: var(--background-color-medium); /* Slightly darker background */
+    overflow-y: auto;                    /* IMPORTANT: Enables vertical scrolling only for this section */
+    min-height: 0;                       /* Crucial for flex items to correctly calculate their height/overflow */
+    -webkit-overflow-scrolling: touch;   /* For smoother scrolling on iOS devices */
 }
 
+/* --- FEATURE: Main Content - Header (Page Title & Description) --- */
 .content-header {
     display: flex;
     justify-content: space-between;
@@ -411,137 +462,67 @@ html, body {
     gap: 20px;
 }
 
-.content-header-left {
-    /* No specific styles needed here for now, it will grow as needed by default */
-}
-
-/* Basic styling for the custom checkbox group */
-.form-group-checkbox {
-    display: flex;
-    align-items: center;
-    gap: 10px; /* Space between checkbox and label */
-    grid-column: span 2; /* Make it span both columns in the grid */
-    margin-top: 15px; /* Space above this setting */
-    margin-bottom: 5px; /* Space below this setting */
-}
-
-.form-group-checkbox input[type="checkbox"] {
-    /* Reuse task checkbox styles for consistency */
-    margin-right: 0; /* Remove default margin from task checkbox style */
-    width: 22px;
-    height: 22px;
-    border: 2px solid var(--border-color);
-    border-radius: 5px;
-    appearance: none;
-    -webkit-appearance: none;
-    cursor: pointer;
-    position: relative;
-    flex-shrink: 0;
-    transition: all 0.2s ease;
-}
-
-.form-group-checkbox input[type="checkbox"]:checked {
-    background-color: #4CAF50; /* Green when checked */
-    border-color: #4CAF50;
-    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
-}
-
-.form-group-checkbox input[type="checkbox"]:checked::after {
-    content: '\2713';
-    font-size: 16px;
-    color: white;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-
-.form-group-checkbox label {
-    font-size: 1em; /* Adjust label size */
-    color: var(--text-color);
-    cursor: pointer;
-    margin-bottom: 0; /* Override any default label margin-bottom */
-}
-.tpt-display {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background-color: #C72C1C;
-    padding: 8px 15px;
-    border-radius: 15px;
-    font-weight: 600;
-    color: var(--secondary-accent-color); /* Using variable */
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    white-space: nowrap;
-}
-
-.tpt-icon {
-    width: 100px;
-    height: auto;
-    object-fit: contain;
-}
-
-.tpt-value {
-    font-size: 1.1em;
-}
 
 .content-header h2 {
     font-size: 2em;
     font-weight: 600;
-    color: var(--text-color-dark); /* Using variable */
+    color: var(--text-color-dark);
     margin-bottom: 8px;
 }
 
 .content-header p {
     font-size: 1.1em;
-    color: var(--text-color-light); /* Using variable */
+    color: var(--text-color-light);
     margin-top: 0;
 }
 
-/* --- Dashboard Grid Container --- */
+
+/* --- FEATURE: Dashboard Grid Container (for Action & Info Cards) --- */
 .dashboard-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 30px;
-    margin-bottom: 50px;
+    display: grid;                       /* Enables CSS Grid layout */
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive columns */
+    gap: 30px;                           /* Space between grid items */
+    margin-bottom: 50px;                 /* Space below the grid */
 }
+
 
 /* --- Individual Dashboard Card Styling --- */
 .dashboard-card {
-    background-color: var(--card-background-color); /* Using variable */
-    padding: 30px;
-    border-radius: var(--border-radius); /* Using variable */
-    box-shadow: var(--shadow-medium); /* Using variable */
-    display: flex;
-    flex-direction: column;
-    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.3s ease;
-    cursor: pointer;
-    border: 1px solid var(--border-color-light); /* Using variable */
-    position: relative;
-    overflow: hidden;
+    background-color: var(--card-background-color); /* White background */
+    padding: 30px;                       /* Internal padding */
+    border-radius: var(--border-radius); /* Rounded corners */
+    box-shadow: var(--shadow-medium);    /* Standard shadow */
+    display: flex;                       /* Flexbox for internal content */
+    flex-direction: column;              /* Stack content vertically */
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.3s ease; /* Smooth hover effects */
+    cursor: pointer;                     /* Indicates clickability */
+    border: 1px solid var(--border-color-light); /* Light border */
+    position: relative;                  /* For positioning internal elements */
+    overflow: hidden;                    /* Hide overflowing content */
 }
 
 .dashboard-card:hover {
-    transform: translateY(-8px);
-    box-shadow: var(--shadow-large); /* Using variable */
+    transform: translateY(-8px);         /* Lift effect on hover */
+    box-shadow: var(--shadow-large);     /* Larger shadow on hover */
 }
 
 .card-icon {
-    width: 55px;
+    width: 55px;                         /* Fixed width/height for circular icon */
     height: 55px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2em;
-    color: #FFFFFF;
-    margin-bottom: 18px;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+    border-radius: 50%;                  /* Perfect circle */
+    display: flex;                       /* Flexbox for icon content */
+    align-items: center;                 /* Center icon vertically */
+    justify-content: center;             /* Center icon horizontally */
+    font-size: 2em;                      /* Icon size */
+    color: #FFFFFF;                      /* White icon color */
+    margin-bottom: 18px;                 /* Space below icon */
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15); /* Shadow for the icon */
 }
 
+/* Color variations for card icons */
 .dashboard-card.color-green .card-icon { background-color: #66BB6A; }
 .dashboard-card.color-purple .card-icon { background-color: #9C27B0; }
-.dashboard-card.color-blue .card-icon { background-color: var(--primary-color); } /* Using variable */
+.dashboard-card.color-blue .card-icon { background-color: var(--primary-color); }
 .dashboard-card.color-red .card-icon { background-color: #F44336; }
 .dashboard-card.color-orange .card-icon { background-color: #FF9800; }
 .dashboard-card.color-yellow .card-icon { background-color: #FFC107; }
@@ -549,36 +530,36 @@ html, body {
 .dashboard-card h3 {
     font-size: 1.3em;
     font-weight: 600;
-    color: var(--text-color-dark); /* Using variable */
+    color: var(--text-color-dark);
     margin-top: 0;
     margin-bottom: 10px;
 }
 
 .card-description {
     font-size: 0.95em;
-    color: var(--text-color-light); /* Using variable */
+    color: var(--text-color-light);
     margin-bottom: 20px;
-    flex-grow: 1;
+    flex-grow: 1; /* Allows description to take up available space */
 }
 
 .card-value {
     font-size: 2.8em;
     font-weight: 700;
-    color: var(--text-color); /* Using variable */
+    color: var(--text-color);
     margin-bottom: 12px;
 }
 
 .card-action-button {
-    background-color: var(--primary-color); /* Using variable */
+    background-color: var(--primary-color);
     color: #FFFFFF;
     border: none;
     padding: 12px 20px;
-    border-radius: var(--border-radius-small); /* Using variable */
+    border-radius: var(--border-radius-small);
     font-size: 1em;
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
-    align-self: flex-start;
+    align-self: flex-start; /* Aligns button to the start of its flex container */
     box-shadow: 0 3px 8px rgba(33, 150, 243, 0.2);
 }
 
@@ -593,32 +574,40 @@ html, body {
     box-shadow: 0 2px 5px rgba(33, 150, 243, 0.2);
 }
 
-/* --- Section Card (for Daily Tasks, etc.) --- */
+
+/* --- Section Card (General Purpose Container for content sections) --- */
+/*
+ * Used for grouping content like Daily Tasks, TPT Calculator sections, Game Inventory.
+ */
 .section-card {
-    background-color: var(--card-background-color); /* Using variable */
+    background-color: var(--card-background-color);
     padding: 35px;
-    border-radius: var(--border-radius); /* Using variable */
-    box-shadow: var(--shadow-medium); /* Using variable */
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-medium);
     margin-top: 35px;
-    border: 1px solid var(--border-color-light); /* Using variable */
+    border: 1px solid var(--border-color-light);
 }
 
 .section-card h2 {
     font-size: 2em;
     font-weight: 600;
-    color: var(--text-color-dark); /* Using variable */
+    color: var(--text-color-dark);
     margin-bottom: 25px;
     padding-bottom: 12px;
     border-bottom: 1px solid #F0F0F0;
 }
 
-/* --- TPT Calculator Page Specific Styles (Consolidated & Refined) --- */
+
+/* --- TPT Calculator Page Specific Styles --- */
+/*
+ * Styles unique to the TPT Calculator page, including file upload, settings, and results.
+ */
 
 /* Container for the "Upload" text/input and the Settings toggle icon */
 .tpt-upload-and-settings-header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-end; /* Align items to the bottom, useful if text and button have different heights */
+    align-items: flex-end; /* Align items to the bottom */
     margin-bottom: 20px;
     flex-wrap: wrap;
     gap: 15px;
@@ -657,7 +646,7 @@ html, body {
     cursor: pointer;
 }
 
-.file-name-display { /* This class is for a potential <p> or <span> for the file name */
+.file-name-display {
     font-size: 0.85em;
     color: var(--text-color-light);
     margin-top: 5px;
@@ -669,7 +658,6 @@ html, body {
 }
 
 .tpt-settings-toggle-area .icon-button {
-    /* Existing icon-button styles apply here too */
     font-size: 1.8em; /* Specific size for this icon */
     color: var(--accent-color);
 }
@@ -678,16 +666,15 @@ html, body {
     transform: scale(1.1);
 }
 
-/* TPT Settings Menu (Collapsible Section) - Base styles for the menu when it's open */
+/* TPT Settings Menu (Collapsible Section) */
 .tpt-settings-container {
-    max-height: 500px; /* Max height when expanded (should be large enough for content) */
+    max-height: 500px; /* Max height when expanded */
     overflow: hidden;
-    transition: max-height 0.3s ease-out, opacity 0.3s ease-out, padding 0.3s ease-out, border 0.3s ease-out, box-shadow 0.3s ease-out; /* Smooth transition for all properties */
-    opacity: 1; /* Fully visible when expanded */
-    padding: 20px; /* Padding when open */
+    transition: max-height 0.3s ease-out, opacity 0.3s ease-out, padding 0.3s ease-out, border 0.3s ease-out, box-shadow 0.3s ease-out;
+    opacity: 1;
+    padding: 20px;
     margin-top: 15px;
-    /* FIX FOR BUTTON/RESULTS NESTING: Adds space below the open menu */
-    margin-bottom: 25px; /* Adjust this value for desired space */
+    margin-bottom: 25px;
     background-color: var(--card-background-color-secondary);
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
@@ -697,17 +684,17 @@ html, body {
 
 /* Style when the container is collapsed (hidden) - applied via JS toggling 'collapsed' class */
 .tpt-settings-container.collapsed {
-    max-height: 0; /* Collapse to 0 height */
-    opacity: 0; /* Fade out */
-    padding-top: 0; /* Remove padding when collapsed */
-    padding-bottom: 0; /* Remove padding when collapsed */
-    border: none; /* Remove border when collapsed */
-    box-shadow: none; /* Remove shadow when collapsed */
+    max-height: 0;
+    opacity: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    border: none;
+    box-shadow: none;
     pointer-events: none; /* Prevent clicks on hidden content */
-    margin-top: 0; /* Remove margin when collapsed to prevent empty space */
-    /* Ensure margin-bottom is also 0 when collapsed */
+    margin-top: 0;
     margin-bottom: 0;
 }
+
 /* Styles for the inputs inside the settings menu */
 .tpt-settings-inputs {
     display: grid;
@@ -737,28 +724,78 @@ html, body {
     margin-top: 10px;
 }
 
-/* --- REMOVED: Old .settings-header, as it's no longer used in the TPT Calculator HTML as per our new structure.
-   If you use .settings-header elsewhere, please re-add it in an appropriate section.
-.settings-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #eee;
-}
-
-.settings-header h3 {
-    margin-bottom: 0;
-    font-size: 1.6em;
-    color: #222;
-}
-*/
-
-/* --- General .form-group style for broader use if needed (beyond specific sections) --- */
-/* You might already have this defined elsewhere, if so, this is just a reminder */
+/* --- General Form Group Style --- */
 .form-group {
     margin-bottom: 15px; /* Default spacing for form elements */
+}
+
+/* --- Basic Checkbox Group Style (Used in TPT settings, tasks) --- */
+.form-group-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
+
+.form-group-checkbox input[type="checkbox"] {
+    margin-right: 0;
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--border-color);
+    border-radius: 5px;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+.form-group-checkbox input[type="checkbox"]:checked {
+    background-color: #4CAF50;
+    border-color: #4CAF50;
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+}
+
+.form-group-checkbox input[type="checkbox"]:checked::after {
+    content: '\2713';
+    font-size: 16px;
+    color: white;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.form-group-checkbox label {
+    font-size: 1em;
+    color: var(--text-color);
+    cursor: pointer;
+    margin-bottom: 0;
+}
+
+.tpt-display { /* This class seems unused currently in HTML, but kept here for reference */
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #C72C1C;
+    padding: 8px 15px;
+    border-radius: 15px;
+    font-weight: 600;
+    color: var(--secondary-accent-color);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    white-space: nowrap;
+}
+
+.tpt-icon { /* This class seems unused currently in HTML, but kept here for reference */
+    width: 100px;
+    height: auto;
+    object-fit: contain;
+}
+
+.tpt-value { /* This class seems unused currently in HTML, but kept here for reference */
+    font-size: 1.1em;
 }
 
 
@@ -857,11 +894,11 @@ html, body {
 .task-priority.facility { background-color: #EDE7F6; color: #7B24FF; }
 
 .add-task-button {
-    background-color: var(--primary-color); /* Using variable */
+    background-color: var(--primary-color);
     color: #FFFFFF;
     border: none;
     padding: 14px 25px;
-    border-radius: var(--border-radius-small); /* Using variable */
+    border-radius: var(--border-radius-small);
     font-size: 1.05em;
     font-weight: 600;
     cursor: pointer;
@@ -881,6 +918,7 @@ html, body {
     transform: translateY(0);
     box-shadow: 0 2px 5px rgba(33, 150, 243, 0.2);
 }
+
 
 /* --- Pop-up Overlay Styles (Clean Look) --- */
 .popup-overlay {
@@ -903,11 +941,12 @@ html, body {
     visibility: visible;
 }
 
+
 /* --- Pop-up Content Styles (Clean & Rounded) --- */
 .popup-content {
-    background-color: var(--card-background-color); /* Using variable */
+    background-color: var(--card-background-color);
     padding: 40px;
-    border-radius: var(--border-radius); /* Using variable */
+    border-radius: var(--border-radius);
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
     max-width: 550px;
     width: 90%;
@@ -926,22 +965,22 @@ html, body {
 
 .popup-content h2 {
     font-size: 2em;
-    color: var(--text-color-dark); /* Using variable */
+    color: var(--text-color-dark);
     margin-bottom: 20px;
 }
 
 .popup-content p {
     font-size: 1.1em;
-    color: var(--text-color-light); /* Using variable */
+    color: var(--text-color-light);
     margin-bottom: 30px;
 }
 
 .popup-button {
-    background-color: var(--primary-color); /* Using variable */
+    background-color: var(--primary-color);
     color: #FFFFFF;
     border: none;
     padding: 12px 25px;
-    border-radius: var(--border-radius-small); /* Using variable */
+    border-radius: var(--border-radius-small);
     font-size: 1.05em;
     font-weight: 600;
     cursor: pointer;
@@ -981,7 +1020,7 @@ html, body {
     padding: 12px;
     margin: 20px 0;
     border: 1px solid #C0C0C0;
-    border-radius: var(--border-radius-small); /* Using variable */
+    border-radius: var(--border-radius-small);
     font-size: 1.05em;
     resize: vertical;
     min-height: 100px;
@@ -991,7 +1030,7 @@ html, body {
 }
 
 .popup-content textarea:focus {
-    border-color: var(--primary-color); /* Using variable */
+    border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.3);
 }
 
@@ -1005,7 +1044,7 @@ html, body {
 #issueList li {
     background-color: #F8F8F8;
     border: 1px solid #E0E0E0;
-    border-radius: var(--border-radius-small); /* Using variable */
+    border-radius: var(--border-radius-small);
     padding: 15px;
     margin-bottom: 10px;
     color: #444444;
@@ -1013,11 +1052,8 @@ html, body {
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
-/* --- NEW: Opening Checklist Modal Specific Styles --- */
-#openingChecklistModal .popup-content {
-    max-width: 650px;
-}
 
+/* --- NEW: Opening Checklist Modal Specific Styles --- */
 .modal-header {
     display: flex;
     justify-content: space-between;
@@ -1030,7 +1066,7 @@ html, body {
 .modal-header h2 {
     margin: 0;
     font-size: 2em;
-    color: var(--text-color-dark); /* Using variable */
+    color: var(--text-color-dark);
     flex-grow: 1;
     text-align: left;
 }
@@ -1068,7 +1104,7 @@ html, body {
 .checklist-step-text {
     font-size: 1.4em;
     font-weight: 500;
-    color: var(--text-color); /* Using variable */
+    color: var(--text-color);
     margin-bottom: 30px;
     line-height: 1.4;
 }
@@ -1106,7 +1142,7 @@ html, body {
 }
 
 .checklist-action-button {
-    background-color: var(--primary-color); /* Using variable */
+    background-color: var(--primary-color);
     color: #FFFFFF;
     padding: 15px 25px;
     font-size: 1.1em;
@@ -1140,6 +1176,7 @@ html, body {
     font-size: 1em;
 }
 
+
 /* --- New Styles for Game Inventory Section --- */
 .game-inventory-section .form-group {
     margin-bottom: 15px;
@@ -1157,10 +1194,10 @@ html, body {
 .game-inventory-section select {
     width: 100%;
     padding: 10px 12px;
-    border: 1px solid var(--border-color); /* Using variable */
-    border-radius: var(--border-radius-small); /* Using variable */
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-small);
     font-size: 1em;
-    background-color: var(--input-background-color); /* Using variable */
+    background-color: var(--input-background-color);
     transition: all 0.2s ease;
     outline: none;
     box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
@@ -1168,9 +1205,9 @@ html, body {
 
 .game-inventory-section input[type="text"]:focus,
 .game-inventory-section select:focus {
-    border-color: var(--primary-color); /* Using variable */
+    border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.2);
-    background-color: var(--card-background-color); /* Using variable */
+    background-color: var(--card-background-color);
 }
 
 .game-input-area {
@@ -1179,10 +1216,10 @@ html, body {
     gap: 20px;
     margin-bottom: 30px;
     padding: 20px;
-    background-color: var(--input-background-color); /* Using variable */
-    border-radius: var(--border-radius-small); /* Using variable */
+    background-color: var(--input-background-color);
+    border-radius: var(--border-radius-small);
     box-shadow: inset 0 1px 5px rgba(0,0,0,0.05);
-    border: 1px solid var(--border-color-light); /* Using variable */
+    border: 1px solid var(--border-color-light);
     align-items: flex-end;
 }
 
@@ -1213,7 +1250,7 @@ html, body {
     color: #FFFFFF;
     border: none;
     padding: 12px 20px;
-    border-radius: var(--border-radius-small); /* Using variable */
+    border-radius: var(--border-radius-small);
     font-size: 1em;
     font-weight: 600;
     cursor: pointer;
@@ -1241,13 +1278,13 @@ html, body {
     width: 100%;
     border-collapse: collapse;
     margin-top: 0;
-    background-color: var(--card-background-color); /* Using variable */
-    border-radius: var(--border-radius-small); /* Using variable */
+    background-color: var(--card-background-color);
+    border-radius: var(--border-radius-small);
     overflow: hidden;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
     box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    border: 1px solid var(--border-color-light); /* Using variable */
+    border: 1px solid var(--border-color-light);
     border-top: none;
 }
 
@@ -1261,7 +1298,7 @@ html, body {
 .game-list-table th {
     background-color: #F8F8F8;
     font-size: 0.9em;
-    color: var(--text-color-light); /* Using variable */
+    color: var(--text-color-light);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -1287,7 +1324,7 @@ html, body {
 }
 
 .game-list-table .status-active {
-    color: var(--primary-color); /* Using variable */
+    color: var(--primary-color);
     font-weight: 600;
 }
 
@@ -1309,7 +1346,7 @@ html, body {
 
 .game-list-table .action-buttons button:hover {
     background-color: #E0E7FF;
-    color: var(--primary-color); /* Using variable */
+    color: var(--primary-color);
     transform: scale(1.1);
 }
 
@@ -1318,112 +1355,266 @@ html, body {
     color: #F44336;
 }
 
-/* --- Responsive Adjustments for Game Inventory --- */
-@media (max-width: 1024px) {
+/* --- Responsive Adjustments --- */
+/*
+ * These media queries ensure your layout adapts to different screen sizes.
+ * Styles defined outside these blocks are the "mobile-first" defaults.
+ */
+
+/* Small screens (less than 768px, mobile) - These are already the default rules */
+/* No specific media query block needed for max-width: 767px if starting mobile-first */
+
+/* Medium screens (768px and up, tablets and desktops) */
+@media (min-width: 768px) {
+    /* HEADER: Desktop/Tablet specific layout adjustments */
+    .main-header {
+        flex-direction: row; /* Arrange main children horizontally */
+        justify-content: space-between; /* Push header-left and header-right to edges */
+        flex-wrap: nowrap; /* Prevent wrapping of header children on desktop */
+        /* Height and padding were adjusted in the global .main-header rule,
+        can be fine-tuned here if needed */
+    }
+
+    /* HEADER: Left and Right Sections */
+    .header-left {
+        flex-grow: 1; /* Allow left side to grow */
+        flex-basis: auto; /* Default basis */
+        gap: 25px; /* Adjust spacing between logo-area and info-widgets */
+        flex-wrap: nowrap; /* Prevent wrapping within header-left */
+    }
+    .header-right {
+        flex-grow: 1; /* Allow right side to grow */
+        flex-basis: auto; /* Default basis */
+        justify-content: flex-end; /* Push content to the right */
+        gap: 25px; /* Adjust spacing between search and buttons */
+        flex-wrap: nowrap; /* Prevent wrapping within header-right */
+    }
+
+    /* HEADER: Logo Area - Adjusting based on the logo's HTML structure */
+    .logo-area {
+        /* If this was stacking, ensure it's row-based */
+        flex-direction: row;
+        align-items: center; /* Vertically align image and text */
+        gap: 12px; /* Space between logo image and text */
+    }
+
+    /* Adjustments for specific header elements on desktop */
+    .app-title {
+        font-size: 1.8em; /* Can adjust font size for desktop if 2em is too big */
+    }
+    .search-bar {
+        width: 340px; /* Adjust search bar width for desktop view */
+    }
+    .info-widgets {
+        gap: 20px; /* Adjust spacing between info items */
+    }
+    /* No need to set display: block for these as they are already flex/block by default
+    .weather-display, .urgent-issue, .search-bar, .icon-button { display: flex; } */
+
+
+    /* MAIN LAYOUT: Sidebar and Main Content Area */
+    .main-layout-area {
+        flex-direction: row; /* Sidebar and main content side-by-side */
+        /* No margin-top needed here if main-header is position: sticky top: 0 */
+    }
+
+    /* SIDEBAR: Desktop/Tablet specific adjustments */
+    .sidebar {
+        width: 240px; /* Fixed width for the sidebar on larger screens */
+        min-width: 240px;
+        /* Height should fill remaining space if main-header is sticky and not fixed */
+        height: calc(100vh - 60px); /* Adjust based on actual main-header height if it's fixed */
+        position: sticky; /* Keep it sticky on desktop */
+        top: 0;
+        border-right: 1px solid var(--border-color-light);
+        box-shadow: 3px 0 15px rgba(0,0,0,0.04);
+        /* Ensure it's not hidden if it was for mobile overlay */
+        transform: translateX(0);
+    }
+
+    /* MAIN CONTENT: Desktop/Tablet specific adjustments */
+    .main-content {
+        padding: 35px; /* Restore desktop padding */
+        /* overflow-y: auto; is already set globally, ensures scrolling */
+    }
+
+    /* --- FEATURE: Dashboard Grid - Responsive Columns --- */
+    .dashboard-grid {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Restore grid layout */
+        gap: 30px; /* Restore desktop gap */
+    }
+
+    /* --- Game Inventory: Responsive Adjustments for wider screens --- */
     .game-input-area {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 15px;
+        flex-direction: row; /* Layout inputs horizontally */
+        align-items: flex-end; /* Align inputs/buttons to the bottom */
+        gap: 20px;
     }
     .game-input-area .form-group {
-        width: 100%;
-        min-width: unset;
+        width: auto; /* Let flex control width */
+        min-width: 200px;
     }
     .game-input-area .button-group {
-        flex-direction: column;
-        gap: 10px;
-        width: 100%;
+        flex-direction: row; /* Layout buttons horizontally */
+        gap: 15px;
+        flex-grow: 1; /* Allows buttons to take up remaining space */
+        justify-content: flex-start;
     }
     .game-inventory-section .add-game-button,
     .game-inventory-section .export-button {
-        width: 100%;
-        flex-grow: unset;
+        width: auto; /* Let flex control width */
+        flex-grow: 1;
+    }
+
+    /* Game List Table: Revert to standard table display on desktop */
+    .game-list-table {
+        display: table;
+        border-top-left-radius: var(--border-radius-small); /* Restore desktop radius */
+        border-top-right-radius: var(--border-radius-small); /* Restore desktop radius */
+    }
+    .game-list-table thead tr {
+        position: static; /* Revert header positioning */
+    }
+    .game-list-table th,
+    .game-list-table td {
+        display: table-cell; /* Revert to table cell display */
+        text-align: left;
+        padding-left: 15px; /* Restore padding */
+    }
+    .game-list-table td::before {
+        content: none; /* Remove pseudo-element for mobile labels */
+    }
+    .game-list-table tr {
+        border: none; /* Remove mobile border */
+        margin-bottom: 0; /* Remove mobile margin */
+    }
+    .game-list-table .action-buttons {
+        justify-content: flex-start; /* Revert button alignment */
     }
 }
 
-@media (max-width: 768px) {
-    .main-header {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 15px;
-    }
-    .header-left {
-        flex-direction: column;
-        align-items: flex-start;
-        width: 100%;
-        gap: 10px;
+
+/* --- Mobile Specific Styles (applies when screen is 767px or less) --- */
+@media (max-width: 767px) {
+    /* Header: Adjust spacing and stacking for mobile */
+.main-header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    padding: 25px 35px; /* ADJUSTED: Made header taller. (Original was 15px 20px) */
+    height: auto;
+    gap: 15px;
+    background-color: var(--card-background-color);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    border-bottom: 1px solid var(--border-color-light);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+    .header-left, .header-right {
+        flex-direction: column; /* Stack contents vertically */
+        align-items: flex-start; /* Align contents to the left */
+        width: 100%; /* Take full width */
+        gap: 10px; /* Smaller gap */
+        flex-wrap: wrap;
     }
     .header-right {
-        width: 100%;
-        justify-content: space-between;
-        margin-top: 15px;
+        justify-content: space-between; /* Space out items horizontally */
+        flex-direction: row; /* Keep search, bell, profile horizontal */
     }
-    .info-widgets {
-        width: 100%;
-        justify-content: space-between;
-        gap: 10px;
+
+    /* Specific header item adjustments for mobile */
+    .logo-image {
+        width: 120px; /* Smaller logo for mobile */
+    }
+    .app-title {
+        font-size: 1.5em; /* Smaller title for mobile */
     }
     .search-bar {
-        flex-grow: 1;
+        flex-grow: 1; /* Allow search bar to fill space */
         width: auto;
     }
+    .search-input {
+        padding: 8px 12px 8px 38px; /* Smaller padding */
+        font-size: 0.9em;
+    }
+    .search-icon {
+        left: 12px;
+        font-size: 1em;
+    }
+    .icon-button {
+        padding: 8px;
+        font-size: 1.1em;
+    }
+    .urgent-issue {
+        padding: 8px 12px;
+        font-size: 0.85em;
+    }
+
+    /* Main Layout: Sidebar on top for mobile */
     .main-layout-area {
-        flex-direction: column;
+        flex-direction: column; /* Stack sidebar then main content */
+        margin-top: 60px; /* Push content down by header height */
     }
     .sidebar {
-        width: 100%;
+        width: 100%; /* Full width for sidebar on mobile */
         min-width: unset;
-        height: auto;
+        height: auto; /* Height adapts to content */
         border-right: none;
-        border-bottom: 1px solid #E0E0E0;
+        border-bottom: 1px solid #E0E0E0; /* Separator line */
         padding: 15px 0;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+        position: relative; /* Not fixed for simple stacking */
+        transform: translateX(0); /* Ensure it's not off-screen */
     }
     .sidebar-nav ul {
-        display: flex;
+        display: flex; /* Make nav items horizontal on mobile sidebar */
         flex-wrap: wrap;
         justify-content: center;
         gap: 10px;
     }
     .sidebar-nav .nav-item {
-        margin-bottom: 0;
+        margin-bottom: 0; /* Remove vertical margin */
     }
     .sidebar-nav .nav-item a {
-        padding: 8px 12px;
+        padding: 8px 12px; /* Smaller padding */
         font-size: 0.85em;
-        border-radius: 8px;
-        box-shadow: none;
+        border-radius: 8px; /* Fully rounded border for mobile nav item */
+        box-shadow: none; /* Remove box-shadow */
     }
     .sidebar-nav .nav-item a i {
-        margin-right: 8px;
+        margin-right: 8px; /* Smaller icon spacing */
     }
     .sidebar-nav .nav-item.current a {
-        box-shadow: none;
+        box-shadow: none; /* Remove left border for mobile active state */
     }
-	/* Styles for the navigation items at the bottom of the sidebar. */
-	.sidebar-bottom-nav {
-    	padding-top: 25px; /* Space above this section, separating it from the main nav. */
-    	border-top: 1px solid var(--border-color-light); /* A light grey line separating this section. */
-    	margin-top: auto;  /* Pushes this section to the very bottom of the sidebar. */
-    	display: flex; /* Arrange items in a column by default */
-    	flex-direction: column;
-    	gap: 8px; /* Space between items in the bottom nav */
-    	align-items: center; /* NEW: Centers children horizontally within this flex container */
 
-	}
+    /* Sidebar TPT Target Ribbon - Mobile Adjustment */
+    .sidebar-bottom-nav {
+        padding-top: 15px; /* Smaller padding */
+    }
+    .nav-item.static-display {
+        margin: 0 auto 5px auto; /* Adjust margin for mobile */
+        padding: 8px 15px;
+    }
+    .tpt-sidebar-icon {
+        width: 18px; /* Smaller icon */
+    }
+
+    /* Main Content area adjustments for mobile */
     .main-content {
         padding: 20px;
     }
     .dashboard-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr; /* Single column for cards */
         gap: 20px;
     }
     .dashboard-card {
         padding: 20px;
     }
     .card-icon {
-        width: 45px;
-        height: 45px;
+        width: 45px; height: 45px;
         font-size: 1.6em;
     }
     .card-value {
@@ -1464,10 +1655,27 @@ html, body {
         padding: 12px;
     }
 
+    /* Game Inventory: Mobile-specific stacking for inputs/buttons */
+    .game-input-area {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+    }
+    .game-input-area .form-group {
+        width: 100%;
+        min-width: unset;
+    }
+    .game-input-area .button-group {
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+    }
     .game-inventory-section .add-game-button,
     .game-inventory-section .export-button {
         width: 100%;
+        flex-grow: unset;
     }
+    /* Game List Table: Stack table columns for mobile readability */
     .game-list-table, .game-list-table thead, .game-list-table tbody, .game-list-table th, .game-list-table td, .game-list-table tr {
         display: block;
     }
@@ -1477,9 +1685,9 @@ html, body {
         left: -9999px;
     }
     .game-list-table tr {
-        border: 1px solid var(--border-color-light); /* Using variable */
+        border: 1px solid var(--border-color-light);
         margin-bottom: 15px;
-        border-radius: var(--border-radius-small); /* Using variable */
+        border-radius: var(--border-radius-small);
         overflow: hidden;
     }
     .game-list-table td {
@@ -1498,12 +1706,13 @@ html, body {
         white-space: nowrap;
         text-align: left;
         font-weight: 600;
-        color: var(--text-color-light); /* Using variable */
+        color: var(--text-color-light);
     }
     .game-list-table .action-buttons {
         justify-content: flex-end;
     }
 }
+
 
 /* --- Custom Scrollbar Styles --- */
 ::-webkit-scrollbar {
