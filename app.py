@@ -277,12 +277,22 @@ def get_issues():
 
 @app.route('/api/urgent_issues_count', methods=['GET'])
 def get_urgent_issues_count():
-    # For now, return a hardcoded count.
-    # In a later step, this will query your 'issues' table
-    # for real high-priority, open issues.
-
-    # Let's pretend there are 2 urgent issues for testing the frontend later
-    return jsonify({"count": 2}) 
+    try:
+        db = get_db() # Get a database connection
+        with db.cursor() as cur:
+            # Query to count issues that are 'Open' AND (priority 'IMMEDIATE' OR 'High')
+            # Adjust priority values to exactly match your Google Sheet values if different
+            cur.execute(sql.SQL("""
+                SELECT COUNT(*) FROM issues
+                WHERE status = 'Open' AND (priority = 'IMMEDIATE' OR priority = 'High');
+            """))
+            count = cur.fetchone()[0] # Fetch the count (it's the first element of the tuple)
+            return jsonify({"count": count})
+    except Exception as e:
+        # Log the error for debugging on Render dashboard logs
+        print(f"ERROR: Failed to fetch urgent issues count from DB: {e}")
+        # Return 0 count in case of DB error so the app doesn't break visually
+        return jsonify({"count": 0, "error": "Database error fetching count"}), 500 
 
 # ... (rest of your app.py, including calculate_tpt, tpt_settings, issues routes) ...
 
