@@ -4,40 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Game Inventory - Arcade Manager</title>
-    <!-- Google Inter Font for a modern, clean look -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Your custom styles (shared across all pages) -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pe-icon-7-weather.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pe-icon-7-helper.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
+
+
 <body>
     <div class="app-container">
         <!-- Main Header Section (Copied from index.html) -->
-        <header class="main-header">
-            <div class="header-left">
-                <a href="/" class="logo-link">
-                    <div class="logo-area">
-                        <img src="{{ url_for('static', filename='images/chuck_e_cheese_logo.png') }}" alt="Chuck E. Cheese Logo" class="logo-image">
-                        <h1 class="app-title">OPS Manager</h1>
-                    </div>
-                </a>
-                <div class="info-widgets">
-                    <div class="info-item urgent-issue">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <span id="urgentIssue">No Urgent Issues</span> </div>
-                </div>
+<header class="main-header">
+    <div class="header-left">
+        <a href="/" class="logo-link">
+            <div class="logo-area">
+                <img src="{{ url_for('static', filename='images/chuck_e_cheese_logo.png') }}" alt="Chuck E. Cheese Logo" class="logo-image">
+                <h1 class="app-title">OPS Manager</h1>
             </div>
-            <div class="header-right">
-                <div class="search-bar">
-                    <input type="text" id="mainSearchBar" placeholder="Search games or issues..." class="search-input">
-                    <i class="fas fa-search search-icon"></i>
-                </div>
-                <button class="icon-button" id="notificationButton"><i class="fas fa-bell"></i></button>
-                <button class="icon-button" id="profileButton"><i class="fas fa-user-circle"></i></button>
-            </div>
-        </header>
-
+        </a>
+        <div class="info-widgets">
+            <div class="info-item urgent-issue">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span id="urgentIssue">No Urgent Issues</span> </div>
+        </div>
+    </div>
+    <div class="header-right">
+        <div class="search-bar">
+            <input type="text" id="mainSearchBar" placeholder="Search games or issues..." class="search-input">
+            <i class="fas fa-search search-icon"></i>
+        </div>
+        <button class="icon-button" id="notificationButton"><i class="fas fa-bell"></i></button>
+        <button class="icon-button" id="profileButton"><i class="fas fa-user-circle"></i></button>
+    </div>
+</header>
         <!-- Main Layout Area: Sidebar + Content -->
         <div class="main-layout-area">
             <!-- Sidebar Navigation (Copied from index.html) -->
@@ -60,6 +60,11 @@
                 <a href="/inventory" id="sidebarGameInventory">
                     <i class="fas fa-gamepad"></i>
                     <span>Game Inventory</span>
+                </a>
+            </li>
+            <li class="nav-item"> <a href="/issues" id="sidebarIssues">
+                    <i class="fas fa-bug"></i>
+                    <span>Issues</span>
                 </a>
             </li>
         </ul>
