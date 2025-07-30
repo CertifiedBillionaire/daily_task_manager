@@ -41,11 +41,10 @@
         <!-- Main Layout Area: Sidebar + Content -->
         <div class="main-layout-area">
             <!-- Sidebar Navigation (Copied from index.html) -->
-            <aside class="sidebar">
+<aside class="sidebar">
     <nav class="sidebar-nav">
         <ul>
-            <li class="nav-item current">
-                <a href="/">
+            <li class="nav-item"> <a href="/">
                     <i class="fas fa-tachometer-alt"></i>
                     <span>Dashboard</span>
                 </a>
@@ -56,27 +55,20 @@
                     <span>TPT Calculator</span>
                 </a>
             </li>
-            <li class="nav-item">
-                <a href="/inventory" id="sidebarGameInventory">
+            <li class="nav-item current"> <a href="/inventory" id="sidebarGameInventory">
                     <i class="fas fa-gamepad"></i>
                     <span>Game Inventory</span>
                 </a>
             </li>
-            <li class="nav-item"> <a href="/issues" id="sidebarIssues">
+            <li class="nav-item">
+                <a href="/issues" id="sidebarIssues">
                     <i class="fas fa-bug"></i>
                     <span>Issues</span>
                 </a>
             </li>
         </ul>
     </nav>
-    <div class="sidebar-bottom-nav">
-        <div class="nav-item static-display" id="sidebarBottomTptTargetLink">
-            <img src="{{ url_for('static', filename='images/ticket_icon.png') }}" alt="Ticket Icon" class="tpt-sidebar-icon">
-            <span id="sidebarBottomTptTargetValue">Target: N/A</span>
-        </div>
-    </div>
-</aside>
-
+    </aside>
             <!-- Main Content Area for Game Inventory -->
             <main class="main-content">
                 <div class="content-header">
