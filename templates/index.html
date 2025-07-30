@@ -12,30 +12,29 @@
 </head>
 <body>
     <div class="app-container">
-        <header class="main-header">
-            <div class="header-left">
-                <a href="/" class="logo-link">
-                    <div class="logo-area">
-                        <img src="{{ url_for('static', filename='images/chuck_e_cheese_logo.png') }}" alt="Chuck E. Cheese Logo" class="logo-image">
-                        <h1 class="app-title">OPS Manager</h1>
-                    </div>
-                </a>
-                <div class="info-widgets">
-                    <div class="info-item urgent-issue">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <span id="urgentIssue">No Urgent Issues</span> </div>
-                </div>
+<header class="main-header">
+    <div class="header-left">
+        <a href="/" class="logo-link">
+            <div class="logo-area">
+                <img src="{{ url_for('static', filename='images/chuck_e_cheese_logo.png') }}" alt="Chuck E. Cheese Logo" class="logo-image">
+                <h1 class="app-title">OPS Manager</h1>
             </div>
-            <div class="header-right">
-                <div class="search-bar">
-                    <input type="text" id="mainSearchBar" placeholder="Search games or issues..." class="search-input">
-                    <i class="fas fa-search search-icon"></i>
-                </div>
-                <button class="icon-button" id="notificationButton"><i class="fas fa-bell"></i></button>
-                <button class="icon-button" id="profileButton"><i class="fas fa-user-circle"></i></button>
-            </div>
-        </header>
-
+        </a>
+        <div class="info-widgets">
+            <div class="info-item urgent-issue">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span id="urgentIssue">No Urgent Issues</span> </div>
+        </div>
+    </div>
+    <div class="header-right">
+        <div class="search-bar">
+            <input type="text" id="mainSearchBar" placeholder="Search games or issues..." class="search-input">
+            <i class="fas fa-search search-icon"></i>
+        </div>
+        <button class="icon-button" id="notificationButton"><i class="fas fa-bell"></i></button>
+        <button class="icon-button" id="profileButton"><i class="fas fa-user-circle"></i></button>
+    </div>
+</header>
         <div class="main-layout-area">
             <aside class="sidebar">
     <nav class="sidebar-nav">
@@ -56,6 +55,11 @@
                 <a href="/inventory" id="sidebarGameInventory">
                     <i class="fas fa-gamepad"></i>
                     <span>Game Inventory</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/issues" id="sidebarIssues">
+                    <i class="fas fa-bug"></i> <span>Issues</span>
                 </a>
             </li>
         </ul>
