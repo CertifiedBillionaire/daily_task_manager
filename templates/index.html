@@ -8,65 +8,49 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/pe-icon-7-weather.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/pe-icon-7-helper.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base/global.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base/scrollbars.css') }}">
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/layout/main_layout.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/layout/header_layout.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/layout/sidebar_layout.css') }}">
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/cards.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/popups.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/forms.css') }}">
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sections/dashboard_content.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sections/game_inventory.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base/mobile.css') }}">
+
+
+
+
 </head>
 <body>
     <div class="app-container">
-<header class="main-header">
-    <div class="header-left">
-        <a href="/" class="logo-link">
-            <div class="logo-area">
-                <img src="{{ url_for('static', filename='images/chuck_e_cheese_logo.png') }}" alt="Chuck E. Cheese Logo" class="logo-image">
+        <header class="main-header">
+            <div class="header-left">
+                <a href="/" class="logo-link">
+                    <div class="logo-area">
+                        <img src="{{ url_for('static', filename='images/chuck_e_cheese_logo.png') }}" alt="Chuck E. Cheese Logo" class="logo-image">
+                    </div>
+                </a>
+                <div class="info-widgets">
+                </div>
             </div>
-        </a>
-        <div class="info-widgets">
-        </div>
-    </div>
-    <div class="header-right">
-        <div class="search-bar">
-            <input type="text" id="mainSearchBar" placeholder="Search games or issues..." class="search-input">
-            <i class="fas fa-search search-icon"></i>
-        </div>
-        <button class="icon-button" id="notificationButton"><i class="fas fa-bell"></i></button>
-        <button class="icon-button" id="profileButton"><i class="fas fa-user-circle"></i></button>
-    </div>
-</header>
+            <div class="header-right">
+                <div class="search-bar">
+                    <input type="text" id="mainSearchBar" placeholder="Search games or issues..." class="search-input">
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+                <button class="icon-button" id="notificationButton"><i class="fas fa-bell"></i></button>
+                <button class="icon-button" id="hamburger-menu"><i class="fas fa-bars"></i></button>        
+            </div>
+        </header>
+
         <div class="main-layout-area">
-            <aside class="sidebar">
-    <nav class="sidebar-nav">
-        <ul>
-            <li class="nav-item current">
-                <a href="/">
-                    <i class="fas fa-tachometer-alt"></i>
-                    <span>Dashboard</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="/tpt_calculator" id="sidebarTptCalculator">
-                    <i class="fas fa-calculator"></i>
-                    <span>TPT Calculator</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="/inventory" id="sidebarGameInventory">
-                    <i class="fas fa-gamepad"></i>
-                    <span>Game Inventory</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="/issues" id="sidebarIssues">
-                    <i class="fas fa-bug"></i> <span>Issues</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
-    <div class="sidebar-bottom-nav">
-        <div class="nav-item static-display" id="sidebarBottomTptTargetLink">
-            <img src="{{ url_for('static', filename='images/ticket_icon.png') }}" alt="Ticket Icon" class="tpt-sidebar-icon">
-            <span id="sidebarBottomTptTargetValue">Target: N/A</span>
-        </div>
-    </div>
-</aside>
             <main class="main-content">
                 <div class="content-header">
                     <div class="dashboard-overview-header"> <div class="content-header-left">
@@ -80,19 +64,34 @@
                     </div>
                 </div>
                 <div class="dashboard-grid">
-                    <div class="dashboard-card action-card color-green" id="startOpeningChecklist"></div>
-                    <div class="dashboard-card action-card color-purple" id="inspectArcadeGame"></div>
-                    <div class="dashboard-card action-card color-blue" id="viewDailyTasks"></div>
-                    <div class="dashboard-card info-card color-red" id="brokenGamesSummary"></div>
-                    <div class="dashboard-card info-card color-orange" id="partsOnOrderSummary"></div>
-                    <div class="dashboard-card info-card color-yellow" id="ticketPayoutSummary"></div>
+                    <div class="dashboard-card action-card color-yellow" id="startOpeningChecklist">
+                        
+                        <div class="card-icon"><i class="fa-solid fa-list-check"></i>
+                        
+                    </div>
+                        <h3>Start Opening Checklist</h3>
+                        <p class="card-description">Begin your daily opening routine.</p>
+
+                         <div class="card-progress">0/4 Done</div>
+                    </div>
+                    <div class="dashboard-card action-card color-blue" id="inspectArcadeGame">
+                        <div class="card-icon"><i class="fa-solid fa-book"></i>
+                    </div>
+                        <h3>Inspect a Game</h3>
+                        <p class="card-description">Perform a detailed check on a single game.</p>
+                    </div>
+                    <div class="dashboard-card action-card color-" id="viewDailyTasks"></div>
+                    <div class="dashboard-card info-card color-" id="brokenGamesSummary"></div>
+                    <div class="dashboard-card info-card color-" id="partsOnOrderSummary"></div>
+                    <div class="dashboard-card info-card color-" id="ticketPayoutSummary"></div>
                     
-                    <div class="dashboard-card info-card color-yellow" id="filler"></div>
-                    <div class="dashboard-card info-card color-yellow" id="filler2"></div>
+                    <div class="dashboard-card info-card color-" id="filler"></div>
+                    <div class="dashboard-card info-card color-" id="filler2"></div>
                 </div>
 
             </main>
         </div>
+
         <div id="customPopup" class="popup-overlay">
             <div class="popup-content">
                 <h2 id="popupTitle"></h2>
@@ -130,6 +129,43 @@
             </div>
         </div>
     </div>
-    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+
+    <aside class="sidebar">
+        <nav class="sidebar-nav">
+            <ul>
+                <li class="nav-item current">
+                    <a href="/">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/tpt_calculator" id="sidebarTptCalculator">
+                        <i class="fas fa-calculator"></i>
+                        <span>TPT Calculator</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/inventory" id="sidebarGameInventory">
+                        <i class="fas fa-gamepad"></i>
+                        <span>Game Inventory</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/issues" id="sidebarIssues">
+                        <i class="fas fa-bug"></i> <span>Issues</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <div class="sidebar-bottom-nav">
+            <div class="nav-item static-display" id="sidebarBottomTptTargetLink">
+                <img src="{{ url_for('static', filename='images/ticket_icon.png') }}" alt="Ticket Icon" class="tpt-sidebar-icon">
+                <span id="sidebarBottomTptTargetValue">Target: N/A</span>
+            </div>
+        </div>
+    </aside>
+    
+    <script type="module" src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>
 </html>

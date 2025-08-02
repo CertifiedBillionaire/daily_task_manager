@@ -1,0 +1,176 @@
+/* --- TPT Calculator Page Specific Styles --- */
+/*
+ * Styles unique to the TPT Calculator page, including file upload, settings, and results.
+ */
+
+/* Container for the "Upload" text/input and the Settings toggle icon */
+.tpt-upload-and-settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end; /* Align items to the bottom */
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.tpt-upload-elements {
+    flex-grow: 1;
+}
+
+.tpt-upload-elements h3 {
+    margin-top: 0;
+    margin-bottom: 5px;
+    font-size: 1.2em;
+    color: var(--text-color-dark);
+}
+
+.tpt-upload-elements .form-group {
+    margin-bottom: 0;
+}
+
+.tpt-upload-elements .form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 0.9em;
+    color: var(--text-color-light);
+}
+
+.tpt-upload-elements .form-group input[type="file"] {
+    display: block;
+    width: 100%;
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-small);
+    background-color: var(--input-background-color);
+    color: var(--text-color);
+    cursor: pointer;
+}
+
+.file-name-display {
+    font-size: 0.85em;
+    color: var(--text-color-light);
+    margin-top: 5px;
+    word-break: break-all;
+}
+
+.tpt-settings-toggle-area {
+    flex-shrink: 0;
+}
+
+.tpt-settings-toggle-area .icon-button {
+    font-size: 1.8em; /* Specific size for this icon */
+    color: var(--accent-color);
+}
+
+.tpt-settings-toggle-area .icon-button:hover {
+    transform: scale(1.1);
+}
+
+/* TPT Settings Menu (Collapsible Section) */
+.tpt-settings-container {
+    max-height: 500px; /* Max height when expanded */
+    overflow: hidden;
+    transition: max-height 0.3s ease-out, opacity 0.3s ease-out, padding 0.3s ease-out, border 0.3s ease-out, box-shadow 0.3s ease-out;
+    opacity: 1;
+    padding: 20px;
+    margin-top: 15px;
+    margin-bottom: 25px;
+    background-color: var(--card-background-color-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-small);
+    box-sizing: border-box;
+}
+
+/* Style when the container is collapsed (hidden) - applied via JS toggling 'collapsed' class */
+.tpt-settings-container.collapsed {
+    max-height: 0;
+    opacity: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    border: none;
+    box-shadow: none;
+    pointer-events: none; /* Prevent clicks on hidden content */
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+/* Styles for the inputs inside the settings menu */
+.tpt-settings-inputs {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 10px 15px;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.tpt-settings-inputs label {
+    font-size: 0.95em;
+    color: var(--text-color-dark);
+    font-weight: 500;
+}
+
+.tpt-settings-inputs input[type="number"] {
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-small);
+    background-color: var(--input-background-color);
+    color: var(--text-color);
+    font-size: 0.95em;
+    width: 100%;
+}
+
+#saveTptSettingsBtn {
+    margin-top: 10px;
+}
+
+/* --- General Form Group Style --- */
+.form-group {
+    margin-bottom: 15px; /* Default spacing for form elements */
+}
+
+/* --- Basic Checkbox Group Style (Used in TPT settings, tasks) --- */
+.form-group-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
+
+.form-group-checkbox input[type="checkbox"] {
+    margin-right: 0;
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--border-color);
+    border-radius: 5px;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+.form-group-checkbox input[type="checkbox"]:checked {
+    background-color: #4CAF50;
+    border-color: #4CAF50;
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+}
+
+.form-group-checkbox input[type="checkbox"]:checked::after {
+    content: '\2713';
+    font-size: 16px;
+    color: white;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.form-group-checkbox label {
+    font-size: 1em;
+    color: var(--text-color);
+    cursor: pointer;
+    margin-bottom: 0;
+}

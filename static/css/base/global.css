@@ -1,0 +1,94 @@
+:root {
+    --primary-color: #2196F3;         /* Google Blue - Main interactive color */
+    --accent-color: #2196F3;          /* Often same as primary, or different highlight color */
+    --secondary-accent-color: #F9B32F; /* Chuck E. Cheese Yellow-Orange - For specific highlights */
+
+    --text-color: #333333;             /* Default dark text for body */
+    --text-color-dark: #222222;        /* Even darker text for main headings */
+    --text-color-light: #666666;       /* Lighter text for descriptions, subheadings, helper text */
+
+    --background-color-light: #F0F4F8; /* Very light background for the overall app/body */
+    --background-color-medium: #F7F8FC; /* Slightly darker background for main content areas */
+    --card-background-color: #FFFFFF;  /* Pure white background for cards, popups, and sidebar */
+    --card-background-color-secondary: #F8FAFC; /* Slightly off-white for nested sections within cards */
+
+    --border-color: #D0D0D0;           /* Light grey for general borders */
+    --border-color-light: #E0E0E0;     /* Even lighter grey for subtle separators */
+    --input-background-color: #F8FAFC; /* Light background for input fields */
+
+    --border-radius: 15px;             /* Standard rounded corners for cards and main containers */
+    --border-radius-small: 8px;        /* Smaller rounded corners for buttons, inputs, minor elements */
+
+    /* Shadow definitions for depth and visual separation */
+    --shadow-small: 0 2px 8px rgba(0,0,0,0.08);    /* Subtle shadow for light elements */
+    --shadow-medium: 0 6px 20px rgba(0,0,0,0.1);   /* Standard shadow for cards */
+    --shadow-large: 0 12px 35px rgba(0,0,0,0.2);   /* More pronounced shadow for hover/active states */
+}
+
+
+
+/* --- Universal Resets and Base Body Styles --- */
+/*
+ * These rules apply globally to ensure consistent rendering across browsers
+ * and define the foundational look of your app's pages.
+ */
+* {
+    /* Ensure padding and border are included in the element's total width and height */
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;                          /* Essential for correct `vh` (viewport height) calculations */
+    margin: 0;                             /* REMOVED: Unwanted 4px margin around the page edges */
+    padding: 0;                            /* Remove default browser padding */
+    font-family: 'Inter', sans-serif;      /* Apply the custom font globally */
+    background-color: var(--background-color-light); /* Use theme variable for background */
+    color: var(--text-color);              /* Use theme variable for default text color */
+    line-height: 1.6;                      /* Improve readability of text */
+    overflow-x: hidden;                    /* Prevent horizontal scrollbar from layout shifts */
+}
+
+
+/* --- Main App Container (Overall Layout & Background) --- */
+/*
+ * This is the primary container for your entire application interface.
+ * It sets up the main flex layout for the header and the content area.
+ */
+.app-container {
+    display: flex;                       /* Enables Flexbox for direct children (header, content-wrapper) */
+    flex-direction: column;              /* Stacks children vertically: Header on top, then main content */
+
+    /* REMOVED: height: 100vh; and overflow: hidden;
+     * These were causing scrolling issues and header overlaps.
+     * Scrolling is now managed by individual content areas (e.g., .main-content).
+     * `min-height: 100vh;` ensures the app always fills the screen vertically. */
+    min-height: 100vh;                   /* Ensures app takes at least full viewport height */
+
+    /* Visual styling for the app container */
+    background: linear-gradient(to bottom right, #EBF2F8, #DDE7F0); /* Subtle gradient background */
+    box-shadow: var(--shadow-medium);    /* Apply a medium shadow for depth */
+    border-radius: var(--border-radius); /* Apply standard border-radius for rounded corners */
+    animation: fadeInScale 0.3s ease-out forwards; /* Simple fade-in animation on load */
+    position: relative;                  /* Needed for the pseudo-element background graphic */
+}
+
+/* --- Background Graphic for App Container --- */
+.app-container::before {
+    content: '';                         /* Required for pseudo-elements */
+    position: absolute;                  /* Position relative to .app-container */
+    top: 0; left: 0;                     /* Covers the entire container */
+    width: 100%; height: 100%;           /* Covers the entire container */
+    background-image: url('../images/background_graphics/wave_graphic.png'); /* Your custom wave graphic */
+    background-repeat: no-repeat;        /* Don't tile the image */
+    background-position: bottom right;   /* Position at the bottom right corner */
+    background-size: 30%;                /* Scale the image */
+    opacity: 0.08;                       /* Make it subtle */
+    z-index: -1;                         /* Place it behind content */
+    pointer-events: none;                /* Ensure it doesn't block clicks */
+}
+
+/* --- Keyframe Animation for App Container Fade In --- */
+@keyframes fadeInScale {
+    from { opacity: 0; transform: scale(0.98); } /* Starts slightly smaller and transparent */
+    to { opacity: 1; transform: scale(1); }   /* Ends full size and opaque */
+}

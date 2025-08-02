@@ -1,0 +1,103 @@
+/*
+ * This file contains the styling for all the dashboard cards.
+ * It defines the general look of the cards, their colors, and internal layout.
+ * To change how all cards look, edit the .dashboard-card rule.
+ */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-bottom: 50px;
+}
+
+.dashboard-card {
+    background-color: #FFFFFF;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    padding: 25px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px; /* Adds space between icon, title, and text */
+    border-top: 6px solid transparent;
+}
+/* --- Card Color Variations --- */
+.color-purple { border-top-color: #673AB7; }
+.color-red    { border-top-color: #F44336; }
+.color-blue   { border-top-color: #2196F3; }
+.color-orange { border-top-color: #FF9800; }
+.color-green  { border-top-color: #4CAF50; }
+.color-yellow {border-top-color:  #FFC107; }
+.color-black  {border-top-color:  black;   }
+.dashboard-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-large);
+}
+
+.card-icon {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2em;
+    color: #FFFFFF;
+    margin-bottom: 18px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+.dashboard-card.color-green .card-icon { background-color: #66BB6A; }
+.dashboard-card.color-purple .card-icon { background-color: #9C27B0; }
+.dashboard-card.color-blue .card-icon { background-color: var(--primary-color); }
+.dashboard-card.color-red .card-icon { background-color: #F44336; }
+.dashboard-card.color-orange .card-icon { background-color: #FF9800; }
+.dashboard-card.color-yellow .card-icon { background-color: #FFC107; }
+
+.dashboard-card h3 {
+    font-size: 1.3em;
+    font-weight: 600;
+    color: var(--text-color-dark);
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.card-description {
+    font-size: 0.95em;
+    color: var(--text-color-light);
+    margin-bottom: 20px;
+    flex-grow: 1;
+}
+
+.card-value {
+    font-size: 2.8em;
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: 12px;
+}
+
+.card-action-button {
+    background-color: var(--primary-color);
+    color: #FFFFFF;
+    border: none;
+    padding: 12px 20px;
+    border-radius: var(--border-radius-small);
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+    align-self: flex-start;
+    box-shadow: 0 3px 8px rgba(33, 150, 243, 0.2);
+}
+
+.card-action-button:hover {
+    background-color: #1976D2;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(33, 150, 243, 0.3);
+}
+
+.card-action-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(33, 150, 243, 0.2);
+}

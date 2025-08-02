@@ -1,0 +1,168 @@
+/* --- Section Card (General Purpose Container for content sections) --- */
+/*
+ * Used for grouping content like Daily Tasks, TPT Calculator sections, Game Inventory.
+ */
+.section-card {
+    background-color: var(--card-background-color);
+    padding: 35px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-medium);
+    margin-top: 35px;
+    border: 1px solid var(--border-color-light);
+}
+
+.section-card h2 {
+    font-size: 2em;
+    font-weight: 600;
+    color: var(--text-color-dark);
+    margin-bottom: 25px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #F0F0F0;
+}
+
+
+
+.tpt-display { /* This class seems unused currently in HTML, but kept here for reference */
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #C72C1C;
+    padding: 8px 15px;
+    border-radius: 15px;
+    font-weight: 600;
+    color: var(--secondary-accent-color);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    white-space: nowrap;
+}
+
+.tpt-icon { /* This class seems unused currently in HTML, but kept here for reference */
+    width: 100px;
+    height: auto;
+    object-fit: contain;
+}
+
+.tpt-value { /* This class seems unused currently in HTML, but kept here for reference */
+    font-size: 1.1em;
+}
+
+
+/* --- Styles for Task Management (Daily Tasks Section) --- */
+.task-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.task-delete-btn {
+    background: none;
+    border: none;
+    color: #888;
+    cursor: pointer;
+    font-size: 0.9em;
+    margin-left: 10px;
+    transition: color 0.2s ease;
+    padding: 5px;
+    border-radius: 50%;
+}
+
+.task-delete-btn:hover {
+    color: #D32F2F;
+    background-color: #fcebeb;
+}
+
+.task-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 0;
+    border-bottom: 1px solid #F0F0F0;
+}
+
+.task-list li:last-child {
+    border-bottom: none;
+}
+
+.task-list li input[type="checkbox"] {
+    margin-right: 18px;
+    width: 22px;
+    height: 22px;
+    border: 2px solid #B0B0B0;
+    border-radius: 5px;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+.task-list li input[type="checkbox"]:checked {
+    background-color: #4CAF50;
+    border-color: #4CAF50;
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+}
+
+.task-list li input[type="checkbox"]:checked::after {
+    content: '\2713';
+    font-size: 16px;
+    color: white;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.task-list li label {
+    flex-grow: 1;
+    font-size: 1.05em;
+    color: #444444;
+    cursor: pointer;
+    padding-right: 20px;
+    transition: color 0.2s ease;
+}
+
+.task-list li input[type="checkbox"]:checked + label {
+    text-decoration: line-through;
+    color: #999999;
+}
+
+.task-priority {
+    font-size: 0.85em;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    white-space: nowrap;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.task-priority.high { background-color: #FFEBEE; color: #F44336; }
+.task-priority.cleanliness { background-color: #E8F5E9; color: #4CAF50; }
+.task-priority.parts { background-color: #FFF3E0; color: #FF9800; }
+.task-priority.facility { background-color: #EDE7F6; color: #7B24FF; }
+
+.add-task-button {
+    background-color: var(--primary-color);
+    color: #FFFFFF;
+    border: none;
+    padding: 14px 25px;
+    border-radius: var(--border-radius-small);
+    font-size: 1.05em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+    width: 100%;
+    margin-top: 30px;
+    box-shadow: 0 4px 10px rgba(33, 150, 243, 0.2);
+}
+
+.add-task-button:hover {
+    background-color: #1976D2;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(33, 150, 243, 0.3);
+}
+
+.add-task-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(33, 150, 243, 0.2);
+}
+
