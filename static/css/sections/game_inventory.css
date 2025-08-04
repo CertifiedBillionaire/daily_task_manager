@@ -95,7 +95,9 @@
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
 }
 
-.game-list-table {
+/* --- DESKTOP TABLE STYLES --- */
+/* These rules apply to both tables on larger screens */
+.game-list-table, .issues-table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 0;
@@ -108,15 +110,18 @@
     border: 1px solid var(--border-color-light);
     border-top: none;
 }
-
-.game-list-table th,
-.game-list-table td {
-    padding: 15px;
-    text-align: left;
-    border-bottom: 1px solid #F0F0F0;
+.game-list-table thead tr, .issues-table thead tr {
+    position: static; /* Revert header positioning */
 }
-
-.game-list-table th {
+.game-list-table th, .issues-table th,
+.game-list-table td, .issues-table td {
+    display: table-cell; /* Revert to table cell display */
+    text-align: left;
+    padding: 15px;
+    border-bottom: 1px solid #F0F0F0;
+    padding-left: 15px; /* Restore padding */
+}
+.game-list-table th, .issues-table th {
     background-color: #F8F8F8;
     font-size: 0.9em;
     color: var(--text-color-light);
@@ -124,200 +129,29 @@
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
-
-.game-list-table td {
+.game-list-table td, .issues-table td {
     font-size: 0.95em;
     color: #444444;
 }
-
-.game-list-table tr:last-child td {
+.game-list-table tr:last-child td, .issues-table tr:last-child td {
     border-bottom: none;
 }
-
-.game-list-table .status-new {
-    color: #4CAF50;
-    font-weight: 600;
+.game-list-table td::before, .issues-table td::before {
+    content: none; /* Remove pseudo-element for mobile labels */
 }
-
-.game-list-table .status-trashed {
-    color: #F44336;
-    font-weight: 600;
+.game-list-table tr, .issues-table tr {
+    border: none; /* Remove mobile border */
+    margin-bottom: 0; /* Remove mobile margin */
 }
-
-.game-list-table .status-active {
-    color: var(--primary-color);
-    font-weight: 600;
-}
-
-.game-list-table .action-buttons {
+.game-list-table .action-buttons, .issues-table .action-buttons {
     display: flex;
     gap: 8px;
+    justify-content: flex-start; /* Revert button alignment */
 }
 
-.game-list-table .action-buttons button {
-    background: none;
-    border: none;
-    color: #666666;
-    cursor: pointer;
-    font-size: 1.1em;
-    padding: 5px;
-    border-radius: 50%;
-    transition: all 0.2s ease;
-}
 
-.game-list-table .action-buttons button:hover {
-    background-color: #E0E7FF;
-    color: var(--primary-color);
-    transform: scale(1.1);
-}
-
-.game-list-table .action-buttons .delete-button:hover {
-    background-color: #FFEBEE;
-    color: #F44336;
-}
-
-    /* --- Game Inventory: Responsive Adjustments for wider screens --- */
-    .game-input-area {
-        flex-direction: row; /* Layout inputs horizontally */
-        align-items: flex-end; /* Align inputs/buttons to the bottom */
-        gap: 20px;
-    }
-    .game-input-area .form-group {
-        width: auto; /* Let flex control width */
-        min-width: 200px;
-    }
-    .game-input-area .button-group {
-        flex-direction: row; /* Layout buttons horizontally */
-        gap: 15px;
-        flex-grow: 1; /* Allows buttons to take up remaining space */
-        justify-content: flex-start;
-    }
-    .game-inventory-section .add-game-button,
-    .game-inventory-section .export-button {
-        width: auto; /* Let flex control width */
-        flex-grow: 1;
-    }
-
-    /* Game List Table: Revert to standard table display on desktop */
-    .game-list-table {
-        display: table;
-        border-top-left-radius: var(--border-radius-small); /* Restore desktop radius */
-        border-top-right-radius: var(--border-radius-small); /* Restore desktop radius */
-    }
-    .game-list-table thead tr {
-        position: static; /* Revert header positioning */
-    }
-    .game-list-table th,
-    .game-list-table td {
-        display: table-cell; /* Revert to table cell display */
-        text-align: left;
-        padding-left: 15px; /* Restore padding */
-    }
-    .game-list-table td::before {
-        content: none; /* Remove pseudo-element for mobile labels */
-    }
-    .game-list-table tr {
-        border: none; /* Remove mobile border */
-        margin-bottom: 0; /* Remove mobile margin */
-    }
-    .game-list-table .action-buttons {
-        justify-content: flex-start; /* Revert button alignment */
-    }
-
-
-
-    /* Main Layout: Sidebar on top for mobile */
-    .main-layout-area {
-        flex-direction: column; /* Stack sidebar then main content */
-        margin-top: 60px; /* Push content down by header height */
-    }
-    .sidebar {
-        width: 100%; /* Full width for sidebar on mobile */
-        min-width: unset;
-        height: auto; /* Height adapts to content */
-        border-right: none;
-        border-bottom: 1px solid #E0E0E0; /* Separator line */
-        padding: 15px 0;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* Subtle shadow */
-        position: relative; /* Not fixed for simple stacking */
-        transform: translateX(0); /* Ensure it's not off-screen */
-    }
-    .sidebar-nav ul {
-        display: flex; /* Make nav items horizontal on mobile sidebar */
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 10px;
-    }
-    .sidebar-nav .nav-item {
-        margin-bottom: 0; /* Remove vertical margin */
-    }
-    .sidebar-nav .nav-item a {
-        padding: 8px 12px; /* Smaller padding */
-        font-size: 0.85em;
-        border-radius: 8px; /* Fully rounded border for mobile nav item */
-        box-shadow: none; /* Remove box-shadow */
-    }
-    .sidebar-nav .nav-item a i {
-        margin-right: 8px; /* Smaller icon spacing */
-    }
-    .sidebar-nav .nav-item.current a {
-        box-shadow: none; /* Remove left border for mobile active state */
-    }
-
-
-    /* Main Content area adjustments for mobile */
-    .main-content {
-        padding: 20px;
-    }
-    .dashboard-grid {
-        grid-template-columns: 1fr; /* Single column for cards */
-        gap: 20px;
-    }
-    .dashboard-card {
-        padding: 20px;
-    }
-    .card-icon {
-        width: 45px; height: 45px;
-        font-size: 1.6em;
-    }
-    .card-value {
-        font-size: 2em;
-    }
-    .section-card {
-        padding: 20px;
-    }
-    .section-card h2 {
-        font-size: 1.5em;
-    }
-    .task-list li label {
-        font-size: 0.9em;
-    }
-    .task-priority {
-        font-size: 0.7em;
-        padding: 4px 8px;
-    }
-    .popup-content {
-        padding: 30px;
-    }
-    .popup-content h2 {
-        font-size: 1.8em;
-    }
-    .popup-content p {
-        font-size: 1em;
-    }
-    .popup-button {
-        font-size: 0.9em;
-        padding: 10px 15px;
-        margin: 5px;
-    }
-    .popup-content textarea {
-        padding: 10px;
-        font-size: 0.95em;
-    }
-    #issueList li {
-        padding: 12px;
-    }
-
+/* --- Mobile styles that only apply on smaller screens --- */
+@media (max-width: 768px) {
     /* Game Inventory: Mobile-specific stacking for inputs/buttons */
     .game-input-area {
         flex-direction: column;
@@ -338,29 +172,30 @@
         width: 100%;
         flex-grow: unset;
     }
+    
     /* Game List Table: Stack table columns for mobile readability */
-    .game-list-table, .game-list-table thead, .game-list-table tbody, .game-list-table th, .game-list-table td, .game-list-table tr {
+    .game-list-table, .issues-table, .game-list-table thead, .issues-table thead, .game-list-table tbody, .issues-table tbody, .game-list-table th, .issues-table th, .game-list-table td, .issues-table td, .game-list-table tr, .issues-table tr {
         display: block;
     }
-    .game-list-table thead tr {
+    .game-list-table thead tr, .issues-table thead tr {
         position: absolute;
         top: -9999px;
         left: -9999px;
     }
-    .game-list-table tr {
+    .game-list-table tr, .issues-table tr {
         border: 1px solid var(--border-color-light);
         margin-bottom: 15px;
         border-radius: var(--border-radius-small);
         overflow: hidden;
     }
-    .game-list-table td {
+    .game-list-table td, .issues-table td {
         border: none;
         border-bottom: 1px solid #F0F0F0;
         position: relative;
         padding-left: 50%;
         text-align: right;
     }
-    .game-list-table td::before {
+    .game-list-table td::before, .issues-table td::before {
         content: attr(data-label);
         position: absolute;
         left: 15px;
@@ -371,7 +206,7 @@
         font-weight: 600;
         color: var(--text-color-light);
     }
-    .game-list-table .action-buttons {
+    .game-list-table .action-buttons, .issues-table .action-buttons {
         justify-content: flex-end;
     }
-
+}

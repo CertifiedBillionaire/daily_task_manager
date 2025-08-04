@@ -79,3 +79,13 @@ html, body {
     from { opacity: 0; transform: scale(0.98); } /* Starts slightly smaller and transparent */
     to { opacity: 1; transform: scale(1); }   /* Ends full size and opaque */
 }
+/* --- FIX for issues page table layout --- */
+.issues-table {
+    display: table !important;
+}
+.issues-table thead, .issues-table tbody, .issues-table tr {
+    display: table-row !important;
+}
+.issues-table th, .issues-table td {
+    display: table-cell !important;
+}

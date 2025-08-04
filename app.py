@@ -164,6 +164,11 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True) # Ensure the upload folder exists
 def index():
     return render_template('index.html')
 
+@app.route('/test_page')
+def test_page():
+    """A temporary route to test the base template."""          #the test
+    return render_template('test_page.html')
+
 @app.route('/inventory')
 def game_inventory():
     return render_template('game_inventory.html')
