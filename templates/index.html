@@ -64,17 +64,30 @@
                     </div>
                 </div>
                 <div class="dashboard-grid">
-                    <div class="dashboard-card action-card color-yellow" id="startOpeningChecklist">
-                        
-                        <div class="card-icon"><i class="fa-solid fa-list-check"></i>
-                        
+                    <div class="dashboard-card action-card color-yellow" id="startOpeningChecklist" data-id="opening-checklist" data-color="yellow">
+                    
+                    <div class="card-menu-container">
+                        <button class="card-menu-button">
+                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                        </button>
+                        <div class="card-menu">
+                        <ul>
+                            <li data-action="reset-checklist">Reset Progress</li>
+                        </ul>
+                        </div>
                     </div>
+
+                    <div class="card-content-top">
+                        <div class="card-icon"><i class="fa-solid fa-list-check"></i></div>
+                        
+                        <div class="card-text-group">
                         <h3>Start Opening Checklist</h3>
                         <p class="card-description">Begin your daily opening routine.</p>
-
-                         <div class="card-progress">0/4 Done</div>
+                        </div>
                     </div>
-                    <div class="dashboard-card action-card color-blue" id="inspectArcadeGame">
+
+                    <div class="card-progress">0/4 Done</div>
+                    </div>                    <div class="dashboard-card action-card color-blue" id="inspectArcadeGame">
                         <div class="card-icon"><i class="fa-solid fa-book"></i>
                     </div>
                         <h3>Inspect a Game</h3>
@@ -108,19 +121,150 @@
             </div>
         </div>
 
-        <div id="openingChecklistModal" class="popup-overlay">
+        <div id="opening-checklist-modal" class="popup-overlay">
             <div class="popup-content">
                 <div class="modal-header">
-                    <h2 id="checklistModalTitle">Daily Opening Checklist</h2>
-                    <span class="step-counter" id="checklistStepCounter">Step 1 of X</span>
-                    <button id="closeChecklistModalButton" class="icon-button close-modal-button" title="Close Checklist">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
+                    <div class="header-top-row">
+                        <h2 id="checklistModalTitle">Daily Opening Checklist</h2>
+                    </div>
+
+                    <div class="header-bottom-row">
+                        <span class="step-counter" id="checklistStepCounter">Step 1 of X</span>
+                        <button id="closeChecklistModalButton" class="icon-button close-modal-button" title="Close Checklist">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>                
                 <div class="modal-body">
-                    <p class="checklist-step-text" id="checklistStepText"></p>
+                    <p id="checklistStepText" class="modal-text"></p>
+
                     <div class="checklist-response-area" id="checklistResponseArea">
+                        <div class="form-checkbox">
+                            <input type="checkbox" id="tptSheetPrinted" class="form-checkbox-input">
+                            <label for="tptSheetPrinted" class="form-checkbox-label">Printed TPT sheet?</label>
                         </div>
+
+                        <div class="form-group" id="tptNotesGroup" style="display: none;">
+                            <label for="tptNotes" class="form-label">Notes (e.g., printer is down):</label>
+                            <textarea id="tptNotes" class="form-textarea" placeholder="Add a note..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="gamesOutOfRangeInput" class="form-label">Games Out of Range:</label>
+                            <input type="number" id="gamesOutOfRangeInput" class="form-input form-input-short" min="0" placeholder="0">
+                        </div>
+                        
+                        <div class="form-group-row">
+                            <div class="form-group">
+                                <label for="dailyTptInput" class="form-label">Daily TPT:</label>
+                                <input type="number" id="dailyTptInput" class="form-input" step="0.01" placeholder="0.00">
+                            </div>
+                            <div class="form-group">
+                                <label for="weeklyAverageTptInput" class="form-label">Weekly Average:</label>
+                                <input type="number" id="weeklyAverageTptInput" class="form-input" step="0.01" placeholder="0.00">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="checklist-item" id="breakersChecklist" style="display: none;">
+                        <p class="checklist-title">Check the following breaker areas:</p>
+                        
+                        <div class="form-checkbox">
+                            <input type="checkbox" id="kitchenBreaker" class="form-checkbox-input">
+                            <label for="kitchenBreaker" class="form-checkbox-label">Kitchen Breakers</label>
+                        </div>
+                        
+                        <div class="form-checkbox">
+                            <input type="checkbox" id="techBreaker" class="form-checkbox-input">
+                            <label for="techBreaker" class="form-checkbox-label">Tech Room Breakers</label>
+                        </div>
+                        
+                        <div class="form-checkbox">
+                            <input type="checkbox" id="showroomBreaker" class="form-checkbox-input">
+                            <label for="showroomBreaker" class="form-checkbox-label">Showroom Breakers</label>
+                        </div>
+
+                        <div class="form-checkbox">
+                            <input type="checkbox" id="backroomBreaker" class="form-checkbox-input">
+                            <label for="backroomBreaker" class="form-checkbox-label">Backroom Breakers</label>
+                        </div>
+                    </div>
+                        <div id="safetyChecklistArea">
+                    </div>
+                    <div class="checklist-item" id="emergencyLightingChecklist" style="display: none;">
+                        <div class="form-checkbox">
+                            <input type="checkbox" id="lightingOK" class="form-checkbox-input">
+                            <label for="lightingOK" class="form-checkbox-label">All emergency lighting batteries are charged.</label>
+                        </div>
+                        
+                        <div class="form-group notes-group">
+                            <label for="lightingNotes" class="form-label">Notes (e.g., location of a discharged battery):</label>
+                            <textarea id="lightingNotes" class="form-textarea" placeholder="Add a note..."></textarea>
+                        </div>
+                    </div>
+                    <div class="checklist-item" id="danceFloorChecklist" style="display: none;">
+                        <div class="form-checkbox">
+                            <input type="checkbox" id="danceFloorOK" class="form-checkbox-input">
+                            <label for="danceFloorOK" class="form-checkbox-label">Dance floor integrity check complete.</label>
+                        </div>
+                        
+                        <div class="form-group notes-group">
+                            <label for="danceFloorNotes" class="form-label">Notes (e.g., location of a rip or loose tile):</label>
+                            <textarea id="danceFloorNotes" class="form-textarea" placeholder="Add a note..."></textarea>
+                        </div>
+                    </div>
+                    <div class="checklist-item" id="suitInspectionChecklist" style="display: none;">
+                        <p class="checklist-title">Inspect the suit for:</p>
+                        
+                        <div class="form-checkbox">
+                            <input type="checkbox" id="suitTearsRips" class="form-checkbox-input">
+                            <label for="suitTearsRips" class="form-checkbox-label">Tears or Rips</label>
+                        </div>
+                        
+                        <div class="form-checkbox">
+                            <input type="checkbox" id="suitComponents" class="form-checkbox-input">
+                            <label for="suitComponents" class="form-checkbox-label">Damage to components (e.g., eyes, ears, teeth)</label>
+                        </div>
+
+                        <div class="form-group notes-group">
+                            <label for="suitNotes" class="form-label">Notes:</label>
+                            <textarea id="suitNotes" class="form-textarea" placeholder="Document any other issues..."></textarea>
+                        </div>
+                    </div>
+                        <div class="checklist-item" id="cleaningResourcesChecklist" style="display: none;">
+                            <div class="form-checkbox">
+                                <input type="checkbox" id="vacuumsOK" class="form-checkbox-input">
+                                <label for="vacuumsOK" class="form-checkbox-label">All vacuums are operational.</label>
+                            </div>
+                            
+                            <div class="form-group notes-group">
+                                <label for="vacuumsNotes" class="form-label">Notes:</label>
+                                <textarea id="vacuumsNotes" class="form-textarea" placeholder="Add a note if an issue was found..."></textarea>
+                            </div>
+                        </div>
+                             <div id="bathroomChecklistArea">
+
+                             </div>
+                            <div class="checklist-item" id="posRestartChecklist" style="display: none;">
+                                <div class="form-checkbox">
+                                    <input type="checkbox" id="posRestartOK" class="form-checkbox-input">
+                                    <label for="posRestartOK" class="form-checkbox-label">POS system has been restarted.</label>
+                                </div>
+                            </div>
+                                <div id="menuBoardChecklistArea">
+                                    </div>
+                                <div id="kioskChecklistArea" style="display: none;">
+                                    </div>
+                                <div id="thankYouBoxChecklistArea" style="display: none;">
+                                    </div>
+                                <div id="kitchenChecklistArea" style="display: none;">
+                                    </div>
+                                <div id="adventureZoneChecklistArea" style="display: none;">
+                                    </div>
+                                <div id="gameRoomChecklistArea" style="display: none;">
+                                    </div>
+                                <div id="dailyTapPlaceholderArea" style="display: none;"></div>
+
+
                 </div>
                 <div class="modal-footer">
                     <button id="checklistBackButton" class="popup-button cancel-button"><i class="fas fa-chevron-left"></i> Back</button>
@@ -165,6 +309,15 @@
             </div>
         </div>
     </aside>
+
+    <div id="contextMenu" class="popup-overlay">
+    <div class="popup-content">
+        <h2 id="contextMenuTitle">Item Options</h2>
+        <ul id="contextMenuList">
+            </ul>
+        <button id="contextMenuCloseBtn" class="popup-button cancel-button">Close</button>
+    </div>
+</div>
     
     <script type="module" src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>

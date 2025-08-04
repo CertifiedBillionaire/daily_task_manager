@@ -21,6 +21,8 @@
     align-items: center;
     gap: 15px; /* Adds space between icon, title, and text */
     border-top: 6px solid transparent;
+    position: relative;
+
 }
 /* --- Card Color Variations --- */
 .color-purple { border-top-color: #673AB7; }

@@ -72,20 +72,7 @@ html, body {
     position: relative;                  /* Needed for the pseudo-element background graphic */
 }
 
-/* --- Background Graphic for App Container --- */
-.app-container::before {
-    content: '';                         /* Required for pseudo-elements */
-    position: absolute;                  /* Position relative to .app-container */
-    top: 0; left: 0;                     /* Covers the entire container */
-    width: 100%; height: 100%;           /* Covers the entire container */
-    background-image: url('../images/background_graphics/wave_graphic.png'); /* Your custom wave graphic */
-    background-repeat: no-repeat;        /* Don't tile the image */
-    background-position: bottom right;   /* Position at the bottom right corner */
-    background-size: 30%;                /* Scale the image */
-    opacity: 0.08;                       /* Make it subtle */
-    z-index: -1;                         /* Place it behind content */
-    pointer-events: none;                /* Ensure it doesn't block clicks */
-}
+
 
 /* --- Keyframe Animation for App Container Fade In --- */
 @keyframes fadeInScale {

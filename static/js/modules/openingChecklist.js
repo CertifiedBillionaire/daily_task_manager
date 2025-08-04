@@ -1,151 +1,454 @@
 // =========================================================================
 // ARCADE MANAGER - OPENING CHECKLIST MODULE
 // =========================================================================
+import { openModal, closeModal } from './modal.js';
+import { getKitchenChecklistHTML } from '/static/js/modules/kitchenChecklist.js';
+import { createSafetyChecklistHTML, safetyChecklistItems } from './safetySecurityChecklist.js';
+import { createBathroomChecklistHTML, bathroomChecklistItems } from './bathroomChecklist.js';
+import { getMenuBoardChecklistHTML } from './menuBoardChecklist.js';
+import { saveChecklistStepData } from './checklistData.js';
+import { getKioskChecklistHTML } from './kioskChecklist.js';
+import { getThankYouBoxChecklistHTML } from './thankYouBoxChecklist.js';
+import { getAdventureZoneChecklistHTML } from './adventureZoneChecklist.js';
+import { getGameRoomChecklistHTML } from './gameRoomChecklist.js';
 
-// This is an array that holds all the steps for our checklist.
-// Each step is an "object" with a title and the question text.
+
+
+
+
+
+
+
+
 export const checklistSteps = [
     {
-        title: "Initial Walk-Through",
-        text: "Have you completed the initial walk-through of the showroom floor?"
+        "title": "Instructions",
+        "text": "Welcome to the Opening Duties Checklist. Use this guide to ensure all daily tasks are completed. Your progress is saved automatically and resets daily."
     },
     {
-        title: "Game Status",
-        text: "Are all games powered on and in attract mode?"
+        "title": "TPT Goals",
+        "text": "Print the TPT sheet to track goals and review payout information."
     },
     {
-        title: "Safety & Cleanliness",
-        text: "Is the showroom floor clean and free of any safety hazards?"
+        "title": "Tools and Resources",
+        "text": "Retrieve the Tech tablet. Use it to log game room issues, track preventative maintenance (PMs), and order parts."
     },
     {
-        title: "Final Check",
-        text: "Checklist complete. Are you ready to open?"
+        "title": "Electrical",
+        "text": "Activate all required breakers for the day, including those for the kitchen, tech room, showroom, and backrooms."
+    },
+    {
+        "title": "Safety & Security",
+        "text": "Conduct a full safety and security inspection. Verify alarms, locks, and lighting. Inspect all carpets, tiles, tables, and chairs, ensuring all hardware is secure."
+    },
+    {
+        "title": "Emergency Lighting",
+        "text": "Verify that all emergency lighting batteries are charged. If an issue is found, report it with a specific location (e.g., \"above Pirates Hook game\")."
+    },
+    {
+        "title": "Showroom",
+        "text": "Perform a dance floor integrity check. Document any issues discovered."
+    },
+    {
+        "title": "Chuck E. Suit Inspection",
+        "text": "Inspect the Chuck E. suit for any tears, rips, or damage to its components (e.g., eyes, ears, teeth), ensuring it is in good condition."
+    },
+    {
+        "title": "Cleaning Resources",
+        "text": "Verify that all vacuums are operational."
+    },
+    {
+        "title": "Bathrooms",
+        "text": "Inspect bathrooms for any facility issues, including toilet battery status, sinks, paint, locks, and hardware."
+    },
+    {
+        "title": "Tech Ready for Day",
+        "text": "Restart the Point of Sale (POS) system."
+    },
+    {
+        "title": "Inspection",
+        "text": "Inspect menu boards and the surrounding front counter area. Check that boards are on, lights work, and there are no facility issues like paint chips or damaged borders."
+    },
+    {
+        "title": "Kiosks",
+        "text": "Verify kiosk operations and document any issues."
+    },
+    {
+        "title": "Thank You Boxes",
+        "text": "Confirm that thank-you boxes are properly stocked, with no missing items, and that the doors are locked."
+    },
+    {
+        "title": "Kitchen",
+        "text": "Inspect all kitchen equipment and verify its operational status."
+    },
+    {
+        "title": "Top Up",
+        "text": "Top up and add points onto staff card."
+    },
+    {
+        "title": "Adventure Zone",
+        "text": "Complete the Adventure Zone inspection. Verify its safety, cleanliness, and lighting."
+    },
+    {
+        "title": "Game Room Check",
+        "text": "Conduct a game room inspection to ensure the cleanliness and integrity of floors, games, booths, tables, and thank-you boxes."
+    },
+    {
+        "title": "Daily Tap",
+        "text": "Complete the morning game tap procedure."
     }
 ];
 
-// This function reads saved data and updates the card's progress text
+// This function updates the dashboard card's progress display.
 export function updateChecklistProgress() {
-    // Find the progress text element on the card
     const checklistCardProgress = document.querySelector('#startOpeningChecklist .card-progress');
-    
-    // If the element doesn't exist, stop.
     if (!checklistCardProgress) return;
-
-    // Get the list of completed steps from the browser's storage, 
-    // or create an empty array if nothing is saved yet.
     const completedSteps = JSON.parse(localStorage.getItem('completedChecklistSteps')) || [];
-    
-    // Get the total number of steps from our checklist array
     const totalSteps = checklistSteps.length;
-
-    // Update the text on the card (e.g., "1/4 Done")
     checklistCardProgress.textContent = `${completedSteps.length}/${totalSteps} Done`;
 }
 
-/**
- * This is the main function that initializes all the logic for the checklist.
- * It finds the HTML elements and adds the click behaviors.
- */
-function initOpeningChecklist() {
-    
-    // --- 1. FIND ALL HTML ELEMENTS ---
-    // We get all the elements we need from the HTML and store them in constants.
-    const checklistCard = document.getElementById('startOpeningChecklist');      // The card on the dashboard
-    const checklistModal = document.getElementById('openingChecklistModal');    // The main pop-up modal container
-    const closeButton = document.getElementById('closeChecklistModalButton'); // The 'X' button in the modal
-    const nextButton = document.getElementById('checklistNextButton');        // The 'Next' button
-    const backButton = document.getElementById('checklistBackButton');        // The 'Back' button
-    const stepTextElement = document.getElementById('checklistStepText');     // The text area for the question
-    const stepCounterElement = document.getElementById('checklistStepCounter'); // The "Step X of Y" text
+// The main initialization function for the checklist.
+export function initOpeningChecklist() {
+    // We get the modal by its correct ID string.
+    const CHECKLIST_MODAL_ID = 'opening-checklist-modal'; 
+    const checklistModal = document.getElementById(CHECKLIST_MODAL_ID);    
+    const nextButton = document.getElementById('checklistNextButton');        
+    const backButton = document.getElementById('checklistBackButton');        
+    const stepTextElement = document.getElementById('checklistStepText');     
+    const stepCounterElement = document.getElementById('checklistStepCounter');
+    const checklistResponseArea = document.getElementById('checklistResponseArea');
+    const breakersChecklist = document.getElementById('breakersChecklist');
+    const safetyChecklistArea = document.getElementById('safetyChecklistArea');
+    const emergencyLightingChecklist = document.getElementById('emergencyLightingChecklist');
+    const danceFloorChecklist = document.getElementById('danceFloorChecklist');
+    const suitInspectionChecklist = document.getElementById('suitInspectionChecklist');
+    const cleaningResourcesChecklist = document.getElementById('cleaningResourcesChecklist');
+    const bathroomChecklistArea = document.getElementById('bathroomChecklistArea');
+    const tptSheetPrintedCheckbox = document.getElementById('tptSheetPrinted');
+    const tptNotesGroup = document.getElementById('tptNotesGroup');
+    const posRestartChecklist = document.getElementById('posRestartChecklist');
+    const menuBoardChecklistArea = document.getElementById('menuBoardChecklistArea');
+    const kioskChecklistArea = document.getElementById('kioskChecklistArea');
+    const thankYouBoxChecklistArea = document.getElementById('thankYouBoxChecklistArea');
+    const kitchenChecklistArea = document.getElementById('kitchenChecklistArea');
+    const adventureZoneChecklistArea = document.getElementById('adventureZoneChecklistArea');
+    const gameRoomChecklistArea = document.getElementById('gameRoomChecklistArea');
+    const dailyTapPlaceholderArea = document.getElementById('dailyTapPlaceholderArea');
 
-    // --- 2. SAFETY CHECK (GUARD CLAUSE) ---
-    // This is a crucial check. If any of the elements above were not found in the
-    // HTML, the script will stop running this function to prevent errors.
-    // The syntax here is now corrected.
-    if (!checklistCard || !checklistModal || !nextButton || !backButton || !stepCounterElement) {
+
+
+
+
+
+
+
+
+    if (!checklistModal || !nextButton || !backButton || !stepTextElement || !stepCounterElement) {
         console.error("Checklist Error: One or more required HTML elements were not found.");
-        return; 
+        return null; // Return null to prevent further errors in app.js
     }
 
-    // --- 3. STATE MANAGEMENT ---
-    // This variable will remember which step we are currently on.
-    // It starts at 0, which is the first item in our checklistSteps array.
     let currentStepIndex = 0;
 
-    // --- 4. CORE DISPLAY FUNCTION ---
-    /**
-     * This function is responsible for updating the modal's display based on the current step.
-     * @param {number} index - The index of the step to display from the checklistSteps array.
-     */
     function displayStep(index) {
-        // Get the specific step object from our array.
         const step = checklistSteps[index];
-
-        // Update the question text and the step counter.
         stepTextElement.textContent = step.text;
         stepCounterElement.textContent = `Step ${index + 1} of ${checklistSteps.length}`;
-
-        // If it's the first step (index 0), hide the "Back" button. Otherwise, show it.
         backButton.style.display = (index === 0) ? 'none' : 'inline-flex';
-    
-        // If it's the last step, change the button text to "Finish". Otherwise, it says "Next Step".
         nextButton.textContent = (index === checklistSteps.length - 1) ? 'Finish' : 'Next Step';
+
+        // --- UPDATED LOGIC HERE ---
+        // This is the new, cleaned-up logic to show and hide the correct checklist
+        // We set the innerHTML for the safety checklist when we get to it.
+        if (index === 1) { // This is the TPT Goals step
+            checklistResponseArea.style.display = 'block';
+            breakersChecklist.style.display = 'none';
+            safetyChecklistArea.style.display = 'none';
+            emergencyLightingChecklist.style.display = 'none';
+            danceFloorChecklist.style.display = 'none';
+            suitInspectionChecklist.style.display = 'none';
+            cleaningResourcesChecklist.style.display = 'none';
+            bathroomChecklistArea.style.display = 'none';
+        } else if (index === 3) { // This is the Electrical Breakers step
+            checklistResponseArea.style.display = 'none';
+            breakersChecklist.style.display = 'block';
+            safetyChecklistArea.style.display = 'none';
+            emergencyLightingChecklist.style.display = 'none';
+            danceFloorChecklist.style.display = 'none';
+            suitInspectionChecklist.style.display = 'none';
+            cleaningResourcesChecklist.style.display = 'none';
+            bathroomChecklistArea.style.display = 'none';
+        } else if (index === 4) { // This is the Safety & Security step
+            checklistResponseArea.style.display = 'none';
+            breakersChecklist.style.display = 'none';
+            safetyChecklistArea.style.display = 'block';
+            emergencyLightingChecklist.style.display = 'none';
+            danceFloorChecklist.style.display = 'none';
+            suitInspectionChecklist.style.display = 'none';
+            cleaningResourcesChecklist.style.display = 'none';
+            bathroomChecklistArea.style.display = 'none';
+            safetyChecklistArea.innerHTML = createSafetyChecklistHTML();
+        } else if (index === 5) { // This is the Emergency Lighting step
+            checklistResponseArea.style.display = 'none';
+            breakersChecklist.style.display = 'none';
+            safetyChecklistArea.style.display = 'none';
+            emergencyLightingChecklist.style.display = 'block';
+            danceFloorChecklist.style.display = 'none';
+            suitInspectionChecklist.style.display = 'none';
+            cleaningResourcesChecklist.style.display = 'none';
+            bathroomChecklistArea.style.display = 'none';
+        } else if (index === 6) { // This is the Showroom / Dance Floor step
+            checklistResponseArea.style.display = 'none';
+            breakersChecklist.style.display = 'none';
+            safetyChecklistArea.style.display = 'none';
+            emergencyLightingChecklist.style.display = 'none';
+            danceFloorChecklist.style.display = 'block';
+            suitInspectionChecklist.style.display = 'none';
+            cleaningResourcesChecklist.style.display = 'none';
+            bathroomChecklistArea.style.display = 'none';
+        } else if (index === 7) { // This is the Chuck E. Suit Inspection step
+            checklistResponseArea.style.display = 'none';
+            breakersChecklist.style.display = 'none';
+            safetyChecklistArea.style.display = 'none';
+            emergencyLightingChecklist.style.display = 'none';
+            danceFloorChecklist.style.display = 'none';
+            suitInspectionChecklist.style.display = 'block';
+            cleaningResourcesChecklist.style.display = 'none';
+            bathroomChecklistArea.style.display = 'none';
+        } else if (index === 8) { // This is the Cleaning Resources step
+            checklistResponseArea.style.display = 'none';
+            breakersChecklist.style.display = 'none';
+            safetyChecklistArea.style.display = 'none';
+            emergencyLightingChecklist.style.display = 'none';
+            danceFloorChecklist.style.display = 'none';
+            suitInspectionChecklist.style.display = 'none';
+            cleaningResourcesChecklist.style.display = 'block';
+            bathroomChecklistArea.style.display = 'none';
+        } else if (index === 9) { // This is the Bathrooms step
+            checklistResponseArea.style.display = 'none';
+            breakersChecklist.style.display = 'none';
+            safetyChecklistArea.style.display = 'none';
+            emergencyLightingChecklist.style.display = 'none';
+            danceFloorChecklist.style.display = 'none';
+            suitInspectionChecklist.style.display = 'none';
+            cleaningResourcesChecklist.style.display = 'none';
+            bathroomChecklistArea.style.display = 'block';
+            bathroomChecklistArea.innerHTML = createBathroomChecklistHTML();
+        } else if (index === 10) { // This is the POS Restart step
+            checklistResponseArea.style.display = 'none';
+            breakersChecklist.style.display = 'none';
+            safetyChecklistArea.style.display = 'none';
+            emergencyLightingChecklist.style.display = 'none';
+            danceFloorChecklist.style.display = 'none';
+            suitInspectionChecklist.style.display = 'none';
+            cleaningResourcesChecklist.style.display = 'none';
+            bathroomChecklistArea.style.display = 'none';
+            posRestartChecklist.style.display = 'block';
+        }
+        else if (index === 11) { // This is the Menu Boards step
+            checklistResponseArea.style.display = 'none';
+            breakersChecklist.style.display = 'none';
+            safetyChecklistArea.style.display = 'none';
+            emergencyLightingChecklist.style.display = 'none';
+            danceFloorChecklist.style.display = 'none';
+            suitInspectionChecklist.style.display = 'none';
+            cleaningResourcesChecklist.style.display = 'none';
+            bathroomChecklistArea.style.display = 'none';
+            posRestartChecklist.style.display = 'none';
+            menuBoardChecklistArea.style.display = 'block';
+            menuBoardChecklistArea.innerHTML = getMenuBoardChecklistHTML();
+            kioskChecklistArea.style.display = 'none';
+            thankYouBoxChecklistArea.style.display = 'none';
+            kitchenChecklistArea.style.display = 'none';
+        }
+        else if (index === 12) { // This is the Kiosks step
+            checklistResponseArea.style.display = 'none';
+            breakersChecklist.style.display = 'none';
+            safetyChecklistArea.style.display = 'none';
+            emergencyLightingChecklist.style.display = 'none';
+            danceFloorChecklist.style.display = 'none';
+            suitInspectionChecklist.style.display = 'none';
+            cleaningResourcesChecklist.style.display = 'none';
+            bathroomChecklistArea.style.display = 'none';
+            posRestartChecklist.style.display = 'none';
+            menuBoardChecklistArea.style.display = 'none';
+            kioskChecklistArea.style.display = 'block'; // Show our new container
+            kioskChecklistArea.innerHTML = getKioskChecklistHTML(); // Populate it
+        }
+
+        else if (index === 13) { // This is the Thank You Boxes step
+            checklistResponseArea.style.display = 'none';
+            breakersChecklist.style.display = 'none';
+            safetyChecklistArea.style.display = 'none';
+            emergencyLightingChecklist.style.display = 'none';
+            danceFloorChecklist.style.display = 'none';
+            suitInspectionChecklist.style.display = 'none';
+            cleaningResourcesChecklist.style.display = 'none';
+            bathroomChecklistArea.style.display = 'none';
+            posRestartChecklist.style.display = 'none';
+            menuBoardChecklistArea.style.display = 'none';
+            kioskChecklistArea.style.display = 'none';
+            thankYouBoxChecklistArea.style.display = 'block';
+            thankYouBoxChecklistArea.innerHTML = getThankYouBoxChecklistHTML();
+        }
+
+        else if (index === 14) { // This is the Kitchen step
+            checklistResponseArea.style.display = 'none';
+            breakersChecklist.style.display = 'none';
+            safetyChecklistArea.style.display = 'none';
+            emergencyLightingChecklist.style.display = 'none';
+            danceFloorChecklist.style.display = 'none';
+            suitInspectionChecklist.style.display = 'none';
+            cleaningResourcesChecklist.style.display = 'none';
+            bathroomChecklistArea.style.display = 'none';
+            posRestartChecklist.style.display = 'none';
+            menuBoardChecklistArea.style.display = 'none';
+            kioskChecklistArea.style.display = 'none';
+            thankYouBoxChecklistArea.style.display = 'none';
+            kitchenChecklistArea.style.display = 'block';
+            kitchenChecklistArea.innerHTML = getKitchenChecklistHTML();
+        }
+
+        else if (index === 16) { // This is the Adventure Zone step
+            checklistResponseArea.style.display = 'none';
+            breakersChecklist.style.display = 'none';
+            safetyChecklistArea.style.display = 'none';
+            emergencyLightingChecklist.style.display = 'none';
+            danceFloorChecklist.style.display = 'none';
+            suitInspectionChecklist.style.display = 'none';
+            cleaningResourcesChecklist.style.display = 'none';
+            bathroomChecklistArea.style.display = 'none';
+            posRestartChecklist.style.display = 'none';
+            menuBoardChecklistArea.style.display = 'none';
+            kioskChecklistArea.style.display = 'none';
+            thankYouBoxChecklistArea.style.display = 'none';
+            kitchenChecklistArea.style.display = 'none';
+            adventureZoneChecklistArea.style.display = 'block';
+            adventureZoneChecklistArea.innerHTML = getAdventureZoneChecklistHTML();
+        }
+
+        else if (index === 17) { // This is the Game Room Check step
+            checklistResponseArea.style.display = 'none';
+            breakersChecklist.style.display = 'none';
+            safetyChecklistArea.style.display = 'none';
+            emergencyLightingChecklist.style.display = 'none';
+            danceFloorChecklist.style.display = 'none';
+            suitInspectionChecklist.style.display = 'none';
+            cleaningResourcesChecklist.style.display = 'none';
+            bathroomChecklistArea.style.display = 'none';
+            posRestartChecklist.style.display = 'none';
+            menuBoardChecklistArea.style.display = 'none';
+            kioskChecklistArea.style.display = 'none';
+            thankYouBoxChecklistArea.style.display = 'none';
+            kitchenChecklistArea.style.display = 'none';
+            adventureZoneChecklistArea.style.display = 'none';
+            gameRoomChecklistArea.style.display = 'block';
+            gameRoomChecklistArea.innerHTML = getGameRoomChecklistHTML();
+        }
+
+        else if (index === 18) { // This is the Daily Tap step
+            // Hide all other checklists
+            checklistResponseArea.style.display = 'none';
+            breakersChecklist.style.display = 'none';
+            safetyChecklistArea.style.display = 'none';
+            emergencyLightingChecklist.style.display = 'none';
+            danceFloorChecklist.style.display = 'none';
+            suitInspectionChecklist.style.display = 'none';
+            cleaningResourcesChecklist.style.display = 'none';
+            bathroomChecklistArea.style.display = 'none';
+            posRestartChecklist.style.display = 'none';
+            menuBoardChecklistArea.style.display = 'none';
+            kioskChecklistArea.style.display = 'none';
+            thankYouBoxChecklistArea.style.display = 'none';
+            kitchenChecklistArea.style.display = 'none';
+            adventureZoneChecklistArea.style.display = 'none';
+            gameRoomChecklistArea.style.display = 'none';
+
+            // Show our placeholder and add a message to it
+            dailyTapPlaceholderArea.style.display = 'block';
+            dailyTapPlaceholderArea.innerHTML = `
+                <div style="text-align: center; padding: 20px; background-color: #2c3e50; border-radius: 8px;">
+                    <p style="margin: 0; font-size: 1.1em; color: #ecf0f1;">This task is completed on a different card.</p>
+                    <p style="margin: 5px 0 0; font-size: 0.9em; color: #95a5a6;">This step is a final reminder.</p>
+                </div>
+            `;
+        }
+
+        
+        else {
+            // For all other steps, hide all of the interactive checklists
+            checklistResponseArea.style.display = 'none';
+            breakersChecklist.style.display = 'none';
+            safetyChecklistArea.style.display = 'none';
+            emergencyLightingChecklist.style.display = 'none';
+            danceFloorChecklist.style.display = 'none';
+            suitInspectionChecklist.style.display = 'none';
+            cleaningResourcesChecklist.style.display = 'none';
+            bathroomChecklistArea.style.display = 'none';
+            posRestartChecklist.style.display = 'none';
+            menuBoardChecklistArea.style.display = 'none';
+            kioskChecklistArea.style.display = 'none'; 
+            thankYouBoxChecklistArea.style.display = 'none';
+            kitchenChecklistArea.style.display = 'none';
+            adventureZoneChecklistArea.style.display = 'none';
+            gameRoomChecklistArea.style.display = 'none'; 
+            dailyTapPlaceholderArea.style.display = 'none';
+            
+        }
+        // --- END UPDATED LOGIC ---
     }
 
-    // --- 5. EVENT LISTENERS (Adding click behaviors) ---
-
-    // When you click the main card on the dashboard...
-    checklistCard.addEventListener('click', () => {
-        // Reset the progress to the very first step.
-        currentStepIndex = 0;
-        // Call our function to display the first step.
-        displayStep(currentStepIndex);
-        // Add the 'active' class to the modal to make it visible.
-        checklistModal.classList.add('active');
-    });
-
-    // When you click the "Next" or "Finish" button...
     nextButton.addEventListener('click', () => {
-        // --- This block saves the current step's progress ---
+
+        // This one function now handles saving for all steps.
+        saveChecklistStepData(currentStepIndex);
+
         const completedSteps = JSON.parse(localStorage.getItem('completedChecklistSteps')) || [];
         if (!completedSteps.includes(currentStepIndex)) {
             completedSteps.push(currentStepIndex);
         }
-
         localStorage.setItem('completedChecklistSteps', JSON.stringify(completedSteps));
-        updateChecklistProgress();
-        // --- End of saving block ---
+        
+        updateChecklistProgress(); 
 
         if (currentStepIndex < checklistSteps.length - 1) {
-        // If we are NOT on the last step, move to the next one
-        currentStepIndex++;
-        displayStep(currentStepIndex);
+            currentStepIndex++;
+            displayStep(currentStepIndex);
+        } else {
+            closeModal(CHECKLIST_MODAL_ID); 
         }
-
-        else {
-        // If we ARE on the last step, clicking "Finish" closes the modal
-        checklistModal.classList.remove('active');
-        }
-
     });
 
-    // When you click the "Back" button...
     backButton.addEventListener('click', () => {
-        // Check if we are not on the first step.
         if (currentStepIndex > 0) {
-            // If not, decrease the step index by 1.
             currentStepIndex--;
-            // Update the modal to show the previous step.
             displayStep(currentStepIndex);
         }
     });
+    
+    if (tptSheetPrintedCheckbox && tptNotesGroup) {
+        tptSheetPrintedCheckbox.addEventListener('change', () => {
+            if (tptSheetPrintedCheckbox.checked) {
+                tptNotesGroup.style.display = 'none';
+            } else {
+                tptNotesGroup.style.display = 'block';
+            }
+        });
+        tptNotesGroup.style.display = tptSheetPrintedCheckbox.checked ? 'none' : 'block';
+    }
+    
+    function openChecklistModal() {
+        console.log("Checklist modal element found:", checklistModal);
+        
+        if (tptSheetPrintedCheckbox && tptNotesGroup) {
+            tptNotesGroup.style.display = tptSheetPrintedCheckbox.checked ? 'none' : 'block';
+        }
 
-    // When you click the 'X' button to close the modal...
-    closeButton.addEventListener('click', () => {
-        // Remove the 'active' class to hide the modal.
-        checklistModal.classList.remove('active');
-    });
+        currentStepIndex = 0;
+        displayStep(currentStepIndex);
+        openModal(CHECKLIST_MODAL_ID); 
+    }
+
+    return { openChecklistModal };
 }
-
-// This line makes the initOpeningChecklist function available to be imported by app.js.
-export default initOpeningChecklist;

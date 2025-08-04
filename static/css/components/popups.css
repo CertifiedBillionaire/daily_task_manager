@@ -23,28 +23,23 @@
 /* --- Pop-up Content Styles (Clean & Rounded) --- */
 .popup-content {
     background-color: var(--card-background-color);
-    padding: 40px;
+    padding: 25px;
     border-radius: var(--border-radius);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-    max-width: 550px;
+    box-shadow: var(--shadow-large);
     width: 90%;
-    text-align: center;
-    transform: translateY(30px) scale(0.9);
-    opacity: 0;
-    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.4s ease-out;
-    position: relative;
-    z-index: 1;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    max-height: 80vh;
+    overflow: hidden;
+    
+    /* This animation is for when the modal appears */
+    animation: fadeIn 0.3s ease-out;
 }
 
-.popup-overlay.active .popup-content {
-    transform: translateY(0) scale(1);
-    opacity: 1;
-}
-
-.popup-content h2 {
-    font-size: 2em;
-    color: var(--text-color-dark);
-    margin-bottom: 20px;
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
 }
 
 .popup-content p {
@@ -53,34 +48,37 @@
     margin-bottom: 30px;
 }
 
+
+/* --- Button Styles for Pop-ups (Standard and Dynamic) --- */
 .popup-button {
-    background-color: var(--primary-color);
+    background-color: var(--modal-primary-color, var(--primary-color));
     color: #FFFFFF;
     border: none;
-    padding: 12px 25px;
+    padding: 12px 24px;
     border-radius: var(--border-radius-small);
-    font-size: 1.05em;
-    font-weight: 600;
+    font-weight: 500;
+    font-size: 1em;
     cursor: pointer;
-    transition: background-color 0.25s ease, transform 0.25s ease;
-    margin: 8px;
-    box-shadow: 0 3px 8px rgba(33, 150, 243, 0.2);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: var(--shadow-small);
 }
 
 .popup-button:hover {
-    background-color: #1976D2;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(33, 150, 243, 0.3);
+    background-color: var(--modal-primary-color-dark, #1976D2);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
 .popup-button.cancel-button {
-    background-color: #9E9E9E;
-    box-shadow: 0 3px 8px rgba(158, 158, 158, 0.2);
+    background-color: transparent;
+    color: var(--text-color-light);
+    border: 1px solid var(--border-color);
+    box-shadow: none;
 }
 
 .popup-button.cancel-button:hover {
-    background-color: #757575;
-    box-shadow: 0 6px 15px rgba(158, 158, 158, 0.3);
+    background-color: #F0F4F8;
+    color: var(--text-color);
+    border-color: var(--border-color);
 }
 
 .popup-button.delete-button {
@@ -112,52 +110,78 @@
     box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.3);
 }
 
+
 /* --- NEW: Opening Checklist Modal Specific Styles --- */
+
+/* This makes the header act as a "column" so the top row is on top of the bottom row */
 .modal-header {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 25px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid #E0E0E0;
+    flex-direction: column;
+    padding-bottom: 15px; 
+    margin-bottom: 15px; 
+    border-bottom: 1px solid var(--border-color-light); 
+    width: 100%; /* Make sure the header takes up all available width */
 }
 
-.modal-header h2 {
+/* This is the top row, which contains the centered title */
+.modal-header .header-top-row {
+    display: flex;
+    justify-content: center; /* This centers the title horizontally */
+    width: 100%;
+    margin-bottom: 10px; /* Add a little space between the two rows */
+}
+
+/* This is the second row, which contains the step counter and X button */
+.modal-header .header-bottom-row {
+    display: flex;
+    justify-content: flex-end; /* This aligns the items to the far right */
+    align-items: center; /* This aligns them in the middle vertically */
+    width: 100%;
+}
+
+/* We don't need a specific rule for the title's alignment anymore because its parent row is centering it. */
+.modal-header h2#checklistModalTitle {
     margin: 0;
-    font-size: 2em;
-    color: var(--text-color-dark);
-    flex-grow: 1;
-    text-align: left;
-}
-
-.step-counter {
-    font-size: 1em;
-    color: #888888;
+    font-size: 1.5em; 
     font-weight: 500;
+    color: var(--text-color-dark);
+}
+
+/* This makes the step counter look like a little pill or badge */
+.modal-header .step-counter {
+    /* Give it a subtle background and rounded corners */
+    background-color: var(--background-color-light); 
+    color: var(--text-color-light);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-weight: 500;
+    font-size: 0.9em;
     white-space: nowrap;
-    margin-left: 15px;
+    margin-right: 15px;
 }
 
-.close-modal-button {
-    background: none;
+/* This is the new, more prominent close button with a red background */
+.modal-header .close-modal-button {
+    background-color: #F44336; /* A red background to make it stand out */
+    color: #FFFFFF; /* White icon on the red background */
     border: none;
-    color: #999999;
-    font-size: 1.5em;
-    padding: 5px;
-    border-radius: 50%;
+    font-size: 1.0em; /* Make the icon a little smaller but the button bigger */
     cursor: pointer;
-    transition: background-color 0.2s ease, color 0.2s ease;
-    margin-left: 15px;
+    padding: 8px; /* Increase padding to make the button larger */
+    border-radius: 20%; /* Makes it a perfect circle */
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-.close-modal-button:hover {
-    background-color: #F0F0F0;
-    color: #666666;
+.modal-header .close-modal-button:hover {
+    background-color: #D32F2F; /* A darker red on hover */
+    transform: scale(1.1); /* A slight zoom effect on hover */
 }
-
 .modal-body {
-    margin-bottom: 30px;
-    text-align: center;
+    flex-grow: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 20px;
 }
 
 .checklist-step-text {
@@ -252,4 +276,3 @@
     word-wrap: break-word;
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
-
