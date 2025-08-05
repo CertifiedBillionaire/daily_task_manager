@@ -5,6 +5,8 @@ import { updateChecklistProgress } from './modules/openingChecklist.js';
 import { initContextMenu } from './modules/contextMenu.js';
 import { initModalListeners } from './modules/modalListeners.js';
 import { initSidebar } from './modules/sidebar.js';
+import { initNewIssueCard } from './modules/addNewIssue.js';
+
 
 // --- FIXED ---
 // We need to import the closeModal tool from modal.js here at the top.
@@ -69,4 +71,5 @@ document.addEventListener('DOMContentLoaded', () => {
     initContextMenu();
     initSidebar();
     initModalListeners();
+    initNewIssueCard();
 });

@@ -29,11 +29,12 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(25, 25, 25, 0.2);
+            background-color: rgba(255, 255, 255, 0.7); /* Changed to a light white */
             z-index: 999;
             opacity: 0;
             visibility: hidden;
-            backdrop-filter: blur(0px);
+            backdrop-filter: blur(5px); /* This adds the blurring effect */
+            -webkit-backdrop-filter: blur(5px);
             transition: all 0.3s ease-in-out;
         }
 
