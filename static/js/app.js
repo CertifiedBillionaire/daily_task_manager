@@ -6,6 +6,8 @@ import { initContextMenu } from './modules/contextMenu.js';
 import { initModalListeners } from './modules/modalListeners.js';
 import { initSidebar } from './modules/sidebar.js';
 import { initNewIssueCard } from './modules/addNewIssue.js';
+import { initPMCard } from './modules/pmCard.js';
+
 
 
 // --- FIXED ---
@@ -72,4 +74,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initSidebar();
     initModalListeners();
     initNewIssueCard();
+    initPMCard();
+
 });
