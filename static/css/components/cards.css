@@ -103,3 +103,86 @@
     transform: translateY(0);
     box-shadow: 0 2px 5px rgba(33, 150, 243, 0.2);
 }
+.card-content-top {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.card-text-group {
+    text-align: center;
+}
+.card-menu-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    position: absolute;
+    top: 20px; /* Moved down slightly */
+    right: 20px; /* Moved left slightly */
+    color: #6c7a89;
+    padding: 0;
+}
+
+.card-menu-button i {
+    font-size: 1.2em; /* Makes the icon slightly bigger */
+}
+
+.card-menu-container .card-menu-button {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #f0f4f8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s ease;
+}
+
+.card-progress {
+    margin-top: auto;
+    padding: 5px 12px;
+    background-color: #f0f4f8;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #6c7a89;
+}
+/* Base styles for the desktop menu links */
+.card-desktop-menu {
+    display: none;
+    padding-top: 15px;
+    font-size: 0.9em;
+    color: var(--text-color-light);
+}
+
+.card-desktop-menu span {
+    cursor: pointer;
+    padding: 5px;
+    transition: color 0.2s ease;
+}
+
+.card-desktop-menu span:hover {
+    color: var(--primary-color);
+}
+
+/* This rule hides the menu button on desktop screens and shows the desktop links */
+@media (min-width: 768px) {
+    .card-menu-container {
+        display: none;
+    }
+    .card-desktop-menu {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+/* This rule hides the desktop links on mobile and shows the menu button */
+@media (max-width: 767px) {
+    .card-menu-container {
+        display: block;
+    }
+    .card-desktop-menu {
+        display: none;
+    }
+}

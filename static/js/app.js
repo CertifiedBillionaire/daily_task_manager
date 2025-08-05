@@ -4,6 +4,8 @@ import { initOpeningChecklist } from './modules/openingChecklist.js';
 import { updateChecklistProgress } from './modules/openingChecklist.js';
 import { initContextMenu } from './modules/contextMenu.js';
 import { initModalListeners } from './modules/modalListeners.js';
+import { initSidebar } from './modules/sidebar.js';
+
 // --- FIXED ---
 // We need to import the closeModal tool from modal.js here at the top.
 import { closeModal } from './modules/modal.js';
@@ -11,31 +13,7 @@ import { closeModal } from './modules/modal.js';
 // Then, we wait for the HTML to be ready
 document.addEventListener('DOMContentLoaded', () => {
     
-    // --- Mobile Sidebar Menu Logic ---
-    const hamburgerMenu = document.getElementById('hamburger-menu');
-    const sidebar = document.querySelector('.sidebar');
-    const overlay = document.createElement('div');
-    overlay.className = 'sidebar-overlay';
-    document.body.appendChild(overlay);
-
-    if (hamburgerMenu && sidebar) {
-        const openSidebar = () => {
-            sidebar.classList.add('sidebar-open');
-            overlay.classList.add('active');
-        };
-
-        const closeSidebar = () => {
-            sidebar.classList.remove('sidebar-open');
-            overlay.classList.remove('active');
-        };
-
-        hamburgerMenu.addEventListener('click', (e) => {
-            e.stopPropagation();
-            openSidebar();
-        });
-
-        overlay.addEventListener('click', closeSidebar);
-    }
+    
     
     // --- FIXED ---
     // The code to find the button is placed here with the other setup logic.
@@ -89,5 +67,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Run the other app logic ---
     updateChecklistProgress();
     initContextMenu();
+    initSidebar();
     initModalListeners();
 });

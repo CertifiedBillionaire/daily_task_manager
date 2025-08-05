@@ -1,75 +1,96 @@
 /*
  * This file controls the main layout of the page, positioning the sidebar and content area.
-
-
-/* Main Content Area (Scrollable Section) */
-.main-content {
-    flex-grow: 1;
-    padding: 35px; /* Default to desktop padding */
-    background-color: var(--background-color-medium);
-    overflow-y: auto;
-    min-height: 0;
-    -webkit-overflow-scrolling: touch;
-}
-
-/* Content Header Section */
-.content-header {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    margin-bottom: 35px;
-    flex-wrap: wrap;
-    gap: 20px;
-}
-
-.dashboard-overview-header {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    flex-wrap: wrap;
-    flex-grow: 1;
-}
-
-.content-header h2 {
-    font-size: 2em;
-    font-weight: 600;
-    color: var(--text-color-dark);
-    margin-bottom: 8px;
-}
-
-.content-header p {
-    font-size: 1.1em;
-    color: var(--text-color-light);
-    margin-top: 0;
-}
-
-/* Main Layout Area: Sidebar + Content */
-.main-layout-area {
-    display: flex;
-    flex-direction: row; /* Aligns sidebar and main content side-by-side */
-    flex-grow: 1;        /* Allows this area to fill available vertical space */
-    height: 0;           /* Prevents overflow issues when paired with flex-grow */
-    overflow: hidden;    /* Prevents its children from spilling out */
-}
+ * It is now split into specific desktop and mobile sections.
+ */
 
 /* ======================================================= */
-/* ===        MOBILE LAYOUT OVERRIDE (under 768px)     === */
+/* ===         DESKTOP LAYOUT (over 768px)             === */
+/* ======================================================= */
+@media (min-width: 769px) {
+    /* Main Layout Area: Sidebar + Content */
+    .main-layout-area {
+        display: flex; /* Aligns sidebar and main content side-by-side */
+        flex-direction: row;
+        flex-grow: 1;
+        min-height: 0;
+    }
+    
+    /* Main Content Area (Scrollable Section) */
+    .main-content {
+        flex-grow: 1;
+        padding: 35px;
+        background-color: var(--background-color-medium);
+        overflow-y: auto;
+        min-height: 0;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Content Header Section */
+    .content-header {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        margin-bottom: 35px;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .dashboard-overview-header {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        flex-wrap: wrap;
+        flex-grow: 1;
+    }
+
+    .content-header h2 {
+        font-size: 2em;
+        font-weight: 600;
+        color: var(--text-color-dark);
+        margin-bottom: 8px;
+    }
+
+    .content-header p {
+        font-size: 1.1em;
+        color: var(--text-color-light);
+        margin-top: 0;
+    }
+}
+
+
+/* ======================================================= */
+/* ===         MOBILE LAYOUT (under 768px)             === */
 /* ======================================================= */
 @media (max-width: 768px) {
-
-    /*
-     This tells the container to stop using a side-by-side flex layout
-     on mobile and just act like a normal container. This is the key fix.
-    */
+    /* This tells the container to stop using a side-by-side flex layout
+     on mobile and just act like a normal container. */
     .main-layout-area {
         display: block;
     }
-
-    /*
-     This ensures your main content area doesn't get squished and
-     takes up the full screen width.
-    */
+    
+    /* This ensures your main content area doesn't get squished and
+     takes up the full screen width. */
     .main-content {
         width: 100%;
+        padding: 20px;
     }
+    
+    .content-header {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+    
+    .content-header h2 {
+        font-size: 1.5em;
+        margin-bottom: 5px;
+    }
+    
+    .content-header p {
+        font-size: 0.9em;
+    }
+    
 }

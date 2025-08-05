@@ -1,0 +1,36 @@
+<aside class="sidebar">
+    <nav class="sidebar-nav">
+        <ul>
+            <li class="nav-item current">
+                <a href="/">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/tpt_calculator" id="sidebarTptCalculator">
+                    <i class="fas fa-calculator"></i>
+                    <span>TPT Calculator</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/inventory" id="sidebarGameInventory">
+                    <i class="fas fa-gamepad"></i>
+                    <span>Game Inventory</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/issues" id="sidebarIssues">
+                    <i class="fas fa-bug"></i> <span>Issues</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <div class="sidebar-bottom-nav">
+        <div class="nav-item static-display" id="sidebarBottomTptTargetLink">
+            <img src="{{ url_for('static', filename='images/ticket_icon.png') }}" alt="Ticket Icon" class="tpt-sidebar-icon">
+            <span id="sidebarBottomTptTargetValue">Target: N/A</span>
+        </div>
+    </div>
+</aside>
+<div class="sidebar-overlay"></div>

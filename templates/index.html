@@ -63,34 +63,36 @@
                         </div>
                     </div>
                 </div>
-                <div class="dashboard-grid">
-                    <div class="dashboard-card action-card color-yellow" id="startOpeningChecklist" data-id="opening-checklist" data-color="yellow">
-                    
-                    <div class="card-menu-container">
-                        <button class="card-menu-button">
-                        <i class="fa-solid fa-ellipsis-vertical"></i>
-                        </button>
-                        <div class="card-menu">
-                        <ul>
-                            <li data-action="reset-checklist">Reset Progress</li>
-                        </ul>
+                    <div class="dashboard-grid">
+                        <div class="dashboard-card action-card color-yellow" id="startOpeningChecklist" data-id="opening-checklist" data-color="yellow">
+                            
+                            <div class="card-menu-container">
+                                <button class="card-menu-button">
+                                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                                </button>
+                                <div class="card-menu">
+                                    <ul>
+                                        <li data-action="reset-checklist">Reset Progress</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="card-content-top">
+                                <div class="card-icon"><i class="fa-solid fa-list-check"></i></div>
+                                
+                                <div class="card-text-group">
+                                    <h3>Start Opening Checklist</h3>
+                                    <p class="card-description">Begin your daily opening routine.</p>
+                                </div>
+                            </div>
+
+                            <div class="card-desktop-menu">
+                                <span data-action="reset-checklist">• Reset Progress</span>
+                            </div>
+
+                            <div class="card-progress">19/19 Done</div>
                         </div>
-                    </div>
 
-                    <div class="card-content-top">
-                        <div class="card-icon"><i class="fa-solid fa-list-check"></i></div>
-                        
-                        <div class="card-text-group">
-                        <h3>Start Opening Checklist</h3>
-                        <p class="card-description">Begin your daily opening routine.</p>
-                        </div>
-                    </div>
-
-                    <div class="card-progress">0/4 Done</div>
-                    </div>
-                        <!-- In daily_task_manager/templates/index.html -->
-
-                        <!-- --- NEW CODE HERE --- -->
                         <div class="dashboard-card action-card color-blue" id="inspectArcadeGame">
                             
                             <div class="card-menu-container">
@@ -112,15 +114,16 @@
                                     <p class="card-description">Perform a detailed check on a single game.</p>
                                 </div>
                             </div>
+                            
+                            <div class="card-desktop-menu">
+                                <span data-action="inspect-all">• Inspect All</span>
+                                <span data-action="reset-progress">• Reset Progress</span>
+                            </div>
 
                             <div class="card-progress">0/53 Done</div>
                         </div>
-                        <!-- --- END NEW CODE --- -->
-                    <h3>Inspect a Game</h3>
-                        <p class="card-description">Perform a detailed check on a single game.</p>
-                    </div>
-                    <div class="dashboard-card action-card color-" id="viewDailyTasks"></div>
-                    <div class="dashboard-card info-card color-" id="brokenGamesSummary"></div>
+                        <div class="dashboard-card action-card color-" id="viewDailyTasks"></div>
+                <div class="dashboard-card info-card color-" id="brokenGamesSummary"></div>
                     <div class="dashboard-card info-card color-" id="partsOnOrderSummary"></div>
                     <div class="dashboard-card info-card color-" id="ticketPayoutSummary"></div>
                     
@@ -300,7 +303,7 @@
         </div>
     </div>
 
-
+    {% include 'sidebar.html' %}
     <div id="contextMenu" class="popup-overlay">
     <div class="popup-content">
         <h2 id="contextMenuTitle">Item Options</h2>
