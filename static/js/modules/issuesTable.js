@@ -1,11 +1,12 @@
 // --- NEW CODE HERE ---
 // --- FILE: issuesTable.js ---
 // This file is a module that exports functions to initialize the issues table.
+import { initIssueOptions } from './issueOptions.js';
+
 
 export function initIssuesTable() {
     const issuesTableBody = document.getElementById('issuesTableBody');
     const noIssuesMessage = document.getElementById('noIssuesMessage');
-    import { initIssueOptions } from './issueOptions.js';
 
 
     // This is the main function that fetches and renders the issues.
