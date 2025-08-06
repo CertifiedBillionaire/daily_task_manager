@@ -29,12 +29,14 @@
                         <th>Assigned Employee</th>
                     </tr>
                 </thead>
-                <tbody id="issuesTableBody">
-                    <tr><td colspan="11" style="text-align: center; padding: 20px;">Loading issues...</td></tr>
-                </tbody>
+                    <tbody id="issuesTableBody">
+                                    </tbody>
             </table>
         </div>
         <p id="noIssuesMessage" style="text-align: center; padding: 20px; display: none; color: var(--text-color-light);">No active issues found.</p>
     </section>
 
 {% endblock %}
+
+<script type="module" src="{{ url_for('static', filename='js/modules/issuesTable.js') }}"></script>
+

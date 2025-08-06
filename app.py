@@ -10,6 +10,7 @@
 import os         # For interacting with environment variables (like DATABASE_URL)
 import json       # For working with JSON data (e.g., API responses)
 import time       # For generating temporary unique IDs (e.g., for new issues)
+import sqlite3    # SQLite database adapter (for local development)
 
 # Third-Party Libraries
 import psycopg2   # PostgreSQL database adapter
@@ -38,22 +39,18 @@ DATABASE_URL = os.environ.get('DATABASE_URL')
 
 def get_db():
     """
-    Establishes a connection to the PostgreSQL database and stores it in Flask's 'g' object.
-    'g' is a special Flask object used to store data for the current request context.
-    This prevents creating a new connection for every database operation within a request.
+    Establishes a connection to the correct database (PostgreSQL on Render, SQLite locally).
     """
     if 'db' not in g:
-        # Check if DATABASE_URL is set; this error is expected if running locally without it.
-        if not DATABASE_URL:
-            raise RuntimeError("DATABASE_URL environment variable is not set. Cannot connect to PostgreSQL.")
-        
-        # Connect to the PostgreSQL database using the DATABASE_URL.
-        g.db = psycopg2.connect(DATABASE_URL)
-        
-        # Optional: Uncomment if you want database query results to be dictionary-like (e.g., row['column_name'])
-        # instead of tuples (e.g., row[0]). Requires 'import psycopg2.extras' at the top.
-        # import psycopg2.extras
-        # g.db.cursor_factory = psycopg2.extras.DictCursor
+        if DATABASE_URL:
+            # Production: Connect to PostgreSQL on Render
+            g.db = psycopg2.connect(DATABASE_URL)
+        else:
+            # Local Development: Connect to SQLite
+            db_path = 'app.db'
+            g.db = sqlite3.connect(db_path)
+            # This allows us to use row['column_name'] syntax for SQLite
+            g.db.row_factory = sqlite3.Row
     return g.db
 
 
@@ -71,70 +68,68 @@ def close_db(e=None):
 
 def init_db():
     """
-    Initializes the database schema for PostgreSQL.
-    This function creates all necessary tables ('settings', 'issues', 'tasks') if they don't already exist.
-    It also handles adding new columns to existing tables for simple migrations during development.
+    Initializes the database schema for both PostgreSQL and SQLite.
+    It creates all necessary tables if they don't already exist.
     """
-    db = get_db() # Get a database connection
-    with db.cursor() as cur: # Create a cursor to execute SQL commands
-        # --- Create 'settings' table ---
-        # This table stores general application settings (e.g., TPT thresholds).
-        cur.execute(sql.SQL("""
+    db = get_db()
+    
+    # Check if the database connection is a PostgreSQL connection
+    is_postgres = hasattr(db, 'dsn')
+    
+    with db.cursor() as cur:
+        # Use an f-string for a simple table creation in both databases
+        cur.execute("""
             CREATE TABLE IF NOT EXISTS settings (
                 key TEXT PRIMARY KEY,
                 value TEXT
             );
-        """))
-
-        # --- Create 'issues' table ---
-        # This table stores all active and open issues in the arcade.
-        cur.execute(sql.SQL("""
+        """)
+        
+        # Create 'issues' table
+        cur.execute("""
             CREATE TABLE IF NOT EXISTS issues (
-                id TEXT PRIMARY KEY, /* Unique ID for the issue (e.g., IS-001) */
-                priority TEXT NOT NULL, /* e.g., 'IMMEDIATE', 'High', 'Medium', 'Low', 'CLEANING' */
-                date_logged TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP, /* When the issue was first recorded */
-                last_updated TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP, /* When the issue was last modified */
-                area TEXT,                 /* e.g., 'Arcade', 'Restaurant', 'Redemption' */
-                equipment_location TEXT,   /* e.g., 'Pac-Man', 'Dining Table 5', 'Ticket Eater #3' */
-                description TEXT NOT NULL, /* Detailed problem description */
-                notes TEXT,                /* Additional notes or action taken */
-                status TEXT NOT NULL,      /* e.g., 'Open', 'In Progress', 'Awaiting Part', 'Resolved' */
-                target_date DATE,          /* Target resolution date (optional) */
-                assigned_to TEXT           /* Employee assigned to the issue (optional) */
+                id TEXT PRIMARY KEY,
+                priority TEXT NOT NULL,
+                date_logged TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                last_updated TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                area TEXT,
+                equipment_location TEXT,
+                description TEXT NOT NULL,
+                notes TEXT,
+                status TEXT NOT NULL,
+                target_date DATE,
+                assigned_to TEXT
             );
-        """))
-        
-        # --- ALTER TABLE for 'issues' (for adding new columns to existing tables) ---
-        # This block is essential for "migrating" your database schema during development.
-        # It adds columns if they don't already exist in an existing 'issues' table.
-        try:
-            # Example: Adding 'last_updated' column if it's missing (this handles old deployments)
-            cur.execute(sql.SQL("""
-                ALTER TABLE issues
-                ADD COLUMN IF NOT EXISTS last_updated TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP;
-            """))
-            db.commit() # Commit after ALTER TABLE is crucial for it to take effect immediately
-            print("Added 'last_updated' column to 'issues' table if it didn't exist.")
-        except Exception as e:
-            print(f"Warning: Could not add 'last_updated' column to 'issues' table (might already exist or other issue): {e}")
-            db.rollback() # Rollback the transaction if the ALTER fails (e.g., due to permission issues)
+        """)
 
-        # --- Create 'tasks' table ---
-        # This table stores daily and recurring tasks for the arcade manager.
-        cur.execute(sql.SQL("""
+        # ALTER TABLE is tricky. We'll handle it for PostgreSQL only for simplicity, as it's not needed for new SQLite DBs
+        if is_postgres:
+            try:
+                cur.execute(sql.SQL("""
+                    ALTER TABLE issues
+                    ADD COLUMN IF NOT EXISTS last_updated TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP;
+                """))
+                db.commit()
+                print("Added 'last_updated' column to 'issues' table if it didn't exist.")
+            except Exception as e:
+                print(f"Warning: Could not add 'last_updated' column: {e}")
+                db.rollback()
+
+        # Create 'tasks' table
+        cur.execute("""
             CREATE TABLE IF NOT EXISTS tasks (
-                id SERIAL PRIMARY KEY, /* Auto-incrementing unique ID for the task */
-                description TEXT NOT NULL, /* Description of the task */
-                priority TEXT NOT NULL, /* e.g., 'High', 'Cleanliness', 'Parts Needed' */
-                completed BOOLEAN NOT NULL DEFAULT FALSE, /* Whether the task is completed */
-                due_date DATE, /* When the task is due */
-                is_recurring BOOLEAN NOT NULL DEFAULT FALSE, /* True if this is a recurring task */
-                recurrence_pattern TEXT /* e.g., 'weekly_monday', 'daily', 'monthly' */
+                id INTEGER PRIMARY KEY,
+                description TEXT NOT NULL,
+                priority TEXT NOT NULL,
+                completed BOOLEAN NOT NULL DEFAULT FALSE,
+                due_date DATE,
+                is_recurring BOOLEAN NOT NULL DEFAULT FALSE,
+                recurrence_pattern TEXT
             );
-        """))
-        
-    db.commit() # Commit all changes from this function to the database
-    print("PostgreSQL database initialized or already exists.")
+        """)
+
+    db.commit()
+    print("Database initialized or already exists.")
 
 
 # --- 4. Application Context for Database Initialization ---
@@ -149,13 +144,13 @@ with app.app_context():
 
 # --- 5. Application Configuration ---
 # Settings for external APIs, file uploads, etc.
-OPENWEATHER_API_KEY = os.environ.get('OPENWEATHER_API_KEY', 'f733dbbdf2d7274b20ed5a5d52fbad30') # Default key for testing if env var not set
-LATITUDE = 26.0636 # Margate, FL
-LONGITUDE = -80.2073 # Margate, FL
+OPENWEATHER_API_KEY = os.environ.get('OPENWEATHER_API_KEY', 'f733dbbdf2d7274b20ed5a5d52fbad30')
+LATITUDE = 26.0636
+LONGITUDE = -80.2073
 
 UPLOAD_FOLDER = 'temp_uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-os.makedirs(UPLOAD_FOLDER, exist_ok=True) # Ensure the upload folder exists
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
 # --- 6. Flask Routes (Page Handlers) ---
@@ -166,7 +161,7 @@ def index():
 
 @app.route('/test_page')
 def test_page():
-    """A temporary route to test the base template."""          #the test
+    """A temporary route to test the base template."""
     return render_template('test_page.html')
 
 @app.route('/inventory')
@@ -181,6 +176,39 @@ def tpt_calculator_page():
 def issues_page():
     return render_template('issues.html')
 
+# Temporary route to populate the database with sample issues for local testing.
+@app.route('/populate_issues')
+def populate_issues():
+    db = get_db()
+    cur = db.cursor()
+    
+    is_postgres = hasattr(db, 'dsn') # Check if it's a PostgreSQL connection
+    
+    sample_issues = [
+        ('IS-001', 'High', 'Arcade', 'Pac-Man', 'Monitor is not turning on.', 'Checked power, seems ok.', 'Open', 'Tech', None),
+        ('IS-002', 'Medium', 'Restaurant', 'Dining Table 5', 'Wobbly table.', 'Tightened the leg bolt.', 'Resolved', 'Manager', None),
+        ('IS-003', 'IMMEDIATE', 'Arcade', 'Ticket Eater #3', 'Ticket eater is not counting.', 'Awaiting a new sensor from supplier.', 'Awaiting Part', 'Tech', '2025-08-08'),
+        ('IS-004', 'CLEANING', 'Restroom', 'Mens Restroom', 'Toilet is clogged.', 'N/A', 'Open', 'Janitor', None),
+    ]
+
+    for issue in sample_issues:
+        try:
+            if is_postgres:
+                cur.execute("""
+                    INSERT INTO issues (id, priority, area, equipment_location, description, notes, status, assigned_to, target_date)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    ON CONFLICT (id) DO NOTHING;
+                """, issue)
+            else: # SQLite
+                cur.execute("""
+                    INSERT OR IGNORE INTO issues (id, priority, area, equipment_location, description, notes, status, assigned_to, target_date)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+                """, issue)
+        except Exception as e:
+            print(f"Error inserting issue {issue[0]}: {e}")
+
+    db.commit()
+    return "Database populated with sample issues!", 200
 
 # --- 7. API Endpoints ---
 # These functions handle data requests from the frontend (JavaScript) and interact with the database or external services.
@@ -191,7 +219,7 @@ def get_data():
     return jsonify({"message": "Data fetched from Flask backend (placeholder)"})
 
 
-@app.route('/weather', methods=['GET']) # Removed from here, but still present in app.js
+@app.route('/weather', methods=['GET'])
 def get_weather():
     """
     Fetches current weather data for a specific location from OpenWeatherMap API.
@@ -199,7 +227,7 @@ def get_weather():
     try:
         url = f"https://api.openweathermap.org/data/2.5/weather?lat={LATITUDE}&lon={LONGITUDE}&appid={OPENWEATHER_API_KEY}&units=imperial"
         response = requests.get(url)
-        response.raise_for_status() # Raises an exception for HTTP errors (4xx or 5xx)
+        response.raise_for_status()
         weather_data = response.json()
 
         icon_code = weather_data['weather'][0]['icon']
@@ -275,8 +303,8 @@ def calculate_tpt():
             return jsonify({"error": f"Server error: {str(e)}. Check Flask console."}), 500
 
 
-@app.route('/api/tpt_settings', methods=['GET', 'POST']) # Added POST previously
-def handle_tpt_settings(): # Renamed from get_tpt_settings for clarity
+@app.route('/api/tpt_settings', methods=['GET', 'POST'])
+def handle_tpt_settings():
     db = get_db()
     
     if request.method == 'GET':
@@ -285,7 +313,7 @@ def handle_tpt_settings(): # Renamed from get_tpt_settings for clarity
             cur.execute("SELECT key, value FROM settings")
             rows = cur.fetchall()
             for row in rows:
-                settings[row[0]] = row[1] # Access by index for non-DictCursor
+                settings[row[0]] = row[1]
         
         return jsonify({
             'lowestDesiredTpt': settings.get('lowestDesiredTpt', '2.00'),
