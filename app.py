@@ -176,6 +176,13 @@ def tpt_calculator_page():
 def issues_page():
     return render_template('issues.html')
 
+@app.route('/init_db_temp')
+def init_db_temp():
+    with app.app_context():
+        init_db()
+    return "Database initialization complete! You can now remove this route.", 200
+
+
 # Temporary route to populate the database with sample issues for local testing.
 @app.route('/populate_issues')
 def populate_issues():
