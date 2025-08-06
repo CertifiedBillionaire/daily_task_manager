@@ -1,14 +1,49 @@
 // --- NEW CODE HERE ---
 // --- FILE: issuesTable.js ---
-// This file is a module that exports functions to initialize the issues table.
+// This file is a module that exports a function to initialize the issues table.
 
 export function initIssuesTable() {
     const issuesTableBody = document.getElementById('issuesTableBody');
     const noIssuesMessage = document.getElementById('noIssuesMessage');
 
+    // This function adds a single click listener to the table body.
+    // It uses 'event delegation' to handle clicks on the options button.
+    const setupOptionsMenu = () => {
+        issuesTableBody.addEventListener('click', (event) => {
+            const button = event.target.closest('.row-options-button');
+            if (button) {
+                // Prevent the click from bubbling up and closing the menu
+                event.stopPropagation();
+                
+                const menuContainer = button.closest('.options-menu-container');
+                const menu = menuContainer.querySelector('.options-menu');
+
+                // Close any other open menus
+                document.querySelectorAll('.options-menu.active').forEach(openMenu => {
+                    if (openMenu !== menu) {
+                        openMenu.classList.remove('active');
+                    }
+                });
+
+                // Toggle the 'active' class on the clicked menu
+                menu.classList.toggle('active');
+            }
+        });
+
+        // Close the menu if the user clicks anywhere else on the page
+        document.addEventListener('click', (event) => {
+            document.querySelectorAll('.options-menu.active').forEach(openMenu => {
+                openMenu.classList.remove('active');
+            });
+        });
+    };
+
+    // This is the main function that fetches and renders the issues.
     async function fetchAndRenderIssues() {
         // Show a loading message while we fetch the data
-        issuesTableBody.innerHTML = '<tr><td colspan="11" style="text-align: center; padding: 20px;">Loading issues...</td></tr>';
+        if (issuesTableBody) {
+            issuesTableBody.innerHTML = '<tr><td colspan="11" style="text-align: center; padding: 20px;">Loading issues...</td></tr>';
+        }
 
         try {
             const response = await fetch('/api/issues');
@@ -18,7 +53,9 @@ export function initIssuesTable() {
             const issues = await response.json();
 
             // Clear the loading message
-            issuesTableBody.innerHTML = '';
+            if (issuesTableBody) {
+                issuesTableBody.innerHTML = '';
+            }
             
             if (issues.length === 0) {
                 // Display the "No issues found" message
@@ -58,8 +95,7 @@ export function initIssuesTable() {
                         <td>${issue.notes || ''}</td>
                         <td>${statusBadge}</td>
                         <td>${issue.target_date ? new Date(issue.target_date).toLocaleDateString() : ''}</td>
-                        <td>${issue.assigned_to || ''}</td>
-                        <td class="row-options-cell">
+                        <td class="options-menu-cell">
                             <div class="options-menu-container">
                                 <button class="icon-button row-options-button" data-issue-id="${issue.id}">
                                     <i class="fa-solid fa-ellipsis-vertical"></i>
@@ -73,52 +109,23 @@ export function initIssuesTable() {
                             </div>
                         </td>
                     `;
-                    issuesTableBody.appendChild(row);
+                    if (issuesTableBody) {
+                        issuesTableBody.appendChild(row);
+                    }
                 });
             }
 
         } catch (error) {
             // Display an error message if the fetch fails
             console.error('Failed to fetch issues:', error);
-            issuesTableBody.innerHTML = '<tr><td colspan="11" style="text-align: center; padding: 20px; color: #f44336;">Error loading issues. Please check the server.</td></tr>';
+            if (issuesTableBody) {
+                issuesTableBody.innerHTML = '<tr><td colspan="11" style="text-align: center; padding: 20px; color: #f44336;">Error loading issues. Please check the server.</td></tr>';
+            }
         }
     }
 
-    // Call the function to fetch and render issues when the page loads
+    // This is the main initialization function
     fetchAndRenderIssues();
+    setupOptionsMenu();
 }
-
-// This function handles the logic for the options menu
-export function initOptionsMenu() {
-    const issuesTableBody = document.getElementById('issuesTableBody');
-
-    if (!issuesTableBody) return; // Make sure the element exists on the page
-
-    issuesTableBody.addEventListener('click', (event) => {
-        const button = event.target.closest('.row-options-button');
-        if (button) {
-            // Prevent the click from bubbling up and closing the menu
-            event.stopPropagation();
-            
-            const menuContainer = button.closest('.options-menu-container');
-            const menu = menuContainer.querySelector('.options-menu');
-
-            // Close any other open menus
-            document.querySelectorAll('.options-menu.active').forEach(openMenu => {
-                if (openMenu !== menu) {
-                    openMenu.classList.remove('active');
-                }
-            });
-
-            // Toggle the 'active' class on the clicked menu
-            menu.classList.toggle('active');
-        }
-    });
-
-    // Close the menu if the user clicks anywhere else on the page
-    document.addEventListener('click', (event) => {
-        document.querySelectorAll('.options-menu.active').forEach(openMenu => {
-            openMenu.classList.remove('active');
-        });
-    });
-}
+// --- END NEW CODE ---
