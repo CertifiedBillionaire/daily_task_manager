@@ -37,6 +37,7 @@ app = Flask(__name__)
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
 
+# --- NEW CODE HERE ---
 def get_db():
     """
     Establishes a connection to the correct database (PostgreSQL on Render, SQLite locally).
@@ -52,7 +53,7 @@ def get_db():
             # This allows us to use row['column_name'] syntax for SQLite
             g.db.row_factory = sqlite3.Row
     return g.db
-
+# --- END NEW CODE ---
 
 @app.teardown_appcontext
 def close_db(e=None):
@@ -65,7 +66,7 @@ def close_db(e=None):
     if db is not None:
         db.close() # Close the database connection if it was open.
 
-
+# --- NEW CODE HERE ---
 # --- NEW CODE HERE ---
 def init_db():
     """
@@ -111,6 +112,28 @@ def init_db():
                     ADD COLUMN IF NOT EXISTS last_updated TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP;
                 """))
                 print("Added 'last_updated' column to 'issues' table.")
+                
+                # Add 'notes' column if it's missing
+                cur.execute(sql.SQL("""
+                    ALTER TABLE issues
+                    ADD COLUMN IF NOT EXISTS notes TEXT;
+                """))
+                print("Added 'notes' column to 'issues' table.")
+                
+                # Add 'target_date' column if it's missing
+                cur.execute(sql.SQL("""
+                    ALTER TABLE issues
+                    ADD COLUMN IF NOT EXISTS target_date DATE;
+                """))
+                print("Added 'target_date' column to 'issues' table.")
+
+                # Add 'assigned_to' column if it's missing
+                cur.execute(sql.SQL("""
+                    ALTER TABLE issues
+                    ADD COLUMN IF NOT EXISTS assigned_to TEXT;
+                """))
+                print("Added 'assigned_to' column to 'issues' table.")
+                
                 db.commit()
             except Exception as e:
                 print(f"Warning: Could not add columns to 'issues' table: {e}")
@@ -138,6 +161,28 @@ def init_db():
     db.commit()
     print("Database initialized or already exists.")
 # --- END NEW CODE ---
+
+# --- NEW CODE HERE (TEMPORARY - FOR DATABASE SCHEMA RESET) ---
+@app.route('/drop_issues_temp')
+def drop_issues_temp():
+    db = get_db()
+    with db.cursor() as cur:
+        # A list of tables to drop (just the issues table for now)
+        tables_to_drop = ["issues"]
+        
+        for table in tables_to_drop:
+            try:
+                cur.execute(f"DROP TABLE IF EXISTS {table};")
+                print(f"Dropped table: {table}")
+            except Exception as e:
+                print(f"ERROR: Failed to drop table {table}: {e}")
+                db.rollback() # Rollback on error
+        
+    db.commit()
+    with app.app_context():
+        init_db()
+    return "Issues table dropped and re-initialized!", 200
+# --- END NEW CODE (TEMPORARY) ---
 
 # --- 4. Application Context for Database Initialization ---
 # This ensures that init_db() is called when the Flask app starts up.
@@ -190,7 +235,7 @@ def init_db_temp():
     return "Database initialization complete! You can now remove this route.", 200
 
 
-# Temporary route to populate the database with sample issues for local testing.
+# --- NEW CODE HERE ---
 @app.route('/populate_issues')
 def populate_issues():
     db = get_db()
@@ -208,11 +253,11 @@ def populate_issues():
     for issue in sample_issues:
         try:
             if is_postgres:
-                cur.execute("""
+                cur.execute(sql.SQL("""
                     INSERT INTO issues (id, priority, area, equipment_location, description, notes, status, assigned_to, target_date)
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
                     ON CONFLICT (id) DO NOTHING;
-                """, issue)
+                """), issue)
             else: # SQLite
                 cur.execute("""
                     INSERT OR IGNORE INTO issues (id, priority, area, equipment_location, description, notes, status, assigned_to, target_date)
@@ -223,7 +268,7 @@ def populate_issues():
 
     db.commit()
     return "Database populated with sample issues!", 200
-
+# --- END NEW CODE ---
 # --- 7. API Endpoints ---
 # These functions handle data requests from the frontend (JavaScript) and interact with the database or external services.
 
