@@ -1,19 +1,23 @@
 /*
  * This file contains styling for the issues table.
- * It is now a simple, modern spreadsheet-like layout.
  */
 .issues-table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
     font-size: 0.9em;
+    table-layout: fixed; /* This ensures columns have equal width */
 }
 
+/* --- NEW CODE HERE --- */
 .issues-table th,
 .issues-table td {
-    padding: 12px 10px;
-    text-align: left; /* All text is now left-aligned */
-    border-bottom: 1px solid #E0E0E0;
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color-light);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .issues-table th {
@@ -23,14 +27,90 @@
     text-transform: uppercase;
 }
 
-/* Add a subtle hover effect to table rows */
+/* Set specific widths for each column to fix spacing */
+.issues-table th:nth-child(1), .issues-table td:nth-child(1) { width: 8%; }  /* Issue ID */
+.issues-table th:nth-child(2), .issues-table td:nth-child(2) { width: 8%; }  /* Priority */
+.issues-table th:nth-child(3), .issues-table td:nth-child(3) { width: 9%; }  /* Date Added */
+.issues-table th:nth-child(4), .issues-table td:nth-child(4) { width: 9%; }  /* Last Update */
+.issues-table th:nth-child(5), .issues-table td:nth-child(5) { width: 8%; }  /* Area */
+.issues-table th:nth-child(6), .issues-table td:nth-child(6) { width: 12%; } /* Equipment Name */
+.issues-table th:nth-child(7), .issues-table td:nth-child(7) { width: 20%; } /* Problem Description */
+.issues-table th:nth-child(8), .issues-table td:nth-child(8) { width: 10%; } /* Notes */
+.issues-table th:nth-child(9), .issues-table td:nth-child(9) { width: 8%; }  /* Status */
+.issues-table th:nth-child(10), .issues-table td:nth-child(10) { width: 8%; } /* Target Date */
+.issues-table th:nth-child(11), .issues-table td:nth-child(11) { width: 10%; } /* Assigned Employee */
+/* --- END NEW CODE --- */
+
+/* Hover effect for table rows */
 .issues-table tbody tr:hover {
-    background-color: #F0F4F8;
+    background-color: #F8F9FA;
     cursor: pointer;
 }
 
-/* Hide the badges on this layout */
-.priority-badge,
+/* Color-coded badges for Priority */
+.priority-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.8em;
+    white-space: nowrap;
+}
+
+.priority-badge.IMMEDIATE {
+    background-color: #FFCDD2;
+    color: #C62828;
+}
+
+.priority-badge.High {
+    background-color: #FFECB3;
+    color: #FF8F00;
+}
+
+.priority-badge.Medium {
+    background-color: #BBDEFB;
+    color: #1565C0;
+}
+
+.priority-badge.Low {
+    background-color: #C8E6C9;
+    color: #2E7D32;
+}
+
+.priority-badge.CLEANING {
+    background-color: #E1BEE7;
+    color: #6A1B9A;
+}
+
+/* Color-coded badges for Status */
 .status-badge {
-    display: none;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.8em;
+    white-space: nowrap;
+}
+
+.status-badge.Open {
+    background-color: #BBDEFB;
+    color: #1565C0;
+}
+
+.status-badge.Resolved {
+    background-color: #C8E6C9;
+    color: #2E7D32;
+}
+
+.status-badge.InProgress {
+    background-color: #FFECB3;
+    color: #FF8F00;
+}
+
+.status-badge.AwaitingPart {
+    background-color: #CFD8DC;
+    color: #455A64;
+}
+
+/* Highlight rows based on priority */
+.issues-table tbody tr.priority-IMMEDIATE {
+    background-color: #FFEBEE;
 }
