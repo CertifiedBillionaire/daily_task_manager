@@ -27,6 +27,7 @@ export function initIssuesTable() {
                 // Hide the "No issues found" message if there are issues
                 noIssuesMessage.style.display = 'none';
 
+// --- NEW CODE HERE ---
                 // Render each issue as a new table row
                 issues.forEach(issue => {
                     const row = document.createElement('tr');
@@ -40,6 +41,9 @@ export function initIssuesTable() {
                     const priorityBadge = `<span class="priority-badge ${issue.priority}">${issue.priority}</span>`;
                     const statusBadge = `<span class="status-badge ${issue.status}">${issue.status}</span>`;
 
+                    // We need a unique ID for each row to handle the options menu
+                    row.dataset.issueId = issue.id;
+
                     row.innerHTML = `
                         <td>${issue.id}</td>
                         <td>${priorityBadge}</td>
@@ -52,11 +56,23 @@ export function initIssuesTable() {
                         <td>${statusBadge}</td>
                         <td>${issue.target_date ? new Date(issue.target_date).toLocaleDateString() : ''}</td>
                         <td>${issue.assigned_to || ''}</td>
+                        <td class="row-options-cell">
+                            <div class="options-menu-container">
+                                <button class="icon-button row-options-button" data-issue-id="${issue.id}">
+                                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                                </button>
+                                <div class="options-menu">
+                                    <ul>
+                                        <li data-action="edit">Edit</li>
+                                        <li data-action="delete">Delete</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </td>
                     `;
                     issuesTableBody.appendChild(row);
                 });
-            }
-
+// --- END NEW CODE ---
         } catch (error) {
             // Display an error message if the fetch fails
             console.error('Failed to fetch issues:', error);
