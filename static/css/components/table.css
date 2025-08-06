@@ -9,6 +9,7 @@
     table-layout: fixed; /* This ensures columns have equal width */
 }
 
+/* --- NEW CODE HERE --- */
 .issues-table th,
 .issues-table td {
     padding: 12px 15px;
@@ -25,6 +26,20 @@
     font-weight: 600;
     text-transform: uppercase;
 }
+
+/* Set specific widths for each column to fix spacing */
+.issues-table th:nth-child(1), .issues-table td:nth-child(1) { width: 8%; }  /* Issue ID */
+.issues-table th:nth-child(2), .issues-table td:nth-child(2) { width: 8%; }  /* Priority */
+.issues-table th:nth-child(3), .issues-table td:nth-child(3) { width: 9%; }  /* Date Added */
+.issues-table th:nth-child(4), .issues-table td:nth-child(4) { width: 9%; }  /* Last Update */
+.issues-table th:nth-child(5), .issues-table td:nth-child(5) { width: 8%; }  /* Area */
+.issues-table th:nth-child(6), .issues-table td:nth-child(6) { width: 12%; } /* Equipment Name */
+.issues-table th:nth-child(7), .issues-table td:nth-child(7) { width: 20%; } /* Problem Description */
+.issues-table th:nth-child(8), .issues-table td:nth-child(8) { width: 10%; } /* Notes */
+.issues-table th:nth-child(9), .issues-table td:nth-child(9) { width: 8%; }  /* Status */
+.issues-table th:nth-child(10), .issues-table td:nth-child(10) { width: 8%; } /* Target Date */
+.issues-table th:nth-child(11), .issues-table td:nth-child(11) { width: 10%; } /* Assigned Employee */
+/* --- END NEW CODE --- */
 
 /* Hover effect for table rows */
 .issues-table tbody tr:hover {
