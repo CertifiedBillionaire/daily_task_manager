@@ -5,6 +5,8 @@
 export function initIssuesTable() {
     const issuesTableBody = document.getElementById('issuesTableBody');
     const noIssuesMessage = document.getElementById('noIssuesMessage');
+    import { initIssueOptions } from './issueOptions.js';
+
 
     // This is the main function that fetches and renders the issues.
     async function fetchAndRenderIssues() {
@@ -94,6 +96,7 @@ export function initIssuesTable() {
 
     // This is the main initialization function
     fetchAndRenderIssues();
+    initIssueOptions();
 }
 
 // This function handles the logic for the options menu
