@@ -1,0 +1,101 @@
+/*
+ * This file contains styling for the issues table.
+ */
+.issues-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 0.9em;
+    table-layout: fixed; /* This ensures columns have equal width */
+}
+
+.issues-table th,
+.issues-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color-light);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.issues-table th {
+    background-color: #F8F9FA;
+    color: var(--text-color-dark);
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+/* Hover effect for table rows */
+.issues-table tbody tr:hover {
+    background-color: #F8F9FA;
+    cursor: pointer;
+}
+
+/* Color-coded badges for Priority */
+.priority-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.8em;
+    white-space: nowrap;
+}
+
+.priority-badge.IMMEDIATE {
+    background-color: #FFCDD2;
+    color: #C62828;
+}
+
+.priority-badge.High {
+    background-color: #FFECB3;
+    color: #FF8F00;
+}
+
+.priority-badge.Medium {
+    background-color: #BBDEFB;
+    color: #1565C0;
+}
+
+.priority-badge.Low {
+    background-color: #C8E6C9;
+    color: #2E7D32;
+}
+
+.priority-badge.CLEANING {
+    background-color: #E1BEE7;
+    color: #6A1B9A;
+}
+
+/* Color-coded badges for Status */
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.8em;
+    white-space: nowrap;
+}
+
+.status-badge.Open {
+    background-color: #BBDEFB;
+    color: #1565C0;
+}
+
+.status-badge.Resolved {
+    background-color: #C8E6C9;
+    color: #2E7D32;
+}
+
+.status-badge.InProgress {
+    background-color: #FFECB3;
+    color: #FF8F00;
+}
+
+.status-badge.AwaitingPart {
+    background-color: #CFD8DC;
+    color: #455A64;
+}
+
+/* Highlight rows based on priority */
+.issues-table tbody tr.priority-IMMEDIATE {
+    background-color: #FFEBEE;
+}

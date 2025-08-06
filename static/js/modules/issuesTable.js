@@ -1,6 +1,6 @@
 // --- NEW CODE HERE ---
-// --- NEW FILE: issuesTable.js ---
-// This file is now a module that exports a function to initialize the issues table.
+// --- FILE: issuesTable.js ---
+// This file is a module that exports a function to initialize the issues table.
 
 export function initIssuesTable() {
     const issuesTableBody = document.getElementById('issuesTableBody');
@@ -30,16 +30,26 @@ export function initIssuesTable() {
                 // Render each issue as a new table row
                 issues.forEach(issue => {
                     const row = document.createElement('tr');
+                    
+                    // Add a class to the row for a hover effect
+                    if (issue.priority === 'IMMEDIATE') {
+                        row.classList.add('priority-IMMEDIATE');
+                    }
+                    
+                    // Create color-coded badges for priority and status
+                    const priorityBadge = `<span class="priority-badge ${issue.priority}">${issue.priority}</span>`;
+                    const statusBadge = `<span class="status-badge ${issue.status}">${issue.status}</span>`;
+
                     row.innerHTML = `
                         <td>${issue.id}</td>
-                        <td>${issue.priority}</td>
+                        <td>${priorityBadge}</td>
                         <td>${new Date(issue.date_logged).toLocaleDateString()}</td>
                         <td>${new Date(issue.last_updated).toLocaleDateString()}</td>
                         <td>${issue.area}</td>
                         <td>${issue.equipment_location}</td>
                         <td>${issue.description}</td>
                         <td>${issue.notes || ''}</td>
-                        <td>${issue.status}</td>
+                        <td>${statusBadge}</td>
                         <td>${issue.target_date ? new Date(issue.target_date).toLocaleDateString() : ''}</td>
                         <td>${issue.assigned_to || ''}</td>
                     `;
