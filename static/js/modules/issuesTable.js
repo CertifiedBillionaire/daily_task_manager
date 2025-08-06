@@ -1,6 +1,6 @@
 // --- NEW CODE HERE ---
 // --- FILE: issuesTable.js ---
-// This file is a module that exports a function to initialize the issues table.
+// This file is a module that exports functions to initialize the issues table.
 
 export function initIssuesTable() {
     const issuesTableBody = document.getElementById('issuesTableBody');
@@ -22,10 +22,14 @@ export function initIssuesTable() {
             
             if (issues.length === 0) {
                 // Display the "No issues found" message
-                noIssuesMessage.style.display = 'block';
+                if (noIssuesMessage) {
+                    noIssuesMessage.style.display = 'block';
+                }
             } else {
                 // Hide the "No issues found" message if there are issues
-                noIssuesMessage.style.display = 'none';
+                if (noIssuesMessage) {
+                    noIssuesMessage.style.display = 'none';
+                }
 
                 // Render each issue as a new table row
                 issues.forEach(issue => {
@@ -84,9 +88,12 @@ export function initIssuesTable() {
     fetchAndRenderIssues();
 }
 
-// --- NEW CODE HERE ---
 // This function handles the logic for the options menu
 export function initOptionsMenu() {
+    const issuesTableBody = document.getElementById('issuesTableBody');
+
+    if (!issuesTableBody) return; // Make sure the element exists on the page
+
     issuesTableBody.addEventListener('click', (event) => {
         const button = event.target.closest('.row-options-button');
         if (button) {
@@ -115,4 +122,3 @@ export function initOptionsMenu() {
         });
     });
 }
-// --- END NEW CODE ---
