@@ -7,6 +7,8 @@ import { initModalListeners } from './modules/modalListeners.js';
 import { initSidebar } from './modules/sidebar.js';
 import { initNewIssueCard } from './modules/addNewIssue.js';
 import { initPMCard } from './modules/pmCard.js';
+import { initIssuesTable } from './modules/issuesTable.js';
+
 
 
 
@@ -75,5 +77,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initModalListeners();
     initNewIssueCard();
     initPMCard();
+        if (window.location.pathname === '/issues') {
+        initIssuesTable();
+    }
 
 });
