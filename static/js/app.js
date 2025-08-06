@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initModalListeners();
     initNewIssueCard();
     initPMCard();
-        if (window.location.pathname === '/issues') {
+    if (window.location.pathname === '/issues') {
         initIssuesTable();
     }
 

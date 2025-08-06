@@ -1,5 +1,8 @@
+// --- NEW CODE HERE ---
 // --- NEW FILE: issuesTable.js ---
-document.addEventListener('DOMContentLoaded', () => {
+// This file is now a module that exports a function to initialize the issues table.
+
+export function initIssuesTable() {
     const issuesTableBody = document.getElementById('issuesTableBody');
     const noIssuesMessage = document.getElementById('noIssuesMessage');
 
@@ -53,4 +56,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Call the function to fetch and render issues when the page loads
     fetchAndRenderIssues();
-});
+}
+// --- END NEW CODE ---
