@@ -66,26 +66,18 @@ def close_db(e=None):
         db.close() # Close the database connection if it was open.
 
 
+# --- NEW CODE HERE ---
 def init_db():
     """
-    Initializes the database schema for both PostgreSQL and SQLite.
-    It creates all necessary tables if they don't already exist.
+    Initializes the database schema for both PostgreSQL and SQLite,
+    and handles simple column migrations.
     """
     db = get_db()
-    
-    # Check if the database connection is a PostgreSQL connection
     is_postgres = hasattr(db, 'dsn')
-    
+
     with db.cursor() as cur:
-        # Use an f-string for a simple table creation in both databases
-        cur.execute("""
-            CREATE TABLE IF NOT EXISTS settings (
-                key TEXT PRIMARY KEY,
-                value TEXT
-            );
-        """)
-        
-        # Create 'issues' table
+        # --- Create 'issues' table with all columns ---
+        # This will create the table on a fresh DB, or do nothing if it exists.
         cur.execute("""
             CREATE TABLE IF NOT EXISTS issues (
                 id TEXT PRIMARY KEY,
@@ -101,21 +93,36 @@ def init_db():
                 assigned_to TEXT
             );
         """)
-
-        # ALTER TABLE is tricky. We'll handle it for PostgreSQL only for simplicity, as it's not needed for new SQLite DBs
+        db.commit()
+        
+        # --- Run ALTER TABLE commands to add missing columns ---
         if is_postgres:
             try:
+                # Add 'area' column if it's missing from an old table
+                cur.execute(sql.SQL("""
+                    ALTER TABLE issues
+                    ADD COLUMN IF NOT EXISTS area TEXT;
+                """))
+                print("Added 'area' column to 'issues' table.")
+
+                # Add 'last_updated' column if it's missing
                 cur.execute(sql.SQL("""
                     ALTER TABLE issues
                     ADD COLUMN IF NOT EXISTS last_updated TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP;
                 """))
+                print("Added 'last_updated' column to 'issues' table.")
                 db.commit()
-                print("Added 'last_updated' column to 'issues' table if it didn't exist.")
             except Exception as e:
-                print(f"Warning: Could not add 'last_updated' column: {e}")
+                print(f"Warning: Could not add columns to 'issues' table: {e}")
                 db.rollback()
 
-        # Create 'tasks' table
+        # --- Create other tables ---
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS settings (
+                key TEXT PRIMARY KEY,
+                value TEXT
+            );
+        """)
         cur.execute("""
             CREATE TABLE IF NOT EXISTS tasks (
                 id INTEGER PRIMARY KEY,
@@ -130,7 +137,7 @@ def init_db():
 
     db.commit()
     print("Database initialized or already exists.")
-
+# --- END NEW CODE ---
 
 # --- 4. Application Context for Database Initialization ---
 # This ensures that init_db() is called when the Flask app starts up.
