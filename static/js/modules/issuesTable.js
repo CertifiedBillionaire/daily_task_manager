@@ -27,7 +27,6 @@ export function initIssuesTable() {
                 // Hide the "No issues found" message if there are issues
                 noIssuesMessage.style.display = 'none';
 
-// --- NEW CODE HERE ---
                 // Render each issue as a new table row
                 issues.forEach(issue => {
                     const row = document.createElement('tr');
@@ -72,7 +71,8 @@ export function initIssuesTable() {
                     `;
                     issuesTableBody.appendChild(row);
                 });
-// --- END NEW CODE ---
+            }
+
         } catch (error) {
             // Display an error message if the fetch fails
             console.error('Failed to fetch issues:', error);
@@ -82,5 +82,37 @@ export function initIssuesTable() {
 
     // Call the function to fetch and render issues when the page loads
     fetchAndRenderIssues();
+}
+
+// --- NEW CODE HERE ---
+// This function handles the logic for the options menu
+export function initOptionsMenu() {
+    issuesTableBody.addEventListener('click', (event) => {
+        const button = event.target.closest('.row-options-button');
+        if (button) {
+            // Prevent the click from bubbling up and closing the menu
+            event.stopPropagation();
+            
+            const menuContainer = button.closest('.options-menu-container');
+            const menu = menuContainer.querySelector('.options-menu');
+
+            // Close any other open menus
+            document.querySelectorAll('.options-menu.active').forEach(openMenu => {
+                if (openMenu !== menu) {
+                    openMenu.classList.remove('active');
+                }
+            });
+
+            // Toggle the 'active' class on the clicked menu
+            menu.classList.toggle('active');
+        }
+    });
+
+    // Close the menu if the user clicks anywhere else on the page
+    document.addEventListener('click', (event) => {
+        document.querySelectorAll('.options-menu.active').forEach(openMenu => {
+            openMenu.classList.remove('active');
+        });
+    });
 }
 // --- END NEW CODE ---

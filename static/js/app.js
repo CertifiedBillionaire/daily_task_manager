@@ -7,14 +7,9 @@ import { initModalListeners } from './modules/modalListeners.js';
 import { initSidebar } from './modules/sidebar.js';
 import { initNewIssueCard } from './modules/addNewIssue.js';
 import { initPMCard } from './modules/pmCard.js';
-import { initIssuesTable } from './modules/issuesTable.js';
-
-
-
-
-// --- FIXED ---
-// We need to import the closeModal tool from modal.js here at the top.
+import { initIssuesTable, initOptionsMenu } from './modules/issuesTable.js';
 import { closeModal } from './modules/modal.js';
+
 
 // Then, we wait for the HTML to be ready
 document.addEventListener('DOMContentLoaded', () => {
@@ -79,6 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initPMCard();
     if (window.location.pathname === '/issues') {
         initIssuesTable();
+        initOptionsMenu();
     }
 
 });
