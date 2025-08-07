@@ -13,13 +13,18 @@
 .issues-table th,
 .issues-table td {
     padding: 12px 15px;
-    text-align: left;
     border-bottom: 1px solid var(--border-color-light);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
+.issues-table .options-menu-cell {
+    position: relative;
+    width: 50px;
+    text-align: center;
+}
+/* --- END NEW CODE --- */
 .issues-table th {
     background-color: #F8F9FA;
     color: var(--text-color-dark);
