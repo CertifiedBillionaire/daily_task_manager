@@ -4,6 +4,8 @@
 export function initIssueOptions() {
     const issuesTableBody = document.getElementById('issuesTableBody');
     if (!issuesTableBody) return; // Make sure the element exists on the page
+    console.log("initIssueOptions function is running!");
+
 
     issuesTableBody.addEventListener('click', (event) => {
         const button = event.target.closest('.row-options-button');
