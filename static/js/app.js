@@ -9,6 +9,8 @@ import { initNewIssueCard } from './modules/addNewIssue.js';
 import { initPMCard } from './modules/pmCard.js';
 import { initIssuesTable, initOptionsMenu } from './modules/issuesTable.js';
 import { closeModal } from './modules/modal.js';
+import { initIssueOptions } from './modules/issueOptions.js';
+
 
 
 // Then, we wait for the HTML to be ready
@@ -74,7 +76,10 @@ document.addEventListener('DOMContentLoaded', () => {
     initPMCard();
     if (window.location.pathname === '/issues') {
         initIssuesTable();
-        initOptionsMenu();
+        // --- NEW CODE HERE ---
+        initIssueOptions();
+        // The old initOptionsMenu() is no longer needed because our new module handles that.
+        // --- END NEW CODE ---
     }
 
 });

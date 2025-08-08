@@ -52,6 +52,12 @@
     cursor: pointer;
 }
 
+/* --- NEW CODE HERE (TEMPORARY TEST) --- */
+.issues-table .options-menu-cell {
+    border: 2px solid red;
+}
+/* --- END NEW CODE (TEMPORARY TEST) --- */
+
 /* Color-coded badges for Priority */
 .priority-badge {
     padding: 4px 8px;

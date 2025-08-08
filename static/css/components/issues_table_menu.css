@@ -1,63 +1,71 @@
-/*
- * This file contains the styling for the table row options menu.
- */
-.options-menu-container {
+/* --- NEW CODE HERE --- */
+/* Style for the container to allow positioning of the menu */
+.menu-container {
     position: relative;
+    text-align: center;
 }
 
-.options-menu {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    min-width: 150px;
-    background-color: #FFFFFF;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    border-radius: 8px;
-    z-index: 10;
-    list-style: none;
-    padding: 8px 0;
-    margin-top: 5px;
-
-    /* Hidden by default */
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-5px);
-    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
-}
-
-.options-menu.active {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-}
-
-.options-menu ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.options-menu li {
-    padding: 10px 15px;
-    font-size: 0.9em;
-    cursor: pointer;
-    color: var(--text-color);
-}
-
-.options-menu li:hover {
-    background-color: var(--background-color-light);
-}
-
-.options-menu-container .row-options-button {
-    /* Style the button itself to match the rest of the app */
+/* Styles for the three-dot button */
+.issue-options-button {
     background: none;
     border: none;
     cursor: pointer;
-    color: var(--text-color-light);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     padding: 5px;
-    transition: color 0.2s ease;
+    height: 100%; /* Makes the button fill the height of the table cell */
+    width: 100%;
 }
 
-.options-menu-container .row-options-button:hover {
-    color: var(--primary-color);
+.dot {
+    width: 4px;
+    height: 4px;
+    background-color: #555;
+    border-radius: 50%;
+    margin: 2px 0;
 }
+
+/* Styles for the pop-up menu itself */
+.issue-options-menu {
+    position: absolute;
+    top: 100%; /* Position it below the button */
+    right: 0;
+    min-width: 150px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    border-radius: 5px;
+    list-style: none;
+    padding: 5px 0;
+    margin: 0;
+    z-index: 1000; /* Ensures it appears on top of other content */
+}
+
+/* Class to hide the menu by default, which we'll toggle with JavaScript */
+.hidden {
+    display: none;
+}
+
+/* Style for each menu item */
+.menu-item {
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #333;
+}
+
+.menu-item:hover {
+    background-color: #f0f0f0;
+}
+
+/* Style for a red 'delete' option to make it stand out */
+.menu-item.red {
+    color: #d9534f;
+}
+
+.menu-item.red:hover {
+    background-color: #f9e2e1;
+}
+/* --- END NEW CODE --- */
