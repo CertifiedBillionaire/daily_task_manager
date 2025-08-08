@@ -1,15 +1,15 @@
 /*table.css
  * This file contains styling for the issues table.
  */
+/* --- NEW CODE HERE --- */
+/* This rule ensures columns have flexible widths */
 .issues-table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
     font-size: 0.9em;
-    table-layout: fixed; /* This ensures columns have equal width */
 }
 
-/* --- NEW CODE HERE --- */
 .issues-table th,
 .issues-table td {
     padding: 12px 15px;
@@ -19,31 +19,18 @@
     white-space: nowrap;
 }
 
-.issues-table .options-menu-cell {
-    position: relative;
-    width: 50px;
-    text-align: center;
-}
-/* --- END NEW CODE --- */
-.issues-table th {
-    background-color: #F8F9FA;
-    color: var(--text-color-dark);
-    font-weight: 600;
-    text-transform: uppercase;
-}
-
-/* Set specific widths for each column to fix spacing */
-.issues-table th:nth-child(1), .issues-table td:nth-child(1) { width: 8%; }  /* Issue ID */
-.issues-table th:nth-child(2), .issues-table td:nth-child(2) { width: 8%; }  /* Priority */
-.issues-table th:nth-child(3), .issues-table td:nth-child(3) { width: 9%; }  /* Date Added */
-.issues-table th:nth-child(4), .issues-table td:nth-child(4) { width: 9%; }  /* Last Update */
-.issues-table th:nth-child(5), .issues-table td:nth-child(5) { width: 8%; }  /* Area */
-.issues-table th:nth-child(6), .issues-table td:nth-child(6) { width: 12%; } /* Equipment Name */
-.issues-table th:nth-child(7), .issues-table td:nth-child(7) { width: 20%; } /* Problem Description */
-.issues-table th:nth-child(8), .issues-table td:nth-child(8) { width: 10%; } /* Notes */
-.issues-table th:nth-child(9), .issues-table td:nth-child(9) { width: 8%; }  /* Status */
-.issues-table th:nth-child(10), .issues-table td:nth-child(10) { width: 8%; } /* Target Date */
-.issues-table th:nth-child(11), .issues-table td:nth-child(11) { width: 10%; } /* Assigned Employee */
+/* Set flexible widths for each column to fix spacing */
+.issues-table th:nth-child(1), .issues-table td:nth-child(1) { width: 7%; }  /* Issue ID */
+.issues-table th:nth-child(2), .issues-table td:nth-child(2) { width: 7%; }  /* Priority */
+.issues-table th:nth-child(3), .issues-table td:nth-child(3) { width: 8%; }  /* Date Added */
+.issues-table th:nth-child(4), .issues-table td:nth-child(4) { width: 8%; }  /* Last Update */
+.issues-table th:nth-child(5), .issues-table td:nth-child(5) { width: 7%; }  /* Area */
+.issues-table th:nth-child(6), .issues-table td:nth-child(6) { width: 10%; } /* Equipment Name */
+.issues-table th:nth-child(7), .issues-table td:nth-child(7) { width: 18%; } /* Problem Description */
+.issues-table th:nth-child(8), .issues-table td:nth-child(8) { width: 8%; }  /* Notes */
+.issues-table th:nth-child(9), .issues-table td:nth-child(9) { width: 7%; }  /* Status */
+.issues-table th:nth-child(10), .issues-table td:nth-child(10) { width: 7%; } /* Target Date */
+.issues-table th:nth-child(11), .issues-table td:nth-child(11) { width: 8%; } /* Assigned Employee */
 /* --- END NEW CODE --- */
 
 /* Hover effect for table rows */
