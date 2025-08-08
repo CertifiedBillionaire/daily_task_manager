@@ -55,31 +55,36 @@ export function initIssuesTable() {
                     // We need a unique ID for each row to handle the options menu
                     row.dataset.issueId = issue.id;
 
+                // --- NEW CODE HERE ---
+                    // The class names here now match what's in issueOptions.js and issues_table_menu.css
                     row.innerHTML = `
                         <td>${issue.id}</td>
-                        <td>${priorityBadge}</td>
-                        <td>${new Date(issue.date_logged).toLocaleDateString()}</td>
-                        <td>${new Date(issue.last_updated).toLocaleDateString()}</td>
+                        <td>${issue.priority}</td>
+                        <td>${issue.date_added}</td>
+                        <td>${issue.last_update}</td>
                         <td>${issue.area}</td>
-                        <td>${issue.equipment_location}</td>
-                        <td>${issue.description}</td>
-                        <td>${issue.notes || ''}</td>
-                        <td>${statusBadge}</td>
-                        <td>${issue.target_date ? new Date(issue.target_date).toLocaleDateString() : ''}</td>
-                        <td class="options-menu-cell">
-                            <div class="options-menu-container">
-                                <button class="icon-button row-options-button" data-issue-id="${issue.id}">
-                                    <i class="fa-solid fa-ellipsis-vertical"></i>
-                                </button>
-                                <div class="options-menu">
-                                    <ul>
-                                        <li data-action="edit">Edit</li>
-                                        <li data-action="delete">Delete</li>
-                                    </ul>
-                                </div>
-                            </div>
+                        <td>${issue.equipment_name}</td>
+                        <td>${issue.problem_description}</td>
+                        <td>${issue.notes}</td>
+                        <td class="issue-status">${issue.status}</td>
+                        <td>${issue.target_date}</td>
+                        <td>${issue.assigned_employee}</td>
+                        
+                        <td class="menu-container">
+                            <button class="issue-options-button" aria-label="Issue Options">
+                                <span class="dot"></span>
+                                <span class="dot"></span>
+                                <span class="dot"></span>
+                            </button>
+                            <ul class="issue-options-menu hidden">
+                                <li class="menu-item" data-action="edit">Edit Issue</li>
+                                <li class="menu-item" data-action="mark-resolved">Mark as Resolved</li>
+                                <li class="menu-item" data-action="assign-employee">Assign to Employee</li>
+                                <li class="menu-item red" data-action="delete">Delete Issue</li>
+                            </ul>
                         </td>
                     `;
+                    // --- END NEW CODE ---
                     if (issuesTableBody) {
                         issuesTableBody.appendChild(row);
                     }
@@ -98,39 +103,4 @@ export function initIssuesTable() {
     // This is the main initialization function
     fetchAndRenderIssues();
     initIssueOptions();
-}
-
-// This function handles the logic for the options menu
-export function initOptionsMenu() {
-    const issuesTableBody = document.getElementById('issuesTableBody');
-
-    if (!issuesTableBody) return; // Make sure the element exists on the page
-
-    issuesTableBody.addEventListener('click', (event) => {
-        const button = event.target.closest('.row-options-button');
-        if (button) {
-            // Prevent the click from bubbling up and closing the menu
-            event.stopPropagation();
-            
-            const menuContainer = button.closest('.options-menu-container');
-            const menu = menuContainer.querySelector('.options-menu');
-
-            // Close any other open menus
-            document.querySelectorAll('.options-menu.active').forEach(openMenu => {
-                if (openMenu !== menu) {
-                    openMenu.classList.remove('active');
-                }
-            });
-
-            // Toggle the 'active' class on the clicked menu
-            menu.classList.toggle('active');
-        }
-    });
-
-    // Close the menu if the user clicks anywhere else on the page
-    document.addEventListener('click', (event) => {
-        document.querySelectorAll('.options-menu.active').forEach(openMenu => {
-            openMenu.classList.remove('active');
-        });
-    });
 }
