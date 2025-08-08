@@ -1,59 +1,61 @@
-/* --- NEW CODE HERE --- */
-// static/js/modules/issueOptions.js
+/* --- ENTIRE FILE REPLACEMENT --- */
 
-// This function will be called to set up the menu functionality
+// This function will be called from app.js to set up the menu functionality
 export function initIssueOptions() {
     const tableBody = document.querySelector('tbody');
 
     // Add a single event listener to the table body (event delegation)
-    // This is more efficient than adding a listener to every single button
+    // This is more efficient than adding a listener to every single button.
     tableBody.addEventListener('click', (event) => {
-        // Find the closest parent with the class '.issue-options-button'
         const button = event.target.closest('.issue-options-button');
+        const menuItem = event.target.closest('.menu-item');
 
         // Check if the click was on a 3-dot button
         if (button) {
-            // Find the menu associated with this button (the next sibling element)
+            // Find the menu associated with this specific button
             const menu = button.nextElementSibling;
-            
-            // Toggle the visibility of the menu by adding or removing the 'hidden' class
+
+            // Close any other open menus
+            document.querySelectorAll('.issue-options-menu:not(.hidden)').forEach(openMenu => {
+                // If it's not the menu we just clicked, close it
+                if (openMenu !== menu) {
+                    openMenu.classList.add('hidden');
+                }
+            });
+
+            // Toggle the visibility of the clicked menu
             menu.classList.toggle('hidden');
-        }
-    });
-
-    // Close any open menus when clicking anywhere else on the page
-    document.addEventListener('click', (event) => {
-        // Find all currently open menus
-        const openMenus = document.querySelectorAll('.issue-options-menu:not(.hidden)');
+        } 
         
-        openMenus.forEach(menu => {
-            // Check if the click was inside the menu or its button
-            const isClickInsideMenu = menu.contains(event.target);
-            const isClickInsideButton = menu.previousElementSibling.contains(event.target);
-
-            // If the click was outside both the menu and its button, close the menu
-            if (!isClickInsideMenu && !isClickInsideButton) {
-                menu.classList.add('hidden');
-            }
-        });
-    });
-
-    // Add event listeners to the menu items to handle actions
-    tableBody.addEventListener('click', (event) => {
-        // Find the closest parent with the class '.menu-item'
-        const menuItem = event.target.closest('.menu-item');
-
-        if (menuItem) {
+        // Check if the click was on a menu item
+        else if (menuItem) {
             // Get the action and the issue ID from the parent row
             const action = menuItem.dataset.action;
             const row = menuItem.closest('tr');
             const issueId = row.querySelector('td:first-child').textContent;
             
-            // Call a function based on the action
+            // Call the function to handle the menu action
             handleMenuAction(action, issueId, row);
             
             // Hide the menu after an action is selected
             menuItem.closest('.issue-options-menu').classList.add('hidden');
+        } 
+        
+        // If the click was anywhere else in the table, close any open menus
+        else {
+             document.querySelectorAll('.issue-options-menu:not(.hidden)').forEach(openMenu => {
+                openMenu.classList.add('hidden');
+            });
+        }
+    });
+
+    // Close any open menus when clicking anywhere on the document (outside the table)
+    document.addEventListener('click', (event) => {
+        const isClickInsideTable = tableBody.contains(event.target);
+        if (!isClickInsideTable) {
+            document.querySelectorAll('.issue-options-menu:not(.hidden)').forEach(menu => {
+                menu.classList.add('hidden');
+            });
         }
     });
 }
@@ -86,4 +88,4 @@ function handleMenuAction(action, issueId, row) {
             break;
     }
 }
-/* --- END NEW CODE --- */
+/* --- END ENTIRE FILE REPLACEMENT --- */
