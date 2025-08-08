@@ -77,6 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (window.location.pathname === '/issues') {
         initIssuesTable();
         // --- NEW CODE HERE ---
+        // We are now calling our new function to set up the menu functionality.
         initIssueOptions();
         // The old initOptionsMenu() is no longer needed because our new module handles that.
         // --- END NEW CODE ---
