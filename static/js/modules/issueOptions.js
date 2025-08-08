@@ -2,21 +2,19 @@
 
 // This function will be called from app.js to set up the menu functionality
 export function initIssueOptions() {
-    console.log("Light Switch 1: initIssueOptions has been called!");
+    console.log("initIssueOptions has been called!"); // This is our first light switch
 
     const tableBody = document.querySelector('tbody');
 
     // Add a single event listener to the table body (event delegation)
-    // This is more efficient than adding a listener to every single button.
     tableBody.addEventListener('click', (event) => {
-        console.log("Light Switch 2: A click was detected inside the table!");
-
         const button = event.target.closest('.issue-options-button');
         const menuItem = event.target.closest('.menu-item');
 
-
         // Check if the click was on a 3-dot button
         if (button) {
+            console.log("A click was detected on a 3-dot button!"); // This is our second, more precise light switch
+
             // Find the menu associated with this specific button
             const menu = button.nextElementSibling;
 
