@@ -1,4 +1,4 @@
-/*
+/*table.css
  * This file contains styling for the issues table.
  */
 .issues-table {
@@ -52,11 +52,6 @@
     cursor: pointer;
 }
 
-/* --- NEW CODE HERE (TEMPORARY TEST) --- */
-.issues-table .options-menu-cell {
-    border: 2px solid red;
-}
-/* --- END NEW CODE (TEMPORARY TEST) --- */
 
 /* Color-coded badges for Priority */
 .priority-badge {
@@ -124,4 +119,10 @@
 /* Highlight rows based on priority */
 .issues-table tbody tr.priority-IMMEDIATE {
     background-color: #FFEBEE;
+}
+
+.table-responsive {
+    max-width: 1400px; /* Adjust this value as needed */
+    margin: 0 auto;
+    padding: 0 20px;
 }
