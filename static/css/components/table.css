@@ -1,22 +1,28 @@
-/*table.css
- * This file contains styling for the issues table.
- */
-/* --- NEW CODE HERE --- */
-/* This rule ensures columns have flexible widths */
+/* --- ENTIRE FILE REPLACEMENT --- */
+/* This file contains styling for the issues table. */
 .issues-table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
     font-size: 0.9em;
+    border: 1px solid #e0e0e0; /* Subtle border around the entire table */
 }
 
+/* We removed the individual bottom borders to avoid redundant lines */
 .issues-table th,
 .issues-table td {
     padding: 12px 15px;
-    border-bottom: 1px solid var(--border-color-light);
+    border-bottom: 1px solid #f0f0f0; /* Very subtle line between rows */
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+.issues-table th {
+    background-color: #F8F9FA;
+    color: var(--text-color-dark);
+    font-weight: 600;
+    text-transform: uppercase;
 }
 
 /* Set flexible widths for each column to fix spacing */
@@ -31,14 +37,12 @@
 .issues-table th:nth-child(9), .issues-table td:nth-child(9) { width: 7%; }  /* Status */
 .issues-table th:nth-child(10), .issues-table td:nth-child(10) { width: 7%; } /* Target Date */
 .issues-table th:nth-child(11), .issues-table td:nth-child(11) { width: 8%; } /* Assigned Employee */
-/* --- END NEW CODE --- */
 
 /* Hover effect for table rows */
 .issues-table tbody tr:hover {
     background-color: #F8F9FA;
     cursor: pointer;
 }
-
 
 /* Color-coded badges for Priority */
 .priority-badge {
@@ -109,7 +113,8 @@
 }
 
 .table-responsive {
-    max-width: 1500px; /* Adjust this value as needed */
+    max-width: 1400px; /* Adjust this value as needed */
     margin: 0 auto;
     padding: 0 20px;
 }
+/* --- END ENTIRE FILE REPLACEMENT --- */
