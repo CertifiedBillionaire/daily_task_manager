@@ -1,6 +1,7 @@
-// --- NEW CODE HERE ---
-// --- FILE: issuesTable.js ---
+/* --- ENTIRE FILE REPLACEMENT --- */
+
 // This file is a module that exports functions to initialize the issues table.
+// We are only importing initIssueOptions here to make sure it's available.
 import { initIssueOptions } from './issueOptions.js';
 
 
@@ -55,7 +56,6 @@ export function initIssuesTable() {
                     // We need a unique ID for each row to handle the options menu
                     row.dataset.issueId = issue.id;
 
-                // --- NEW CODE HERE ---
                     // The class names here now match what's in issueOptions.js and issues_table_menu.css
                     row.innerHTML = `
                         <td>${issue.id}</td>
@@ -84,7 +84,7 @@ export function initIssuesTable() {
                             </ul>
                         </td>
                     `;
-                    // --- END NEW CODE ---
+                    
                     if (issuesTableBody) {
                         issuesTableBody.appendChild(row);
                     }
@@ -102,5 +102,6 @@ export function initIssuesTable() {
 
     // This is the main initialization function
     fetchAndRenderIssues();
-    initIssueOptions();
 }
+
+/* --- END ENTIRE FILE REPLACEMENT --- */

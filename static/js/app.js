@@ -1,3 +1,4 @@
+/* --- ENTIRE FILE REPLACEMENT --- */
 // Import must be at the very top of the file
 // This file will now import a special 'open' job from the checklist file.
 import { initOpeningChecklist } from './modules/openingChecklist.js';
@@ -7,10 +8,10 @@ import { initModalListeners } from './modules/modalListeners.js';
 import { initSidebar } from './modules/sidebar.js';
 import { initNewIssueCard } from './modules/addNewIssue.js';
 import { initPMCard } from './modules/pmCard.js';
-import { initIssuesTable, initOptionsMenu } from './modules/issuesTable.js';
+// We are removing 'initOptionsMenu' from the import because it's no longer needed.
+import { initIssuesTable } from './modules/issuesTable.js';
 import { closeModal } from './modules/modal.js';
 import { initIssueOptions } from './modules/issueOptions.js';
-
 
 
 // Then, we wait for the HTML to be ready
@@ -75,12 +76,11 @@ document.addEventListener('DOMContentLoaded', () => {
     initNewIssueCard();
     initPMCard();
     if (window.location.pathname === '/issues') {
+        // Now that issuesTable.js only has one exported function, we call it here.
         initIssuesTable();
-        // --- NEW CODE HERE ---
-        // We are now calling our new function to set up the menu functionality.
+        // And we call the function for the options menu separately.
         initIssueOptions();
-        // The old initOptionsMenu() is no longer needed because our new module handles that.
-        // --- END NEW CODE ---
     }
 
 });
+/* --- END ENTIRE FILE REPLACEMENT --- */
