@@ -162,27 +162,6 @@ def init_db():
     print("Database initialized or already exists.")
 # --- END NEW CODE ---
 
-# --- NEW CODE HERE (TEMPORARY - FOR DATABASE SCHEMA RESET) ---
-@app.route('/drop_issues_temp')
-def drop_issues_temp():
-    db = get_db()
-    with db.cursor() as cur:
-        # A list of tables to drop (just the issues table for now)
-        tables_to_drop = ["issues"]
-        
-        for table in tables_to_drop:
-            try:
-                cur.execute(f"DROP TABLE IF EXISTS {table};")
-                print(f"Dropped table: {table}")
-            except Exception as e:
-                print(f"ERROR: Failed to drop table {table}: {e}")
-                db.rollback() # Rollback on error
-        
-    db.commit()
-    with app.app_context():
-        init_db()
-    return "Issues table dropped and re-initialized!", 200
-# --- END NEW CODE (TEMPORARY) ---
 
 # --- 4. Application Context for Database Initialization ---
 # This ensures that init_db() is called when the Flask app starts up.
@@ -235,40 +214,6 @@ def init_db_temp():
     return "Database initialization complete! You can now remove this route.", 200
 
 
-# --- NEW CODE HERE ---
-@app.route('/populate_issues')
-def populate_issues():
-    db = get_db()
-    cur = db.cursor()
-    
-    is_postgres = hasattr(db, 'dsn') # Check if it's a PostgreSQL connection
-    
-    sample_issues = [
-        ('IS-001', 'High', 'Arcade', 'Pac-Man', 'Monitor is not turning on.', 'Checked power, seems ok.', 'Open', 'Tech', None),
-        ('IS-002', 'Medium', 'Restaurant', 'Dining Table 5', 'Wobbly table.', 'Tightened the leg bolt.', 'Resolved', 'Manager', None),
-        ('IS-003', 'IMMEDIATE', 'Arcade', 'Ticket Eater #3', 'Ticket eater is not counting.', 'Awaiting a new sensor from supplier.', 'Awaiting Part', 'Tech', '2025-08-08'),
-        ('IS-004', 'CLEANING', 'Restroom', 'Mens Restroom', 'Toilet is clogged.', 'N/A', 'Open', 'Janitor', None),
-    ]
-
-    for issue in sample_issues:
-        try:
-            if is_postgres:
-                cur.execute(sql.SQL("""
-                    INSERT INTO issues (id, priority, area, equipment_location, description, notes, status, assigned_to, target_date)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-                    ON CONFLICT (id) DO NOTHING;
-                """), issue)
-            else: # SQLite
-                cur.execute("""
-                    INSERT OR IGNORE INTO issues (id, priority, area, equipment_location, description, notes, status, assigned_to, target_date)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
-                """, issue)
-        except Exception as e:
-            print(f"Error inserting issue {issue[0]}: {e}")
-
-    db.commit()
-    return "Database populated with sample issues!", 200
-# --- END NEW CODE ---
 # --- 7. API Endpoints ---
 # These functions handle data requests from the frontend (JavaScript) and interact with the database or external services.
 
