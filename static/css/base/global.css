@@ -89,3 +89,34 @@ html, body {
 .issues-table th, .issues-table td {
     display: table-cell !important;
 }
+/* --- NEW CODE HERE --- */
+/* Styles for the toast notification container */
+#toast-container {
+    position: fixed; /* Stays in place relative to the viewport */
+    bottom: 20px;    /* 20px from the bottom */
+    right: 20px;     /* 20px from the right */
+    z-index: 1000;   /* Ensures it's on top of most other content */
+    display: flex;
+    flex-direction: column; /* Stacks multiple toasts vertically */
+    align-items: flex-end;  /* Aligns toasts to the right */
+    pointer-events: none; /* Allows clicks to pass through the container */
+}
+
+/* Styles for individual toast notifications */
+.toast-notification {
+    background-color: #333; /* Default dark background */
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin-bottom: 10px; /* Space between multiple toasts */
+    opacity: 0; /* Start hidden */
+    transform: translateY(20px); /* Start slightly below final position */
+    transition: opacity 0.3s ease-out, transform 0.3s ease-out; /* Smooth animation */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Subtle shadow for depth */
+    font-size: 0.95em;
+    font-weight: 500;
+    max-width: 300px; /* Limit width for readability */
+    word-wrap: break-word; /* Ensure long messages wrap */
+    pointer-events: auto; /* Re-enable pointer events for the toast itself (so user can click it if needed) */
+}
+/* --- END NEW CODE --- */

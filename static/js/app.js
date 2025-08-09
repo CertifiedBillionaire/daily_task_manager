@@ -16,7 +16,63 @@ import { initSettingsPageListeners } from './modules/settings.js';
 import { resetOpeningChecklistStatus } from './modules/settings.js';
 
 
+// --- NEW CODE HERE ---
+/**
+ * Displays a temporary "toast" notification at the bottom of the screen.
+ * @param {string} message The message to display in the toast.
+ * @param {string} type The type of toast (e.g., "Success", "Error", "Info"). Used for styling.
+ * @param {number} duration The duration in milliseconds the toast should be visible (default: 3000ms).
+ */
+window.showToast = function(message, type = "Info", duration = 3000) {
+    const toastContainer = document.getElementById('toast-container');
+    if (!toastContainer) {
+        console.error("Toast container not found. Cannot display toast.");
+        // Fallback to console log if container is missing
+        console.log(`Toast: ${type} - ${message}`);
+        return;
+    }
 
+    const toast = document.createElement('div');
+    toast.className = 'toast-notification';
+    toast.textContent = message;
+
+    // Add type-specific class for styling
+    if (type === "Success") {
+        toast.style.backgroundColor = '#4CAF50'; // Green
+    } else if (type === "Error") {
+        toast.style.backgroundColor = '#f44336'; // Red
+    } else {
+        toast.style.backgroundColor = '#2196F3'; // Blue (Info)
+    }
+
+    toast.style.color = 'white';
+    toast.style.padding = '10px 20px';
+    toast.style.borderRadius = '8px';
+    toast.style.marginBottom = '10px'; // Space between toasts if multiple
+    toast.style.opacity = '0';
+    toast.style.transition = 'opacity 0.3s ease-in-out, transform 0.3s ease-in-out';
+    toast.style.transform = 'translateY(20px)';
+    toast.style.boxShadow = '0 4px 8px rgba(0,0,0,0.2)';
+    toast.style.zIndex = '1000'; // Ensure it's above other content
+
+    toastContainer.appendChild(toast);
+
+    // Animate in
+    setTimeout(() => {
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateY(0)';
+    }, 100);
+
+    // Animate out and remove
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            toastContainer.removeChild(toast);
+        }, 300); // Remove after transition
+    }, duration);
+};
+// --- END NEW CODE ---
 
 // Then, we wait for the HTML to be ready
 document.addEventListener('DOMContentLoaded', () => {
