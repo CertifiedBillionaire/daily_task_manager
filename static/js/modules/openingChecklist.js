@@ -135,6 +135,14 @@ export function initOpeningChecklist() {
     const adventureZoneChecklistArea = document.getElementById('adventureZoneChecklistArea');
     const gameRoomChecklistArea = document.getElementById('gameRoomChecklistArea');
     const dailyTapPlaceholderArea = document.getElementById('dailyTapPlaceholderArea');
+    const startOpeningChecklistCard = document.getElementById('startOpeningChecklist');
+
+    // Check localStorage on initialization and apply 'completed' class if needed
+    const isCompleted = localStorage.getItem('isOpeningChecklistCompleted');
+    if (isCompleted === 'true' && startOpeningChecklistCard) {
+        startOpeningChecklistCard.classList.add('completed');
+        console.log("Opening Checklist card loaded as completed from localStorage."); // For debugging
+    }
 
 
 
@@ -423,6 +431,10 @@ export function initOpeningChecklist() {
                 startOpeningChecklistCard.classList.add('completed');
                 console.log("Opening Checklist card marked as completed."); // For debugging
             }
+                        // Save the card's completed status to localStorage
+            localStorage.setItem('isOpeningChecklistCompleted', 'true');
+            console.log("Opening Checklist completion status saved to localStorage."); // For debugging
+            // --- END NEW CODE ---
         }
     });
 
