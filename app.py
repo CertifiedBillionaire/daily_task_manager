@@ -212,6 +212,19 @@ def ai_assistant():
     """Renders the AI Assistant page."""
     return render_template('ai_assistant_page.html')
 
+@app.route('/settings')
+def settings_page():
+    """Renders the Settings page."""
+    return render_template('settings_page.html')
+
+@app.route('/clear_issues_temp')
+def clear_issues_temp():
+    db = get_db()
+    with db.cursor() as cur:
+        cur.execute("DELETE FROM issues;")
+    db.commit()
+    return "All issues have been cleared from the database.", 200
+
 
 # --- NEW CODE HERE (TEMPORARY - FOR CLEARING ISSUES) ---
 @app.route('/clear_issues_temp')

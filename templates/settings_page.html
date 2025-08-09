@@ -1,0 +1,24 @@
+{% extends 'base.html' %} {# This line tells Flask/Jinja2 to use your base.html as the layout foundation #}
+
+{% block title %}Settings - Arcade Manager{% endblock %} {# Sets the title for this specific page #}
+
+{% block content %} {# This block will contain the unique content for the Settings page #}
+    <div class="content-header">
+        <div class="content-header-left">
+            <h2>App Settings</h2>
+            <p>Manage application preferences and reset options here.</p>
+        </div>
+    </div>
+
+    <section class="section-card">
+        <h3>Reset Options</h3>
+        <p>This section will contain options to reset various parts of your app's progress.</p>
+        {# Future buttons/forms for resetting will go here #}
+    </section>
+
+    <section class="section-card" style="margin-top: 2rem;">
+        <h3>General Settings</h3>
+        <p>This section will contain other application-wide settings.</p>
+        {# Future settings like notification preferences, etc., will go here #}
+    </section>
+{% endblock content %}
