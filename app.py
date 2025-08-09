@@ -226,16 +226,6 @@ def clear_issues_temp():
     return "All issues have been cleared from the database.", 200
 
 
-# --- NEW CODE HERE (TEMPORARY - FOR CLEARING ISSUES) ---
-@app.route('/clear_issues_temp')
-def clear_issues_temp():
-    db = get_db()
-    with db.cursor() as cur:
-        cur.execute("DELETE FROM issues;")
-    db.commit()
-    return "All issues have been cleared from the database.", 200
-# --- END NEW CODE (TEMPORARY) ---
-
 @app.route('/init_db_temp')
 def init_db_temp():
     with app.app_context():
