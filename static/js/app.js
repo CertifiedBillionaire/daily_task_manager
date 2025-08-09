@@ -12,6 +12,8 @@ import { initPMCard } from './modules/pmCard.js';
 import { initIssuesTable } from './modules/issuesTable.js';
 import { closeModal } from './modules/modal.js';
 import { initIssueOptions } from './modules/issueOptions.js';
+import { initSettingsPageListeners } from './modules/settings.js';
+
 
 
 // Then, we wait for the HTML to be ready
@@ -75,12 +77,18 @@ document.addEventListener('DOMContentLoaded', () => {
     initModalListeners();
     initNewIssueCard();
     initPMCard();
+        // Initialize settings page listeners ONLY if on the settings page
+    if (window.location.pathname === '/settings') {
+        initSettingsPageListeners();
+        console.log("Settings page listeners initialized."); // For debugging
+    }
     if (window.location.pathname === '/issues') {
         // Now that issuesTable.js only has one exported function, we call it here.
         initIssuesTable();
         // And we call the function for the options menu separately.
         initIssueOptions();
     }
+    
 
 });
 /* --- END ENTIRE FILE REPLACEMENT --- */
