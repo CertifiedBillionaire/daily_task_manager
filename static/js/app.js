@@ -13,11 +13,30 @@ import { initIssuesTable } from './modules/issuesTable.js';
 import { closeModal } from './modules/modal.js';
 import { initIssueOptions } from './modules/issueOptions.js';
 import { initSettingsPageListeners } from './modules/settings.js';
+import { resetOpeningChecklistStatus } from './modules/settings.js';
+
 
 
 
 // Then, we wait for the HTML to be ready
 document.addEventListener('DOMContentLoaded', () => {
+        // Function to check and perform daily reset for Opening Checklist
+    function checkAndResetDailyChecklist() {
+        const lastResetDate = localStorage.getItem('openingChecklistLastResetDate');
+        const today = new Date();
+        const todayString = today.toDateString(); // e.g., "Fri Aug 09 2025"
+
+        if (lastResetDate !== todayString) {
+            console.log("New day detected or no reset date found. Resetting Opening Checklist.");
+            resetOpeningChecklistStatus(); // Call the full reset function
+            localStorage.setItem('openingChecklistLastResetDate', todayString); // Store today's date
+        } else {
+            console.log("Opening Checklist already reset for today, or not a new day.");
+        }
+    }
+
+    // Call the daily reset check when the app loads
+    checkAndResetDailyChecklist();
     
     
     
