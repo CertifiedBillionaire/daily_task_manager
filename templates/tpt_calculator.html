@@ -1,185 +1,93 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TPT Calculator</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/pe-icon-7-weather.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/pe-icon-7-helper.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body>
-    <div class="app-container">
-<header class="main-header">
-    <div class="header-left">
-        <a href="/" class="logo-link">
-            <div class="logo-area">
-                <img src="{{ url_for('static', filename='images/chuck_e_cheese_logo.png') }}" alt="Chuck E. Cheese Logo" class="logo-image">
-            </div>
-        </a>
-        <div class="info-widgets">
-        </div>
-    </div>
-    <div class="header-right">
-        <div class="search-bar">
-            <input type="text" id="mainSearchBar" placeholder="Search games or issues..." class="search-input">
-            <i class="fas fa-search search-icon"></i>
-        </div>
-        <button class="icon-button" id="notificationButton"><i class="fas fa-bell"></i></button>
-        <button class="icon-button" id="profileButton"><i class="fas fa-user-circle"></i></button>
-    </div>
-</header>
-        <div class="main-layout-area">
-            <aside class="sidebar">
-    <nav class="sidebar-nav">
-        <ul>
-            <li class="nav-item"> <a href="/">
-                    <i class="fas fa-tachometer-alt"></i>
-                    <span>Dashboard</span>
-                </a>
-            </li>
-            <li class="nav-item current"> <a href="/tpt_calculator" id="sidebarTptCalculator">
-                    <i class="fas fa-calculator"></i>
-                    <span>TPT Calculator</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="/inventory" id="sidebarGameInventory">
-                    <i class="fas fa-gamepad"></i>
-                    <span>Game Inventory</span>
-                </a>
-            </li>
-            <li class="nav-item"> <a href="/issues" id="sidebarIssues">
-                    <i class="fas fa-bug"></i>
-                    <span>Issues</span>
-                </a>
-            </li>
-            
-        </ul>
-    </nav>
-    <div class="sidebar-bottom-nav">
-        <div class="nav-item static-display" id="sidebarBottomTptTargetLink">
-            <img src="{{ url_for('static', filename='images/ticket_icon.png') }}" alt="Ticket Icon" class="tpt-sidebar-icon">
-            <span id="sidebarBottomTptTargetValue">Target: N/A</span>
-        </div>
-    </div>
-</aside>
+{% extends 'base.html' %} {# This line tells Flask/Jinja2 to use your base.html as the layout foundation #}
 
-            <main class="main-content">
-                <div class="content-header">
-                    <div class="content-header-left">
-                        <h2>TPT Calculator</h2>
-                        <p>Upload your TPT data file here.</p>
-                    </div>
-                    </div>
+{% block title %}TPT Calculator - Arcade Manager{% endblock %} {# Sets the unique title for this page #}
 
-
-<section class="section-card">
-    <div class="tpt-upload-and-settings-header">
-        <div class="tpt-upload-elements">
-            <h3>Upload TPT Data File</h3>
-            <div class="form-group">
-                <label for="tptFileInput">Select File (.csv, .xlsx):</label>
-                <input type="file" id="tptFileInput" accept=".csv, .xlsx">
-                </div>
-        </div>
-        <div class="tpt-settings-toggle-area">
-            <button class="icon-button" id="toggleTptSettingsBtn" title="Toggle TPT Settings">
-                <i class="fas fa-bars"></i>
-            </button>
+{% block content %} {# This block will contain all the unique content for the TPT Calculator page #}
+    <div class="content-header">
+        <div class="content-header-left">
+            <h2>TPT Calculator</h2>
+            <p>Upload your TPT data file here.</p>
         </div>
     </div>
 
-    <div id="tptSettingsContainer" class="tpt-settings-container collapsed">
-        <div class="tpt-settings-inputs">
-            <label for="tptLowest">Lowest Desired TPT:</label>
-            <input type="number" id="tptLowest" value="2.80" step="0.01">
-
-            <label for="tptHighest">Highest Desired TPT:</label>
-            <input type="number" id="tptHighest" value="3.20" step="0.01">
-
-            <label for="tptTarget">Target TPT:</label>
-            <input type="number" id="tptTarget" value="3.00" step="0.01">
-
-            <div class="form-group-checkbox">
-                <input type="checkbox" id="includeBirthdayBlaster" checked>
-                <label for="includeBirthdayBlaster">Include Birthday Blaster in TPT calculation</label>
-            </div>
-        </div>
-        <button class="add-task-button" id="saveTptSettingsBtn">Save Settings</button>
-    </div>
-
-    <button id="calculateTptButton" class="add-task-button">Calculate TPT</button>
-
-    <div id="tptResults" style="margin-top: 30px; padding: 20px; background-color: #f8f8f8; border-radius: 10px; border: 1px solid #e0e0e0; display: none;">
-        <h4>Calculation Results:</h4>
-        <p id="tptOutput">Results will appear here.</p>
-        <div id="outOfRangeGamesList" style="margin-top: 15px;">
-        </div>
-    </div>
-    
-    <div id="individualGameTableSection" class="section-card" style="margin-top: 30px; display: none;">
-    <h2>Individual Game Data</h2>
-    <div class="table-container">
-        <table class="game-data-table">
-            <thead>
-                <tr>
-                    <th>Profile</th>
-                    <th>Game Name</th>
-                    <th>TPT (Individual)</th>
-                    <th>Total Tickets</th>
-                    <th>Total Plays</th>
-                </tr>
-            </thead>
-            <tbody id="individualGameTableBody">
-                </tbody>
-        </table>
-    </div>
-    <button id="exportIndividualGamesCsvBtn" class="add-task-button" style="margin-top: 20px;">Export Individual Games CSV</button>
-</div>
-    
-</section>
-            </main>
-        </div>
-        <div id="customPopup" class="popup-overlay">
-            <div class="popup-content">
-                <h2 id="popupTitle"></h2>
-                <p id="popupMessage"></p>
-                <div id="popupActions"></div>
-            </div>
-        </div>
-
-        <div id="issueSummaryPopup" class="popup-overlay">
-            <div class="popup-content">
-                <h2>Daily Issues Summary</h2>
-                <ul id="issueList"></ul>
-                <button id="closeSummaryBtn">Close Summary</button>
-            </div>
-        </div>
-
-        <div id="openingChecklistModal" class="popup-overlay">
-            <div class="popup-content">
-                <div class="modal-header">
-                    <h2 id="checklistModalTitle">Daily Opening Checklist</h2>
-                    <span class="step-counter" id="checklistStepCounter">Step 1 of X</span>
-                    <button id="closeChecklistModalButton" class="icon-button close-modal-button" title="Close Checklist">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p class="checklist-step-text" id="checklistStepText"></p>
-                    <div class="checklist-response-area" id="checklistResponseArea">
-                        </div>
-                </div>
-                <div class="modal-footer">
-                    <button id="checklistBackButton" class="popup-button cancel-button"><i class="fas fa-chevron-left"></i> Back</button>
-                    <button id="checklistNextButton" class="popup-button"><i class="fas fa-chevron-right"></i> Next Step</button>
+    <section class="section-card">
+        <div class="tpt-upload-and-settings-header">
+            <div class="tpt-upload-elements">
+                <h3>Upload TPT Data File</h3>
+                <div class="form-group">
+                    <label for="tptFileInput">Select File (.csv, .xlsx):</label>
+                    <input type="file" id="tptFileInput" accept=".csv, .xlsx">
                 </div>
             </div>
+            <div class="tpt-settings-toggle-area">
+                <button class="icon-button" id="toggleTptSettingsBtn" title="Toggle TPT Settings">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
         </div>
-    </div>
-    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
-</body>
-</html>
+
+        <div id="tptSettingsContainer" class="tpt-settings-container collapsed">
+            <div class="tpt-settings-inputs">
+                <label for="tptLowest">Lowest Desired TPT:</label>
+                <input type="number" id="tptLowest" value="2.80" step="0.01">
+
+                <label for="tptHighest">Highest Desired TPT:</label>
+                <input type="number" id="tptHighest" value="3.20" step="0.01">
+
+                <label for="tptTarget">Target TPT:</label>
+                <input type="number" id="tptTarget" value="3.00" step="0.01">
+
+                <div class="form-group-checkbox">
+                    <input type="checkbox" id="includeBirthdayBlaster" checked>
+                    <label for="includeBirthdayBlaster">Include Birthday Blaster in TPT calculation</label>
+                </div>
+            </div>
+            <button class="add-task-button" id="saveTptSettingsBtn">Save Settings</button>
+        </div>
+
+        <button id="calculateTptButton" class="add-task-button">Calculate TPT</button>
+
+        <div id="tptResults" style="margin-top: 30px; padding: 20px; background-color: #f8f8f8; border-radius: 10px; border: 1px solid #e0e0e0; display: none;">
+            <h4>Calculation Results:</h4>
+            <p id="tptOutput">Results will appear here.</p>
+            <div id="outOfRangeGamesList" style="margin-top: 15px;">
+            </div>
+        </div>
+        
+        <div id="individualGameTableSection" class="section-card" style="margin-top: 30px; display: none;">
+            <h2>Individual Game Data</h2>
+            <div class="table-container">
+                <table class="game-data-table">
+                    <thead>
+                        <tr>
+                            <th>Profile</th>
+                            <th>Game Name</th>
+                            <th>TPT (Individual)</th>
+                            <th>Total Tickets</th>
+                            <th>Total Plays</th>
+                        </tr>
+                    </thead>
+                    <tbody id="individualGameTableBody">
+                    </tbody>
+                </table>
+            </div>
+            <button id="exportIndividualGamesCsvBtn" class="add-task-button" style="margin-top: 20px;">Export Individual Games CSV</button>
+        </div>
+        
+    </section>
+
+    {# The script for TPT Calculator functionality should ideally be in static/js/modules/tptCalculator.js
+       and linked in base.html if it's used across pages, or here if strictly for this page.
+       For now, assuming it will be loaded via app.js or another module.
+    #}
+    {# <script src="{{ url_for('static', filename='js/tptCalculator.js') }}"></script> #}
+{% endblock content %}
+
+{# Any additional scripts that are *only* for this page and not already loaded by app.js or base.html
+   would go in a custom block, if defined in base.html. Otherwise, they would be put directly here
+   inside the content block as tags.
+   Since your base.html includes app.js as type="module", ensure any page-specific JS
+   is either integrated into app.js's module system or added as a separate script that runs after the DOM is ready.
+   For simplicity, if tpt_calculator.js isn't already handled by app.js, you might add it here:
+#}
+{# <script src="{{ url_for('static', filename='js/modules/tptCalculator.js') }}"></script> #}
