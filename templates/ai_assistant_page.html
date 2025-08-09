@@ -1,0 +1,157 @@
+{% extends 'base.html' %} {# This line tells Flask/Jinja2 to use your base.html as the layout foundation #}
+
+{% block title %}AI Assistant - Arcade Manager{% endblock %} {# Sets the title for this specific page #}
+
+{% block content %} {# This block is where the unique content for the AI Assistant page will go #}
+    <div class="ai-container">
+        <h1 class="section-title">AI Assistant</h1>
+        <p class="instruction-text">Type your query below and click 'Get Response' to simulate an AI interaction.</p>
+        
+        <div class="input-area">
+            <label for="aiQuery" class="text-gray-700 text-lg font-medium">Your Query:</label>
+            <textarea id="aiQuery" placeholder="e.g., 'What's the status of the 'Awaiting Part' issues?', 'Suggest a plan for monthly LED fixture orders.'"></textarea>
+            <button id="getResponseBtn">Get Response</button>
+        </div>
+
+        <div class="response-area">
+            <label for="aiResponse" class="text-gray-700 text-lg font-medium mb-2 block">AI Response:</label>
+            <div id="aiResponse" class="text-gray-800">
+                <!-- AI responses will appear here -->
+                Hello! I'm ready to assist you. Type your query above.
+            </div>
+        </div>
+    </div>
+
+    {# --- NEW CODE HERE --- #}
+    {# This script handles the button click and simulates AI response. #}
+    <script>
+        // Get references to the elements
+        const aiQueryInput = document.getElementById('aiQuery');
+        const getResponseBtn = document.getElementById('getResponseBtn');
+        const aiResponseDiv = document.getElementById('aiResponse');
+
+        // Add event listener to the button
+        getResponseBtn.addEventListener('click', () => {
+            const query = aiQueryInput.value.trim(); // Get the user's query and trim whitespace
+
+            if (query === "") {
+                aiResponseDiv.textContent = "Please enter a query.";
+                console.warn("User tried to submit an empty query.");
+                return;
+            }
+
+            // Simulate AI thinking
+            aiResponseDiv.textContent = "Thinking...";
+            console.log("Simulating AI processing for query:", query);
+
+            // Simulate an asynchronous AI response after a short delay
+            setTimeout(() => {
+                const simulatedResponse = `AI has processed your query: "${query}".\n\n(This is a simulated response. In a real application, an AI model would generate a relevant answer here.)\n\nPossible actions based on your query could include: fetching data from your issue logs, analyzing patterns, or providing recommendations.`;
+                aiResponseDiv.textContent = simulatedResponse;
+                console.log("Simulated AI response generated.");
+            }, 1500); // 1.5 second delay to simulate processing
+
+            // Clear the input field after sending the query (optional)
+            aiQueryInput.value = "";
+        });
+    </script>
+
+    {# These are the specific styles for the AI Assistant page's elements. #}
+    {# They are placed here so they only apply to this page. #}
+    <style>
+        .ai-container {
+            background-color: #ffffff;
+            border-radius: 1.5rem; /* More rounded corners */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08), 0 5px 10px rgba(0, 0, 0, 0.05);
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 800px; /* Wider for better interaction */
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            animation: fadeIn 0.8s ease-out;
+            margin: 2rem auto; /* Center the container with margin */
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .input-area {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        textarea {
+            width: 100%;
+            min-height: 120px; /* Taller textarea for queries */
+            padding: 1rem;
+            border-radius: 0.75rem;
+            border: 1px solid #e2e8f0; /* Light border */
+            resize: vertical; /* Allow vertical resizing */
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: all 0.2s ease-in-out;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #3b82f6; /* Blue border on focus */
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+        }
+        button {
+            background-color: #4CAF50; /* Green submit button */
+            color: white;
+            padding: 0.85rem 1.5rem;
+            border: none;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        button:hover {
+            background-color: #45a049; /* Darker green on hover */
+            transform: translateY(-1px);
+        }
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .response-area {
+            background-color: #f8fafc; /* Lighter background for responses */
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            min-height: 150px; /* Good height for responses */
+            border: 1px solid #e2e8f0;
+            white-space: pre-wrap; /* Preserve whitespace and wrap text */
+            word-wrap: break-word; /* Break long words */
+            color: #374151; /* Darker text */
+            font-size: 1rem;
+            overflow-y: auto; /* Scroll for long responses */
+            max-height: 400px; /* Limit height */
+        }
+        .section-title {
+            font-size: 1.75rem; /* Larger title */
+            font-weight: 700;
+            color: #1f2937; /* Dark text */
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        .instruction-text {
+            color: #6b7280;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        /* Adjusted body style is no longer needed here as base.html handles it */
+        /* Ensure main content area handles full width for this container */
+        .main-content {
+            display: flex; /* Use flexbox to center the container */
+            justify-content: center;
+            align-items: flex-start; /* Align to top for content */
+            padding: 2rem; /* Add some padding around the content */
+            box-sizing: border-box; /* Include padding in element's total width and height */
+            width: 100%; /* Ensure it takes full width of its parent */
+        }
+    </style>
+    {# --- END NEW CODE --- #}
+{% endblock content %}

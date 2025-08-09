@@ -207,6 +207,12 @@ def tpt_calculator_page():
 def issues_page():
     return render_template('issues.html')
 
+@app.route('/ai_assistant')
+def ai_assistant():
+    """Renders the AI Assistant page."""
+    return render_template('ai_assistant_page.html')
+
+
 # --- NEW CODE HERE (TEMPORARY - FOR CLEARING ISSUES) ---
 @app.route('/clear_issues_temp')
 def clear_issues_temp():
