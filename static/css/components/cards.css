@@ -147,6 +147,36 @@
     font-weight: 500;
     color: #6c7a89;
 }
+
+.dashboard-card.completed {
+    opacity: 0.6; /* Makes the card slightly transparent */
+    background-color: #f0f4f8; /* A lighter, grayed-out background */
+    color: #a0a7ad; /* Lighter text color */
+    box-shadow: none; /* Remove shadow to reduce prominence */
+    transform: none; /* Remove hover effect */
+    cursor: default; /* Change cursor to indicate no interaction */
+    border-top-color: #d1d5db; /* Gray out the top border color */
+    pointer-events: none; /* Disable all mouse events on the card */
+}
+
+/* Ensure child elements also inherit the muted look */
+.dashboard-card.completed .card-icon {
+    background-color: #bdc3c7 !important; /* Mute the icon background */
+    box-shadow: none;
+}
+
+.dashboard-card.completed h3,
+.dashboard-card.completed .card-description,
+.dashboard-card.completed .card-progress {
+    color: #a0a7ad !important; /* Ensure text is muted */
+}
+
+/* Hide menu/desktop links when completed */
+.dashboard-card.completed .card-menu-container,
+.dashboard-card.completed .card-desktop-menu {
+    display: none;
+}
+
 /* Base styles for the desktop menu links */
 .card-desktop-menu {
     display: none;

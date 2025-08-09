@@ -417,6 +417,12 @@ export function initOpeningChecklist() {
             displayStep(currentStepIndex);
         } else {
             closeModal(CHECKLIST_MODAL_ID); 
+                        // Get a reference to the dashboard card itself
+            const startOpeningChecklistCard = document.getElementById('startOpeningChecklist');
+            if (startOpeningChecklistCard) {
+                startOpeningChecklistCard.classList.add('completed');
+                console.log("Opening Checklist card marked as completed."); // For debugging
+            }
         }
     });
 
