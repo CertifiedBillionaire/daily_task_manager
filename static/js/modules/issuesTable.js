@@ -4,11 +4,9 @@
 // We are only importing initIssueOptions here to make sure it's available.
 import { initIssueOptions } from './issueOptions.js';
 
-
 export function initIssuesTable() {
     const issuesTableBody = document.getElementById('issuesTableBody');
     const noIssuesMessage = document.getElementById('noIssuesMessage');
-
 
     // This is the main function that fetches and renders the issues.
     async function fetchAndRenderIssues() {
@@ -49,26 +47,24 @@ export function initIssuesTable() {
                         row.classList.add('priority-IMMEDIATE');
                     }
                     
-                    // Create color-coded badges for priority and status
-                    const priorityBadge = `<span class="priority-badge ${issue.priority}">${issue.priority}</span>`;
-                    const statusBadge = `<span class="status-badge ${issue.status}">${issue.status}</span>`;
-
-                    // We need a unique ID for each row to handle the options menu
+                    // Create color-coded badges for priority and status (badges are not rendered here, just values)
+                    // The class names here now match what's in issueOptions.js and issues_table_menu.css
                     row.dataset.issueId = issue.id;
 
-                    // The class names here now match what's in issueOptions.js and issues_table_menu.css
+                    // --- NEW CODE HERE ---
+                    // Use the || '' operator to display empty string instead of null/undefined
                     row.innerHTML = `
-                        <td>${issue.id}</td>
-                        <td>${issue.priority}</td>
-                        <td>${issue.date_added}</td>
-                        <td>${issue.last_update}</td>
-                        <td>${issue.area}</td>
-                        <td>${issue.equipment_name}</td>
-                        <td>${issue.problem_description}</td>
-                        <td>${issue.notes}</td>
-                        <td class="issue-status">${issue.status}</td>
-                        <td>${issue.target_date}</td>
-                        <td>${issue.assigned_employee}</td>
+                        <td>${issue.id || ''}</td>
+                        <td>${issue.priority || ''}</td>
+                        <td>${issue.date_logged || ''}</td>
+                        <td>${issue.last_updated || ''}</td>
+                        <td>${issue.area || ''}</td>
+                        <td>${issue.equipment_location || ''}</td>
+                        <td>${issue.description || ''}</td>
+                        <td>${issue.notes || ''}</td>
+                        <td class="issue-status">${issue.status || ''}</td>
+                        <td>${issue.target_date || ''}</td>
+                        <td>${issue.assigned_to || ''}</td>
                         
                         <td class="menu-container">
                             <button class="issue-options-button" aria-label="Issue Options">
@@ -84,6 +80,7 @@ export function initIssuesTable() {
                             </ul>
                         </td>
                     `;
+                    // --- END NEW CODE ---
                     
                     if (issuesTableBody) {
                         issuesTableBody.appendChild(row);
@@ -103,5 +100,3 @@ export function initIssuesTable() {
     // This is the main initialization function
     fetchAndRenderIssues();
 }
-
-/* --- END ENTIRE FILE REPLACEMENT --- */
