@@ -150,5 +150,82 @@ td.col-selected {
     background: rgba(0,0,0,0.04); /* subtle */
 }
 
+/* --- NEW CODE HERE --- */
+.inline-editor-row td {
+  background: var(--card-background-color, #fff);
+  border-top: 1px solid var(--border-color, #d9e0e6);
+  border-bottom: 1px solid var(--border-color, #d9e0e6);
+  padding: 12px;
+}
 
+.inline-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.inline-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
+  gap: 10px;
+}
+
+.inline-grid .col-span-2 {
+  grid-column: span 2;
+}
+
+.inline-editor label > span {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-color-light, #6b7785);
+  margin-bottom: 4px;
+}
+
+.inline-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+/* --- END NEW CODE --- */
+
+/* --- NEW CODE HERE --- */
+/* inline editor that looks like a normal row */
+.inline-editor-row td {
+  background: var(--card-background-color, #fff);
+  border-top: 1px solid var(--border-color, #d9e0e6);
+  border-bottom: 1px solid var(--border-color, #d9e0e6);
+  padding: 6px 8px;
+  vertical-align: middle;
+}
+
+/* read-only cells (ID, dates) */
+.inline-editor-row .readonly-cell {
+  color: var(--text-color-light, #6b7785);
+  background: #f7f9fb;
+}
+
+/* inputs that feel like cells */
+.inline-editor-row .cell-input,
+.inline-editor-row .cell-select,
+.inline-editor-row .cell-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--border-color, #d9e0e6);
+  border-radius: 6px;
+  padding: 6px 8px;
+  font: inherit;
+}
+
+.inline-editor-row .cell-textarea {
+  resize: vertical;
+  min-height: 40px;
+}
+
+/* action buttons in last column */
+.inline-editor-row .cell-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+/* --- END NEW CODE --- */
 
