@@ -15,7 +15,38 @@ export function initTableResizers() {
     let startX;
     let startWidth;
     let currentHeader; // The <th> element being resized
-    let initialTableWidth; // NEW: To store the table's width when resizing starts
+    let initialTableWidth; // To store the table's width when resizing starts
+
+    // --- NEW CODE HERE ---
+    // Define default widths for each column in pixels
+    // These values are chosen to provide a good initial layout for your table.
+    // Adjust these values as needed for your specific content.
+    const DEFAULT_COLUMN_WIDTHS = [
+        100, // Issue ID
+        100, // Priority
+        120, // Date Added
+        120, // Last Update
+        100, // Area
+        150, // Equipment Name
+        250, // Problem Description
+        150, // Notes
+        100, // Status
+        120, // Target Date
+        150, // Assigned Employee
+        50   // Last column (options menu) - small fixed width
+    ];
+
+    // Apply initial widths on load
+    let totalInitialWidth = 0;
+    headers.forEach((header, index) => {
+        if (DEFAULT_COLUMN_WIDTHS[index]) {
+            header.style.width = `${DEFAULT_COLUMN_WIDTHS[index]}px`;
+            totalInitialWidth += DEFAULT_COLUMN_WIDTHS[index];
+        }
+    });
+    table.style.width = `${totalInitialWidth}px`; // Set the overall table width
+    console.log("Table initialized with default column widths. Total width:", totalInitialWidth);
+    // --- END NEW CODE ---
 
     // Function to handle the mouse down event on a resizer
     function mouseDownHandler(e) {
@@ -23,7 +54,7 @@ export function initTableResizers() {
         currentHeader = currentResizer.parentElement; // The <th> element
         startX = e.clientX; // Initial mouse X position
         startWidth = currentHeader.offsetWidth; // Initial width of the header
-        initialTableWidth = table.offsetWidth; // NEW: Capture table's initial width
+        initialTableWidth = table.offsetWidth; // Capture table's initial width
 
         // Add class to resizer for visual feedback (e.g., highlight)
         currentResizer.classList.add('is-resizing');
@@ -48,8 +79,7 @@ export function initTableResizers() {
         if (newColumnWidth > MIN_COLUMN_WIDTH) {
             currentHeader.style.width = `${newColumnWidth}px`; // Apply new width to the column header
 
-            // NEW: Adjust the overall table width
-            // The table's new width is its initial width plus the change in column width
+            // Adjust the overall table width
             table.style.width = `${initialTableWidth + deltaX}px`; 
         }
     }
