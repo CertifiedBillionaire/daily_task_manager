@@ -496,7 +496,34 @@ def get_urgent_issues_count():
         # Return 0 count in case of DB error so the app doesn't break visually
         return jsonify({"count": 0, "error": "Database error fetching count"}), 500 
 
+@app.route('/api/equipment_locations', methods=['GET'])
+def equipment_locations():
+    """
+    Returns a list of unique equipment_location values (newest first).
+    Works for Postgres and SQLite.
+    """
+    try:
+        db = get_db()
+        cur = db.cursor()
+        try:
+            cur.execute("""
+                SELECT equipment_location, MAX(date_logged) AS last_used
+                FROM issues
+                WHERE equipment_location IS NOT NULL AND TRIM(equipment_location) <> ''
+                GROUP BY equipment_location
+                ORDER BY last_used DESC
+                LIMIT 50;
+            """)
+            rows = cur.fetchall()
+        finally:
+            cur.close()
 
+        suggestions = [row[0] for row in rows if row and row[0]]
+        return jsonify({"items": suggestions})
+
+    except Exception as e:
+        print(f"ERROR: equipment_locations failed: {e}")
+        return jsonify({"items": [], "error": "failed"}), 500
 
 
 # --- 8. Application Entry Point ---

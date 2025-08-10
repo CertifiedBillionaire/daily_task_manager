@@ -9,6 +9,36 @@
 import { refreshIssuesTableData } from './issuesTable.js';
 // --- END MODIFIED CODE ---
 
+// --- NEW CODE HERE ---
+// Get past equipment/location names from the server
+async function fetchEquipmentLocations() {
+  try {
+    const res = await fetch('/api/equipment_locations');
+    if (!res.ok) return [];
+    const data = await res.json();
+    return Array.isArray(data.items) ? data.items : [];
+  } catch (e) {
+    console.warn('Could not load equipment locations:', e);
+    return [];
+  }
+}
+
+// Put items into the <datalist>
+function fillEquipmentLocationDatalist(items) {
+  const list = document.getElementById('equipmentLocationList');
+  if (!list) return;
+
+  list.innerHTML = ''; // clear first
+  items.forEach((val) => {
+    if (!val) return;
+    const opt = document.createElement('option');
+    opt.value = String(val);
+    list.appendChild(opt);
+  });
+}
+// --- END NEW CODE ---
+
+
 /**
  * Sets up collapsible behavior for a given header and its content.
  * This is a reusable utility function.
@@ -41,6 +71,8 @@ export function initAddNewIssueForm() {
     // Setup the collapsible behavior for the "Add New Issue" section
     setupCollapsible('addNewIssueToggle', 'collapsible-content');
     console.log("Add New Issue form collapsible behavior initialized.");
+    // fill the suggestions list on page load
+    fetchEquipmentLocations().then(fillEquipmentLocationDatalist)
 
     const addNewIssueForm = document.getElementById('addNewIssueForm');
     const newIssueEquipmentLocation = document.getElementById('newIssueEquipmentLocation');
@@ -116,6 +148,8 @@ export function initAddNewIssueForm() {
                 // Refresh the issues table to show the new entry and maintain fixed rows
                 refreshIssuesTableData(); // Call the correctly named function
                 console.log("Issues table refreshed after new issue submission.");
+                // refresh the suggestions list so new locations appear next time
+                fetchEquipmentLocations().then(fillEquipmentLocationDatalist);
                 // --- END MODIFIED CODE ---
 
             } catch (error) {
