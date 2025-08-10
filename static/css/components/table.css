@@ -2,12 +2,12 @@
 /* This file contains styling for the issues table. */
 .issues-table {
     width: 100%; /* Ensure table takes 100% of its parent's width */
-    min-width: 100%; /* NEW: Crucial - table will at least be 100% wide */
+    min-width: 100%; /* Crucial - table will at least be 100% wide */
     border-collapse: collapse;
     margin-top: 20px;
     font-size: 0.9em;
     border: 1px solid #e0e0e0; /* Subtle border around the entire table */
-    table-layout: fixed; /* NEW: This is crucial for fixed column widths */
+    table-layout: fixed; /* Crucial for fixed column widths */
 }
 
 /* We removed the individual bottom borders to avoid redundant lines */
@@ -17,7 +17,12 @@
     border-bottom: 1px solid #f0f0f0; /* Very subtle line between rows */
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
+    white-space: nowrap; /* Keep text on a single line */
+}
+
+/* NEW: This is for data cells (td) only, to break long words */
+.issues-table td {
+    word-break: break-all; /* Break words to fit within cell, even without spaces */
 }
 
 .issues-table th {
@@ -103,9 +108,7 @@
 
 .table-responsive {
     width: 100%; /* Ensure it takes full available width */
-    /* REMOVED: max-width: 1400px; */ /* This was limiting its initial width */
     margin: 0 auto;
-    /* REMOVED: padding: 0 20px; */ /* This padding should be handled by the section-card */
     overflow-x: auto; /* Add horizontal scrolling for wider tables */
 }
 /* --- END ENTIRE FILE REPLACEMENT --- */
