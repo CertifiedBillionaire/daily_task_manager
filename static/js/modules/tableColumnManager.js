@@ -6,16 +6,13 @@
 export function initTableColumnManager() {
     const table = document.querySelector('.issues-table');
     const headers = table ? table.querySelectorAll('th') : [];
-    // const toolbar = document.getElementById('columnAlignmentToolbar'); // REMOVED: No longer needed
     const issuesToolbarToggle = document.getElementById('issuesToolbarToggle'); // Reference to the new compact toolbar header
 
-    // Removed 'toolbar' from the check, as it's no longer needed
     if (!table || headers.length === 0 || !issuesToolbarToggle) { 
         console.warn("Table Column Manager: Required elements (table, headers, or compact toolbar toggle) not found. Functionality will not be active.");
         return;
     }
 
-    // activeHeader is still useful for future column selection logic
     let activeHeader = null; 
 
     /**
@@ -29,9 +26,7 @@ export function initTableColumnManager() {
             const content = header.nextElementSibling; 
             if (content && content.classList.contains(contentClass)) {
                 header.addEventListener('click', () => {
-                    // --- NEW CODE HERE ---
                     console.log("Issues Toolbar Toggle clicked!"); // Test if click is registered
-                    // --- END NEW CODE ---
                     header.classList.toggle('active');
                     content.classList.toggle('active');
                 });
@@ -43,29 +38,10 @@ export function initTableColumnManager() {
         }
     }
 
-    // REMOVED: showToolbar and hideToolbar functions are no longer needed for the floating toolbar.
-    /*
-    function showToolbar(header) { ... }
-    function hideToolbar() { ... }
-    */
-
-    // REMOVED: Click listeners for each table header to show/hide the floating toolbar
-    /*
-    headers.forEach((header, index) => { ... });
-    */
-
-    // REMOVED: Hide toolbar when clicking anywhere else on the document
-    /*
-    document.addEventListener('click', (event) => { ... });
-    */
-
-    // REMOVED: Handle clicks on the floating toolbar buttons
-    /*
-    toolbar.addEventListener('click', (event) => { ... });
-    */
-
     // Initialize the new compact Issues Toolbar collapsible behavior
-    setupCollapsible('issuesToolbarToggle', 'toolbar-buttons-group'); // MODIFIED: contentClass is now 'toolbar-buttons-group'
+    // --- MODIFIED CODE HERE ---
+    setupCollapsible('issuesToolbarToggle', 'toolbar-buttons-group'); // CORRECTED: contentClass is now 'toolbar-buttons-group'
+    // --- END MODIFIED CODE ---
     console.log("Compact Issues Toolbar collapsible behavior initialized.");
 
     console.log("Table Column Manager initialized.");
