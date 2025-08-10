@@ -18,7 +18,6 @@ export function initTableColumnManager() {
     // activeHeader is still useful for future column selection logic
     let activeHeader = null; 
 
-    // --- NEW CODE HERE ---
     /**
      * Reusable function to set up collapsible behavior for a header and its content.
      * @param {string} headerId The ID of the clickable header element.
@@ -30,6 +29,9 @@ export function initTableColumnManager() {
             const content = header.nextElementSibling; 
             if (content && content.classList.contains(contentClass)) {
                 header.addEventListener('click', () => {
+                    // --- NEW CODE HERE ---
+                    console.log("Issues Toolbar Toggle clicked!"); // Test if click is registered
+                    // --- END NEW CODE ---
                     header.classList.toggle('active');
                     content.classList.toggle('active');
                 });
@@ -40,7 +42,6 @@ export function initTableColumnManager() {
             console.warn(`Collapsible setup: Header element with ID '${headerId}' not found.`);
         }
     }
-    // --- END NEW CODE ---
 
     // REMOVED: showToolbar and hideToolbar functions are no longer needed for the floating toolbar.
     /*
