@@ -9,6 +9,73 @@
             <p>All active and open issues in your arcade.</p>
         </div>
     </div>
+    {# Collapsible section for adding a new issue #}
+    <section class="section-card collapsible-section">
+        <div class="collapsible-header" id="addNewIssueToggle">
+            <h3>Add New Issue</h3>
+            <i class="fas fa-plus toggle-icon"></i> {# Plus icon for "add" #}
+        </div>
+        <div class="collapsible-content">
+            <form id="addNewIssueForm" class="form-grid"> {# Added form-grid for better layout #}
+                <div class="form-group">
+                    <label for="newIssueEquipmentLocation">Equipment / Location:</label>
+                    <input type="text" id="newIssueEquipmentLocation" name="equipment_location" class="form-input" placeholder="e.g., Skee-Ball Lane 3, Front Door" required>
+                </div>
+                <div class="form-group">
+                    <label for="newIssueDescription">Problem Description:</label>
+                    <textarea id="newIssueDescription" name="description" class="form-textarea" rows="3" placeholder="e.g., Ball return jammed, Lock is loose" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="newIssueArea">Area:</label>
+                    <select id="newIssueArea" name="area" class="form-select" required>
+                        <option value="">Select Area</option>
+                        <option value="Arcade">Arcade</option>
+                        <option value="Restroom">Restroom</option>
+                        <option value="Kitchen">Kitchen</option>
+                        <option value="Showroom">Showroom</option>
+                        <option value="Backroom">Backroom</option>
+                        <option value="Exterior">Exterior</option>
+                        <option value="Office">Office</option>
+                        <option value="Adventure Zone">Adventure Zone</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="newIssueCategory">Category / Type:</label>
+                    <select id="newIssueCategory" name="category" class="form-select" required>
+                        <option value="">Select Category</option>
+                        <option value="Lighting">Lighting</option>
+                        <option value="Safety">Safety</option>
+                        <option value="Cosmetic">Cosmetic</option>
+                        <option value="Mechanical">Mechanical</option>
+                        <option value="Electrical">Electrical</option>
+                        <option value="Plumbing">Plumbing</option>
+                        <option value="Cleaning">Cleaning</option>
+                        <option value="Software">Software</option>
+                        <option value="HVAC">HVAC</option>
+                        <option value="Structural">Structural</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="newIssuePriority">Priority:</label>
+                    <select id="newIssuePriority" name="priority" class="form-select" required>
+                        <option value="">Select Priority</option>
+                        <option value="IMMEDIATE">IMMEDIATE</option>
+                        <option value="High">High</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Low">Low</option>
+                        <option value="CLEANING">CLEANING</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="newIssueAssignedTo">Assigned To:</label>
+                    <input type="text" id="newIssueAssignedTo" name="assigned_to" class="form-input" placeholder="e.g., Tech, Self, Contractor">
+                </div>
+                <button type="submit" class="add-task-button form-submit-button">Submit New Issue</button>
+            </form>
+        </div>
+    </section>
     
     <section class="section-card">
         <h2>Current Issues</h2>

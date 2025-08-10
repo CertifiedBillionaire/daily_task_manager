@@ -14,6 +14,8 @@ import { closeModal } from './modules/modal.js';
 import { initIssueOptions } from './modules/issueOptions.js';
 import { initSettingsPageListeners } from './modules/settings.js';
 import { resetOpeningChecklistStatus } from './modules/settings.js';
+import { initAddNewIssueForm } from './modules/addNewIssueForm.js';
+
 
 
 // --- NEW CODE HERE ---
@@ -160,6 +162,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (window.location.pathname === '/issues') {
         // Now that issuesTable.js only has one exported function, we call it here.
         initIssuesTable();
+        initAddNewIssueForm(); // Initialize the new issue form's collapsible behavior
+        console.log("Add New Issue form listeners initialized."); // For debugging
         // And we call the function for the options menu separately.
         initIssueOptions();
     }
