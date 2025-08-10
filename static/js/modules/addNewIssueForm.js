@@ -4,6 +4,11 @@
 // for the "Add New Issue" form on the Issues Management page.
 // =========================================================================
 
+// --- NEW CODE HERE ---
+// Import the refreshIssuesTable function from issuesTable.js
+import { refreshIssuesTable } from './issuesTable.js';
+// --- END NEW CODE ---
+
 /**
  * Sets up collapsible behavior for a given header and its content.
  * This is a reusable utility function.
@@ -37,7 +42,6 @@ export function initAddNewIssueForm() {
     setupCollapsible('addNewIssueToggle', 'collapsible-content');
     console.log("Add New Issue form collapsible behavior initialized.");
 
-    // --- NEW CODE HERE ---
     const addNewIssueForm = document.getElementById('addNewIssueForm');
     const newIssueEquipmentLocation = document.getElementById('newIssueEquipmentLocation');
     const newIssueDescription = document.getElementById('newIssueDescription');
@@ -104,8 +108,11 @@ export function initAddNewIssueForm() {
                 newIssueCategory.value = "";
                 newIssueAssignedTo.value = "";
 
-                // --- Future Step: Refresh the issues table here ---
-                // You will call a function from issuesTable.js here to re-render the table.
+                // --- NEW CODE HERE ---
+                // Refresh the issues table to show the new entry and maintain fixed rows
+                refreshIssuesTable();
+                console.log("Issues table refreshed after new issue submission.");
+                // --- END NEW CODE ---
 
             } catch (error) {
                 window.showToast(`Error adding issue: ${error.message}`, "Error", 5000);
@@ -129,5 +136,4 @@ export function initAddNewIssueForm() {
     } else {
         console.warn("Add New Issue Form: Form element not found.");
     }
-    // --- END NEW CODE ---
 }

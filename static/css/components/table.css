@@ -23,6 +23,8 @@
 /* NEW: This is for data cells (td) only, to break long words */
 .issues-table td {
     word-break: break-all; /* Break words to fit within cell, even without spaces */
+    width: auto; /* NEW: Ensure td's defer to th's width */
+
 }
 
 .issues-table th {

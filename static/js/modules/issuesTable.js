@@ -4,11 +4,22 @@
 // We are only importing initIssueOptions here to make sure it's available.
 import { initIssueOptions } from './issueOptions.js';
 
+// --- NEW CODE HERE ---
+// Exported function to refresh the issues table.
+// This will be called by other modules (e.g., addNewIssueForm.js)
+export function refreshIssuesTable() {
+    fetchAndRenderIssues();
+}
+// --- END NEW CODE ---
+
 export function initIssuesTable() {
     const issuesTableBody = document.getElementById('issuesTableBody');
     const noIssuesMessage = document.getElementById('noIssuesMessage');
 
-    // --- NEW CODE HERE ---
+    const DEFAULT_ROWS_TO_RENDER = 15; // Set a default number of rows to always display
+    // You can increase this to 150 or more once confident in performance.
+    // For now, 15 is good for testing.
+
     /**
      * Helper function to format a date string into YYYY-MM-DD.
      * Returns an empty string if the date is null or invalid.
@@ -34,14 +45,16 @@ export function initIssuesTable() {
             return ''; // Return empty string on error
         }
     }
-    // --- END NEW CODE ---
 
     // This is the main function that fetches and renders the issues.
+    // It is now a local function, called by initIssuesTable and refreshIssuesTable.
     async function fetchAndRenderIssues() {
-        // Show a loading message while we fetch the data
+        // --- MODIFIED CODE HERE ---
+        // Always clear the table body completely before rendering new data
         if (issuesTableBody) {
-            issuesTableBody.innerHTML = '<tr><td colspan="11" style="text-align: center; padding: 20px;">Loading issues...</td></tr>';
+            issuesTableBody.innerHTML = '';
         }
+        // --- END MODIFIED CODE ---
 
         try {
             const response = await fetch('/api/issues');
@@ -50,15 +63,10 @@ export function initIssuesTable() {
             }
             const issues = await response.json();
 
-            // Clear the loading message
-            if (issuesTableBody) {
-                issuesTableBody.innerHTML = '';
-            }
-            
             if (issues.length === 0) {
-                // Display the "No issues found" message
+                // Hide the "No issues found" message if we're always rendering rows
                 if (noIssuesMessage) {
-                    noIssuesMessage.style.display = 'block';
+                    noIssuesMessage.style.display = 'none';
                 }
             } else {
                 // Hide the "No issues found" message if there are issues
@@ -75,14 +83,11 @@ export function initIssuesTable() {
                         row.classList.add('priority-IMMEDIATE');
                     }
                     
-                    // The class names here now match what's in issueOptions.js and issues_table_menu.css
                     row.dataset.issueId = issue.id;
 
-                    // --- MODIFIED CODE HERE ---
-                    // Use the formatDate helper and || '' operator for clean display
                     const formattedDateLogged = formatDate(issue.date_logged);
                     const formattedLastUpdated = formatDate(issue.last_updated);
-                    const formattedTargetDate = formatDate(issue.target_date); // Format target date too
+                    const formattedTargetDate = formatDate(issue.target_date); 
 
                     row.innerHTML = `
                         <td>${issue.id || ''}</td>
@@ -111,12 +116,28 @@ export function initIssuesTable() {
                             </ul>
                         </td>
                     `;
-                    // --- END MODIFIED CODE ---
                     
                     if (issuesTableBody) {
                         issuesTableBody.appendChild(row);
                     }
                 });
+            }
+
+            // Add empty rows if the total number of issues is less than DEFAULT_ROWS_TO_RENDER
+            const existingRowCount = issues.length;
+            if (existingRowCount < DEFAULT_ROWS_TO_RENDER) {
+                for (let i = existingRowCount; i < DEFAULT_ROWS_TO_RENDER; i++) {
+                    const emptyRow = document.createElement('tr');
+                    // Create 12 empty cells (matching the number of columns in your header)
+                    emptyRow.innerHTML = `
+                        <td></td><td></td><td></td><td></td><td></td><td></td>
+                        <td></td><td></td><td></td><td></td><td></td><td></td>
+                    `;
+                    if (issuesTableBody) {
+                        issuesTableBody.appendChild(emptyRow);
+                    }
+                }
+                console.log(`Added ${DEFAULT_ROWS_TO_RENDER - existingRowCount} empty rows.`);
             }
 
         } catch (error) {
