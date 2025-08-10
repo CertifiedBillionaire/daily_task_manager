@@ -174,3 +174,125 @@
     cursor: pointer;
     margin-bottom: 0;
 }
+/* --- NEW CODE HERE --- */
+/* General Collapsible Section Styles (Reusable for Settings, Add New Issue, etc.) */
+.collapsible-section {
+    margin-bottom: 1.5rem; /* Space below the section */
+    border: 1px solid var(--border-color-light);
+    border-radius: var(--border-radius); /* Use global border-radius */
+    overflow: hidden; /* Ensures content doesn't spill out when collapsed */
+    background-color: var(--card-background-color); /* White background for the section */
+    box-shadow: var(--shadow-small); /* Subtle shadow */
+}
+
+.collapsible-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background-color: var(--card-background-color-secondary); /* Lighter background for header */
+    cursor: pointer;
+    border-bottom: 1px solid var(--border-color-light);
+    transition: background-color 0.2s ease-in-out;
+}
+
+.collapsible-header:hover {
+    background-color: #f0f4f8; /* Slightly darker on hover */
+}
+
+.collapsible-header h3, .collapsible-header h4 {
+    margin: 0; /* Remove default margins */
+    font-size: 1.3em;
+    color: var(--text-color-dark);
+}
+
+.collapsible-header .toggle-icon {
+    transition: transform 0.3s ease-in-out;
+    font-size: 1.2em;
+    color: var(--text-color-light);
+}
+
+/* Rotate icon when header is active (expanded) */
+.collapsible-header.active .toggle-icon {
+    transform: rotate(45deg); /* Plus to X, or chevron down to up */
+}
+
+/* Collapsible Content Area */
+.collapsible-content {
+    max-height: 0; /* Initially hidden */
+    overflow: hidden;
+    transition: max-height 0.4s ease-in-out, padding 0.4s ease-in-out;
+    padding: 0 1.5rem; /* No padding when collapsed */
+}
+
+.collapsible-content.active {
+    max-height: 1000px; /* Large enough value to ensure content expands fully */
+    padding: 1.5rem; /* Apply padding when active */
+}
+
+/* Nested Collapsible Sections (for deeper organization, like in Settings) */
+.collapsible-section.nested-section {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    border: none; /* No extra border for nested sections */
+    box-shadow: none; /* No extra shadow for nested sections */
+    background-color: transparent; /* Transparent background */
+}
+
+.nested-section .collapsible-header {
+    background-color: transparent; /* No background for nested header */
+    border-bottom: none;
+    padding: 0.75rem 0; /* Smaller padding for nested header */
+}
+
+.nested-section .collapsible-header h4 {
+    font-size: 1.1em;
+}
+
+.nested-section .collapsible-content {
+    padding: 0.5rem 0; /* Smaller padding for nested content */
+}
+
+.nested-section .collapsible-content.active {
+    padding: 1rem 0;
+}
+
+/* Form Grid for Add New Issue Form */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Two columns */
+    gap: 1rem 2rem; /* Row gap, column gap */
+    align-items: flex-start; /* Align items to the top of their grid cells */
+}
+
+.form-grid .form-group {
+    margin-bottom: 0; /* Remove default margin-bottom as gap handles spacing */
+}
+
+.form-grid .form-group:nth-child(2) { /* Problem Description takes full width */
+    grid-column: span 2;
+}
+
+.form-grid .form-submit-button {
+    grid-column: span 2; /* Submit button takes full width */
+    justify-self: center; /* Center the button */
+    width: auto; /* Allow button to size naturally */
+    padding: 0.8rem 2rem;
+    font-size: 1.1em;
+}
+
+/* Adjustments for smaller screens */
+@media (max-width: 768px) {
+    .form-grid {
+        grid-template-columns: 1fr; /* Single column on smaller screens */
+        gap: 1rem;
+    }
+    .form-grid .form-group:nth-child(2) {
+        grid-column: auto; /* Reset span for description */
+    }
+    .form-grid .form-submit-button {
+        grid-column: auto; /* Reset span for button */
+        width: 100%; /* Full width button */
+    }
+}
+/* --- END NEW CODE --- */
