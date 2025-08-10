@@ -79,14 +79,15 @@
     </section>
     
     <section class="section-card">
-        <div class="section-card-header-with-toolbar"> {# NEW: Wrapper for title and toolbar #}
+        <div class="section-card-header-with-toolbar"> {# Wrapper for title and toolbar #}
             <h2>Current Issues</h2>
-            {# --- NEW CODE HERE --- #}
+            {# --- MODIFIED CODE HERE --- #}
             {# Compact Issues Toolbar #}
             <div class="issues-toolbar-compact" id="issuesToolbarCompact">
                 <div class="toolbar-toggle" id="issuesToolbarToggle">
                     <i class="fas fa-chevron-down toggle-icon"></i>
                 </div>
+                {# The toolbar-buttons-group is now a direct sibling of toolbar-toggle #}
                 <div class="toolbar-buttons-group">
                     {# Placeholder for future buttons like Align, Filter, Sort, etc. #}
                     <button class="toolbar-button" data-action="align-left" title="Align Left"><i class="fas fa-align-left"></i></button>
@@ -95,7 +96,7 @@
                     {# Add more buttons here as needed #}
                 </div>
             </div>
-            {# --- END NEW CODE --- #}
+            {# --- END MODIFIED CODE --- #}
         </div>
         <div class="table-responsive">
             <table class="issues-table">
