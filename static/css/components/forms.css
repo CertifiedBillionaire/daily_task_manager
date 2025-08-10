@@ -328,18 +328,19 @@
     padding: 1rem 2.5rem; /* Larger padding */
     font-size: 1.15em; /* Slightly larger font */
     font-weight: 600;
-    background-color: var(--primary-color); /* Use primary color for submit */
+    background-color: #F44336; /* Changed to red color */
     color: white;
     border-radius: var(--border-radius-small);
-    box-shadow: 0 4px 10px rgba(33, 150, 243, 0.2); /* More prominent shadow */
+    box-shadow: 0 4px 10px rgba(244, 67, 54, 0.2); /* Adjusted shadow color for red */
     transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
 }
 
 .form-grid .form-submit-button:hover {
-    background-color: #1976D2; /* Darker blue on hover */
+    background-color: #D32F2F; /* Darker red on hover */
     transform: translateY(-2px); /* Slight lift */
-    box-shadow: 0 6px 15px rgba(33, 150, 243, 0.3); /* Enhanced shadow on hover */
+    box-shadow: 0 6px 15px rgba(244, 67, 54, 0.3); /* Enhanced shadow for red on hover */
 }
+
 
 .form-grid .form-submit-button:active {
     transform: translateY(0);
