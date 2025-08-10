@@ -49,6 +49,7 @@ export function initAddNewIssueForm() {
     const newIssueCategory = document.getElementById('newIssueCategory');
     const newIssuePriority = document.getElementById('newIssuePriority');
     const newIssueAssignedTo = document.getElementById('newIssueAssignedTo');
+    const notesInput = document.getElementById('newIssueNotes');
 
     if (addNewIssueForm) {
         addNewIssueForm.addEventListener('submit', async (event) => {
@@ -64,6 +65,8 @@ export function initAddNewIssueForm() {
                 assigned_to: newIssueAssignedTo.value.trim(),
                 status: "Open" // Default status for new issues
             };
+            const notes = notesInput ? notesInput.value.trim() : '';
+            issueData.notes = notes;
 
             // Basic client-side validation
             if (!issueData.description || !issueData.priority || !issueData.area || !issueData.equipment_location) {
@@ -107,6 +110,7 @@ export function initAddNewIssueForm() {
                 newIssueArea.value = "";
                 newIssueCategory.value = "";
                 newIssueAssignedTo.value = "";
+                if (notesInput) notesInput.value = '';
 
                 // --- MODIFIED CODE HERE ---
                 // Refresh the issues table to show the new entry and maintain fixed rows

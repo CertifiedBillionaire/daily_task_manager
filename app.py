@@ -447,11 +447,23 @@ def handle_issues():
             # Generate a temporary unique ID for the issue (will be replaced by DB SERIAL in real use)
             issue_id = f"IS-{int(time.time())}" 
 
+            # --- NEW CODE HERE ---
             # Insert new issue into the issues table, setting last_updated automatically
-            cur.execute(sql.SQL("""
-                INSERT INTO issues (id, description, priority, status, area, equipment_location, notes, target_date, assigned_to, last_updated)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP);
-            """), (issue_id, description, priority, status, area, equipment_location, notes, target_date, assigned_to))
+            is_postgres = hasattr(db, 'dsn')
+
+            if is_postgres:
+                # Postgres uses %s placeholders and can keep sql.SQL wrapper
+                cur.execute(sql.SQL("""
+                    INSERT INTO issues (id, description, priority, status, area, equipment_location, notes, target_date, assigned_to, last_updated)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP);
+                """), (issue_id, description, priority, status, area, equipment_location, notes, target_date, assigned_to))
+            else:
+                # SQLite uses ? placeholders; DO NOT use sql.SQL here
+                cur.execute("""
+                    INSERT INTO issues (id, description, priority, status, area, equipment_location, notes, target_date, assigned_to, last_updated)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP);
+                """, (issue_id, description, priority, status, area, equipment_location, notes, target_date, assigned_to))
+            # --- END NEW CODE ---
             
             db.commit() # Commit the changes to save to database
 
