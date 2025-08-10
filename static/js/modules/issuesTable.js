@@ -1,18 +1,18 @@
 /* --- ENTIRE FILE REPLACEMENT --- */
 
-// This file is a module that exports functions to initialize the issues table.
-// We are only importing initIssueOptions here to make sure it's available.
-import { initIssueOptions } from './issueOptions.js';
+// This file is a module that exports functions to fetch issues data.
+// It now uses tableRenderer.js to handle the actual rendering.
 
 // --- NEW CODE HERE ---
-// Define constants and helper functions at a module level (global to this file)
-const DEFAULT_ROWS_TO_RENDER = 25; // Set a default number of rows to always display
-// You can increase this to 150 or more once confident in performance.
-// For now, 15 is good for testing.
+// Import the renderIssuesTable function from the new tableRenderer module
+import { renderIssuesTable } from './tableRenderer.js';
+// --- END NEW CODE ---
 
 /**
  * Helper function to format a date string into YYYY-MM-DD.
  * Returns an empty string if the date is null or invalid.
+ * This function is duplicated here and in tableRenderer.js for now.
+ * It will be moved to a shared utility in a future step.
  * @param {string|null} dateString The date string from the API.
  * @returns {string} Formatted date (YYYY-MM-DD) or empty string.
  */
@@ -22,31 +22,25 @@ function formatDate(dateString) {
     }
     try {
         const date = new Date(dateString);
-        // Check if date is valid (e.g., avoids "Invalid Date" issues)
         if (isNaN(date.getTime())) {
             return '';
         }
         const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+        const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
     } catch (e) {
-        console.error("Error formatting date:", dateString, e);
-        return ''; // Return empty string on error
+        console.error("Error formatting date in issuesTable.js:", dateString, e);
+        return '';
     }
 }
 
-// This is the main function that fetches and renders the issues.
-// MOVED TO MODULE-LEVEL SCOPE so it can be called by refreshIssuesTable
-async function fetchAndRenderIssues() {
-    const issuesTableBody = document.getElementById('issuesTableBody');
-    const noIssuesMessage = document.getElementById('noIssuesMessage');
-
-    // Always clear the table body completely before rendering new data
-    if (issuesTableBody) {
-        issuesTableBody.innerHTML = '';
-    }
-
+/**
+ * Fetches issues data from the API and formats relevant fields.
+ * This function is now responsible ONLY for data retrieval and basic formatting.
+ * @returns {Promise<Array>} A promise that resolves to an array of formatted issue objects.
+ */
+async function fetchIssuesData() {
     try {
         const response = await fetch('/api/issues');
         if (!response.ok) {
@@ -54,104 +48,44 @@ async function fetchAndRenderIssues() {
         }
         const issues = await response.json();
 
-        if (issues.length === 0) {
-            // Hide the "No issues found" message if we're always rendering rows
-            if (noIssuesMessage) {
-                noIssuesMessage.style.display = 'none';
-            }
-        } else {
-            // Hide the "No issues found" message if there are issues
-            if (noIssuesMessage) {
-                noIssuesMessage.style.display = 'none';
-            }
-
-            // Render each issue as a new table row
-            issues.forEach(issue => {
-                const row = document.createElement('tr');
-                
-                // Add a class to the row for a hover effect
-                if (issue.priority === 'IMMEDIATE') {
-                    row.classList.add('priority-IMMEDIATE');
-                }
-                
-                row.dataset.issueId = issue.id;
-
-                const formattedDateLogged = formatDate(issue.date_logged);
-                const formattedLastUpdated = formatDate(issue.last_updated);
-                const formattedTargetDate = formatDate(issue.target_date); 
-
-                row.innerHTML = `
-                    <td>${issue.id || ''}</td>
-                    <td>${issue.priority || ''}</td>
-                    <td>${formattedDateLogged}</td>
-                    <td>${formattedLastUpdated}</td>
-                    <td>${issue.area || ''}</td>
-                    <td>${issue.equipment_location || ''}</td>
-                    <td>${issue.description || ''}</td>
-                    <td>${issue.notes || ''}</td>
-                    <td class="issue-status">${issue.status || ''}</td>
-                    <td>${formattedTargetDate}</td>
-                    <td>${issue.assigned_to || ''}</td>
-                    
-                    <td class="menu-container">
-                        <button class="issue-options-button" aria-label="Issue Options">
-                            <span class="dot"></span>
-                            <span class="dot"></span>
-                            <span class="dot"></span>
-                        </button>
-                        <ul class="issue-options-menu hidden">
-                            <li class="menu-item" data-action="edit">Edit Issue</li>
-                            <li class="menu-item" data-action="mark-resolved">Mark as Resolved</li>
-                            <li class="menu-item" data-action="assign-employee">Assign to Employee</li>
-                            <li class="menu-item red" data-action="delete">Delete Issue</li>
-                        </ul>
-                    </td>
-                `;
-                
-                if (issuesTableBody) {
-                    issuesTableBody.appendChild(row);
-                }
-            });
-        }
-
-        // Add empty rows if the total number of issues is less than DEFAULT_ROWS_TO_RENDER
-        const existingRowCount = issues.length;
-        if (existingRowCount < DEFAULT_ROWS_TO_RENDER) {
-            for (let i = existingRowCount; i < DEFAULT_ROWS_TO_RENDER; i++) {
-                const emptyRow = document.createElement('tr');
-                // Create 12 empty cells (matching the number of columns in your header)
-                emptyRow.innerHTML = `
-                    <td></td><td></td><td></td><td></td><td></td><td></td>
-                    <td></td><td></td><td></td><td></td><td></td><td></td>
-                `;
-                if (issuesTableBody) {
-                    issuesTableBody.appendChild(emptyRow);
-                }
-            }
-            console.log(`Added ${DEFAULT_ROWS_TO_RENDER - existingRowCount} empty rows.`);
-        }
+        // Format dates and ensure all properties exist for consistent rendering
+        return issues.map(issue => ({
+            id: issue.id || '',
+            priority: issue.priority || '',
+            date_logged: formatDate(issue.date_logged),
+            last_updated: formatDate(issue.last_updated),
+            area: issue.area || '',
+            equipment_location: issue.equipment_location || '',
+            description: issue.description || '',
+            notes: issue.notes || '',
+            status: issue.status || '',
+            target_date: formatDate(issue.target_date),
+            assigned_to: issue.assigned_to || ''
+        }));
 
     } catch (error) {
-        // Display an error message if the fetch fails
-        console.error('Failed to fetch issues:', error);
-        const issuesTableBody = document.getElementById('issuesTableBody'); // Re-get reference here
-        if (issuesTableBody) {
-            issuesTableBody.innerHTML = '<tr><td colspan="11" style="text-align: center; padding: 20px; color: #f44336;">Error loading issues. Please check the server.</td></tr>';
-        }
+        console.error('Failed to fetch issues data:', error);
+        return []; 
     }
 }
-// --- END NEW CODE ---
 
-// Exported function to refresh the issues table.
+// Exported function to refresh the issues table data.
 // This will be called by other modules (e.g., addNewIssueForm.js)
-export function refreshIssuesTable() {
-    fetchAndRenderIssues();
+// It now returns the fetched data for external rendering.
+export async function refreshIssuesTableData() {
+    const issues = await fetchIssuesData();
+    // --- NEW CODE HERE ---
+    renderIssuesTable(issues); // Call the renderer to update the table
+    // --- END NEW CODE ---
+    return issues; // Still return issues if other modules need them
 }
 
-export function initIssuesTable() {
-    // No need to get issuesTableBody or noIssuesMessage here, as fetchAndRenderIssues
-    // now gets them directly.
-    
-    // This is the main initialization function
-    fetchAndRenderIssues();
+// initIssuesTable now just calls fetchIssuesData and then renders it.
+export async function initIssuesTable() {
+    console.log("Issues Table Data Module Initialized.");
+    const issues = await fetchIssuesData();
+    // --- NEW CODE HERE ---
+    renderIssuesTable(issues); // Render the initial table
+    // --- END NEW CODE ---
+    return issues;
 }
