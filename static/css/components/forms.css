@@ -361,3 +361,31 @@
         width: 100%;
     }
 }
+/* --- NEW CODE HERE --- */
+.input-with-clear {
+  position: relative;
+}
+.input-with-clear .form-input {
+  padding-right: 2rem; /* room for the X */
+}
+.clear-input-btn {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  font-size: 16px;
+  line-height: 1;
+  padding: 4px;
+  cursor: pointer;
+  opacity: 0.6;
+  display: none;           /* hidden until there’s text */
+}
+.clear-input-btn.show {
+  display: inline-block;   /* show when input has value */
+}
+.clear-input-btn:hover {
+  opacity: 1;
+}
+/* --- END NEW CODE --- */

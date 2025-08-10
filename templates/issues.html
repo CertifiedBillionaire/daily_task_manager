@@ -20,8 +20,12 @@
             <form id="addNewIssueForm" class="form-grid"> {# Added form-grid for better layout #}
                 <div class="form-group">
                     <label for="newIssueEquipmentLocation">Equipment / Location:</label>
-                    <input type="text" id="newIssueEquipmentLocation" name="equipment_location" class="form-input" placeholder="e.g., Skee-Ball Lane 3, Front Door" list="equipmentLocationList" required>                </div>
-                <div class="form-group">
+                    <div class="input-with-clear">
+                    <input type="text" id="newIssueEquipmentLocation" name="equipment_location" class="form-input"
+                            placeholder="e.g., Skee-Ball Lane 3, Front Door" list="equipmentLocationList" required>
+                    <button type="button" id="clearEquipmentLocation" class="clear-input-btn" aria-label="Clear input" title="Clear">×</button>
+                    </div>
+                    <div class="form-group">
                     <datalist id="equipmentLocationList"></datalist>
 
                     <label for="newIssueDescription">Problem Description:</label>

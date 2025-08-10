@@ -23,20 +23,31 @@ async function fetchEquipmentLocations() {
   }
 }
 
-// Put items into the <datalist>
+// Put items into the <datalist>, removing duplicates (case-insensitive, keep newest first)
 function fillEquipmentLocationDatalist(items) {
   const list = document.getElementById('equipmentLocationList');
   if (!list) return;
 
-  list.innerHTML = ''; // clear first
-  items.forEach((val) => {
-    if (!val) return;
+  const seen = new Set();
+  const unique = [];
+
+  for (const raw of items) {
+    if (!raw) continue;
+    const key = String(raw).trim().toLowerCase();
+    if (!key) continue;
+    if (!seen.has(key)) {
+      seen.add(key);
+      unique.push(raw); // keep the first we see (API is newest-first)
+    }
+  }
+
+  list.innerHTML = '';
+  unique.forEach((val) => {
     const opt = document.createElement('option');
     opt.value = String(val);
     list.appendChild(opt);
   });
 }
-// --- END NEW CODE ---
 
 
 /**
@@ -82,6 +93,27 @@ export function initAddNewIssueForm() {
     const newIssuePriority = document.getElementById('newIssuePriority');
     const newIssueAssignedTo = document.getElementById('newIssueAssignedTo');
     const notesInput = document.getElementById('newIssueNotes');
+    const equipmentInput = newIssueEquipmentLocation;
+    const clearBtn = document.getElementById('clearEquipmentLocation');
+
+    if (equipmentInput && clearBtn) {
+    const toggleClear = () => {
+        clearBtn.classList.toggle('show', equipmentInput.value.trim().length > 0);
+    };
+    equipmentInput.addEventListener('input', toggleClear);
+    clearBtn.addEventListener('click', () => {
+        equipmentInput.value = '';
+        equipmentInput.focus();
+        toggleClear();
+    });
+    // set initial state on load
+    toggleClear();
+
+    // also hide after successful submit (place near your other clears)
+    // (you already have addNewIssueForm.reset(); we'll just toggle again)
+    // tip: after your success toast and clears:
+    // if (clearBtn) clearBtn.classList.remove('show');
+    }
 
     if (addNewIssueForm) {
         addNewIssueForm.addEventListener('submit', async (event) => {
@@ -143,6 +175,8 @@ export function initAddNewIssueForm() {
                 newIssueCategory.value = "";
                 newIssueAssignedTo.value = "";
                 if (notesInput) notesInput.value = '';
+                if (clearBtn) clearBtn.classList.remove('show');
+
 
                 // --- MODIFIED CODE HERE ---
                 // Refresh the issues table to show the new entry and maintain fixed rows
