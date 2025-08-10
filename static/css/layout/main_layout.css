@@ -23,6 +23,7 @@
         overflow-y: auto;
         min-height: 0;
         -webkit-overflow-scrolling: touch;
+        position: relative; /* NEW: Crucial for positioning absolute children like the toolbar */
     }
 
     /* Content Header Section */
@@ -73,6 +74,7 @@
     .main-content {
         width: 100%;
         padding: 20px;
+        position: relative; /* NEW: Also apply for mobile layout if toolbar is used */
     }
     
     .content-header {
