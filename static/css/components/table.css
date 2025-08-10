@@ -119,3 +119,29 @@
     padding: 0 20px;
 }
 /* --- END ENTIRE FILE REPLACEMENT --- */
+/* --- NEW CODE HERE --- */
+/* Styles for the resizer handle */
+.resizer {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 10px; /* Width of the draggable area */
+    height: 100%;
+    cursor: col-resize; /* Cursor to indicate resizability */
+    user-select: none; /* Prevent text selection during drag */
+    /* Optional: Add a subtle visual line for debugging/visibility */
+    /* background-color: rgba(0, 0, 0, 0.1); */
+}
+
+/* Ensure th elements are relatively positioned for resizer */
+.issues-table th {
+    position: relative; /* Crucial for positioning the resizer */
+    /* Existing styles for th... */
+}
+
+/* Style for when a resizer is actively being dragged */
+.resizer.is-resizing {
+    background-color: var(--primary-color); /* Highlight color when dragging */
+    opacity: 0.5;
+}
+/* --- END NEW CODE --- */

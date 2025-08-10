@@ -83,22 +83,24 @@
             <table class="issues-table">
                 <thead>
                     <tr>
-                        <th>Issue ID</th>
-                        <th>Priority</th>
-                        <th>Date Added</th>
-                        <th>Last Update</th>
-                        <th>Area</th>
-                        <th>Equipment Name</th>
-                        <th>Problem Description</th>
-                        <th>Notes</th>
-                        <th>Status</th>
-                        <th>Target Date</th>
-                        <th>Assigned Employee</th>
-                        <th></th> 
-                        </tr>
+                        {# --- NEW CODE HERE --- #}
+                        <th>Issue ID <div class="resizer"></div></th>
+                        <th>Priority <div class="resizer"></div></th>
+                        <th>Date Added <div class="resizer"></div></th>
+                        <th>Last Update <div class="resizer"></div></th>
+                        <th>Area <div class="resizer"></div></th>
+                        <th>Equipment Name <div class="resizer"></div></th>
+                        <th>Problem Description <div class="resizer"></div></th>
+                        <th>Notes <div class="resizer"></div></th>
+                        <th>Status <div class="resizer"></div></th>
+                        <th>Target Date <div class="resizer"></div></th>
+                        <th>Assigned Employee <div class="resizer"></div></th>
+                        <th></th> {# No resizer for the last column (options menu) #}
+                        {# --- END NEW CODE --- #}
+                    </tr>
                 </thead>
-                    <tbody id="issuesTableBody">
-                                    </tbody>
+                <tbody id="issuesTableBody">
+                </tbody>
             </table>
         </div>
         <p id="noIssuesMessage" style="text-align: center; padding: 20px; display: none; color: var(--text-color-light);">No active issues found.</p>
