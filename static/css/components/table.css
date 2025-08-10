@@ -104,6 +104,7 @@
     max-width: 1400px; /* Adjust this value as needed */
     margin: 0 auto;
     padding: 0 20px;
+    overflow-x: auto; /* NEW: Add horizontal scrolling for wider tables */
 }
 /* --- END ENTIRE FILE REPLACEMENT --- */
 /* --- NEW CODE HERE --- */
