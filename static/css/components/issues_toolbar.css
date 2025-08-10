@@ -55,7 +55,8 @@
     transform: rotate(180deg);
 }
 
-/* Group for the actual toolbar buttons */
+/* --- MODIFIED CODE HERE --- */
+/* Group for the actual toolbar buttons (now the collapsible content) */
 .toolbar-buttons-group {
     display: flex;
     flex-wrap: nowrap; /* Keep buttons in a single row */
@@ -63,7 +64,7 @@
     max-width: 0; /* Initially hidden (collapsed) */
     overflow: hidden;
     transition: max-width 0.3s ease-in-out, padding 0.3s ease-in-out;
-    padding: 0;
+    padding: 0; /* No padding when collapsed */
 }
 
 /* When toolbar is active, expand the buttons group */
@@ -71,6 +72,7 @@
     max-width: 500px; /* Large enough to show all buttons */
     padding: 6px 10px; /* Padding when expanded */
 }
+/* --- END MODIFIED CODE --- */
 
 /* Individual toolbar buttons */
 .toolbar-button {
