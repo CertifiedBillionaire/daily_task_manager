@@ -34,14 +34,24 @@ export function initTableResizers() {
         console.log("Resizing started for column:", currentHeader.textContent.trim());
     }
 
-    // Function to handle the mouse move event (actual resizing logic will go here later)
+    // --- MODIFIED CODE HERE ---
+    // Function to handle the mouse move event (actual resizing logic)
     function mouseMoveHandler(e) {
         // Prevent text selection during drag
         e.preventDefault(); 
 
-        // For now, just log that dragging is happening
-        // console.log("Resizing column:", currentHeader.textContent.trim(), "Current X:", e.clientX);
+        // Calculate the new width
+        const newWidth = startWidth + (e.clientX - startX);
+        
+        // Apply the new width to the current header
+        // Ensure minimum width to prevent columns from disappearing or becoming too small
+        const MIN_WIDTH = 50; // pixels
+        if (newWidth > MIN_WIDTH) {
+            currentHeader.style.width = `${newWidth}px`;
+            // console.log(`Resizing column: ${currentHeader.textContent.trim()}, New Width: ${newWidth}px`); // For debugging
+        }
     }
+    // --- END MODIFIED CODE ---
 
     // Function to handle the mouse up event (stop resizing)
     function mouseUpHandler() {
