@@ -23,6 +23,7 @@
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
+    display: flex !important; /* NEW: Ensure it overrides display: none; */
 }
 
 .toolbar-button {

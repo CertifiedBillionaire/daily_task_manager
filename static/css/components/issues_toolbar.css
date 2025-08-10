@@ -1,0 +1,102 @@
+/* =========================================================================
+// ARCADE MANAGER - ISSUES TOOLBAR STYLES
+// This file contains styles for the compact, collapsible toolbar on the Issues Management page.
+// ========================================================================= */
+
+.issues-toolbar-container {
+    background-color: var(--card-background-color); /* White background */
+    border: 1px solid var(--border-color-light);
+    border-radius: var(--border-radius); /* Use global border-radius */
+    box-shadow: var(--shadow-small); /* Subtle shadow */
+    margin-bottom: 1.5rem; /* Space below the toolbar */
+    overflow: hidden; /* Ensures content doesn't spill out when collapsed */
+}
+
+.issues-toolbar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1.25rem; /* Smaller padding for a compact look */
+    background-color: var(--card-background-color-secondary); /* Lighter background for header */
+    cursor: pointer;
+    border-bottom: 1px solid var(--border-color-light);
+    transition: background-color 0.2s ease-in-out;
+}
+
+.issues-toolbar-header:hover {
+    background-color: #f0f4f8; /* Slightly darker on hover */
+}
+
+.issues-toolbar-header span {
+    margin: 0;
+    font-size: 1em; /* Smaller font size for subtlety */
+    font-weight: 600;
+    color: var(--text-color-dark);
+}
+
+.issues-toolbar-header .toggle-icon {
+    transition: transform 0.3s ease-in-out;
+    font-size: 0.9em; /* Smaller icon */
+    color: var(--text-color-light);
+}
+
+/* Rotate icon when header is active (expanded) */
+.issues-toolbar-header.active .toggle-icon {
+    transform: rotate(180deg); /* Chevron down to up */
+}
+
+.issues-toolbar-content {
+    max-height: 0; /* Initially hidden */
+    overflow: hidden;
+    transition: max-height 0.4s ease-in-out, padding 0.4s ease-in-out;
+    padding: 0 1.25rem; /* No padding when collapsed */
+}
+
+.issues-toolbar-content.active {
+    max-height: 200px; /* Max height for content (adjust as more buttons are added) */
+    padding: 0.75rem 1.25rem; /* Apply padding when active */
+}
+
+.toolbar-buttons-group {
+    display: flex;
+    flex-wrap: wrap; /* Allow buttons to wrap to next line */
+    gap: 5px; /* Small gap between buttons */
+    align-items: center;
+}
+
+.toolbar-button {
+    background-color: transparent; /* No background by default */
+    border: 1px solid var(--border-color-light); /* Subtle border */
+    padding: 6px 10px; /* Small padding for compact buttons */
+    cursor: pointer;
+    font-size: 0.9em; /* Small font size */
+    color: var(--text-color-light);
+    border-radius: var(--border-radius-small);
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    display: flex; /* For icon + text alignment */
+    align-items: center;
+    gap: 5px; /* Space between icon and text if any */
+}
+
+.toolbar-button i {
+    font-size: 1em; /* Icon size */
+}
+
+.toolbar-button:hover {
+    background-color: var(--background-color-medium); /* Light hover background */
+    color: var(--primary-color); /* Primary color on hover */
+    border-color: var(--primary-color); /* Highlight border on hover */
+}
+
+/* Style for active (selected) toolbar buttons */
+.toolbar-button.active {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+    box-shadow: 0 2px 5px rgba(33, 150, 243, 0.2);
+}
+
+.toolbar-button.active:hover {
+    background-color: var(--primary-color); /* Keep primary color on hover when active */
+    color: white;
+}
