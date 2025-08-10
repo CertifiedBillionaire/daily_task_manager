@@ -95,6 +95,11 @@ export function initTableResizers() {
 
         console.log("Resizing stopped for column:", currentHeader.textContent.trim());
 
+                // Save current column widths to localStorage
+        const currentColumnWidths = Array.from(headers).map(header => header.offsetWidth);
+        localStorage.setItem('issuesTableColumnWidths', JSON.stringify(currentColumnWidths));
+        console.log("Column widths saved to localStorage:", currentColumnWidths);
+
         // --- Future Step: Save column widths to localStorage here ---
         // This will now save the new pixel widths applied by JS
     }
