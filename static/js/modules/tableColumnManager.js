@@ -7,11 +7,20 @@ export function initTableColumnManager() {
     const table = document.querySelector('.issues-table');
     const headers = table ? table.querySelectorAll('th') : [];
     const issuesToolbarToggle = document.getElementById('issuesToolbarToggle'); // Reference to the new compact toolbar header
+    const issuesToolbarCompact = document.getElementById('issuesToolbarCompact'); // The toolbar container we want to open/close
 
-    if (!table || headers.length === 0 || !issuesToolbarToggle) { 
-        console.warn("Table Column Manager: Required elements (table, headers, or compact toolbar toggle) not found. Functionality will not be active.");
+    if (!table || headers.length === 0 || !issuesToolbarToggle || !issuesToolbarCompact) { 
+        console.warn("Table Column Manager: Required elements (table, headers, toolbar toggle, or toolbar container) not found. Functionality will not be active.");
         return;
     }
+
+    // --- NEW CODE HERE ---
+    // Make the chevron toggle the whole compact toolbar by adding/removing 'active'
+    issuesToolbarToggle.addEventListener('click', () => {
+        console.log("Issues Toolbar Toggle clicked!");
+        issuesToolbarCompact.classList.toggle('active'); // this triggers your CSS to expand/collapse
+    });
+    // --- END NEW CODE ---
 
     let activeHeader = null; 
 
@@ -39,10 +48,8 @@ export function initTableColumnManager() {
     }
 
     // Initialize the new compact Issues Toolbar collapsible behavior
-    // --- MODIFIED CODE HERE ---
-    setupCollapsible('issuesToolbarToggle', 'toolbar-buttons-group'); // CORRECTED: contentClass is now 'toolbar-buttons-group'
-    // --- END MODIFIED CODE ---
+    // --- NEW CODE HERE ---
+    // setupCollapsible('issuesToolbarToggle', 'toolbar-buttons-group'); // (disabled) old approach toggled the wrong element
     console.log("Compact Issues Toolbar collapsible behavior initialized.");
-
-    console.log("Table Column Manager initialized.");
+    // --- END NEW CODE ---
 }
