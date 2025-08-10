@@ -17,7 +17,6 @@ export function initTableResizers() {
     let currentHeader; // The <th> element being resized
     let initialTableWidth; // To store the table's width when resizing starts
 
-    // --- NEW CODE HERE ---
     // Define default widths for each column in pixels
     // These values are chosen to provide a good initial layout for your table.
     // Adjust these values as needed for your specific content.
@@ -36,17 +35,36 @@ export function initTableResizers() {
         50   // Last column (options menu) - small fixed width
     ];
 
-    // Apply initial widths on load
-    let totalInitialWidth = 0;
+    // --- MODIFIED CODE HERE ---
+    // Try to load saved widths from localStorage, otherwise use defaults
+    let loadedWidths = [];
+    const savedWidths = localStorage.getItem('issuesTableColumnWidths');
+    if (savedWidths) {
+        try {
+            loadedWidths = JSON.parse(savedWidths);
+            // Basic validation: ensure loadedWidths has correct number of columns
+            if (loadedWidths.length !== headers.length) {
+                console.warn("Loaded column widths count mismatch. Using default widths.");
+                loadedWidths = []; // Fallback to default if mismatch
+            }
+        } catch (e) {
+            console.error("Error parsing saved column widths from localStorage:", e);
+            loadedWidths = []; // Fallback to default on parse error
+        }
+    }
+
+    // Apply initial/loaded widths on load
+    let totalTableWidth = 0;
     headers.forEach((header, index) => {
-        if (DEFAULT_COLUMN_WIDTHS[index]) {
-            header.style.width = `${DEFAULT_COLUMN_WIDTHS[index]}px`;
-            totalInitialWidth += DEFAULT_COLUMN_WIDTHS[index];
+        const widthToApply = loadedWidths[index] || DEFAULT_COLUMN_WIDTHS[index];
+        if (widthToApply) {
+            header.style.width = `${widthToApply}px`;
+            totalTableWidth += widthToApply;
         }
     });
-    table.style.width = `${totalInitialWidth}px`; // Set the overall table width
-    console.log("Table initialized with default column widths. Total width:", totalInitialWidth);
-    // --- END NEW CODE ---
+    table.style.width = `${totalTableWidth}px`; // Set the overall table width
+    console.log("Table initialized with column widths. Total width:", totalTableWidth, " (Loaded:", loadedWidths.length > 0, ")");
+    // --- END MODIFIED CODE ---
 
     // Function to handle the mouse down event on a resizer
     function mouseDownHandler(e) {
@@ -95,13 +113,10 @@ export function initTableResizers() {
 
         console.log("Resizing stopped for column:", currentHeader.textContent.trim());
 
-                // Save current column widths to localStorage
+        // Save current column widths to localStorage
         const currentColumnWidths = Array.from(headers).map(header => header.offsetWidth);
         localStorage.setItem('issuesTableColumnWidths', JSON.stringify(currentColumnWidths));
         console.log("Column widths saved to localStorage:", currentColumnWidths);
-
-        // --- Future Step: Save column widths to localStorage here ---
-        // This will now save the new pixel widths applied by JS
     }
 
     // Attach mouse down listeners to all resizer elements
