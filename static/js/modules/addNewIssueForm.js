@@ -4,10 +4,10 @@
 // for the "Add New Issue" form on the Issues Management page.
 // =========================================================================
 
-// --- NEW CODE HERE ---
-// Import the refreshIssuesTable function from issuesTable.js
-import { refreshIssuesTable } from './issuesTable.js';
-// --- END NEW CODE ---
+// --- MODIFIED CODE HERE ---
+// Import the refreshIssuesTableData function from issuesTable.js
+import { refreshIssuesTableData } from './issuesTable.js';
+// --- END MODIFIED CODE ---
 
 /**
  * Sets up collapsible behavior for a given header and its content.
@@ -108,11 +108,11 @@ export function initAddNewIssueForm() {
                 newIssueCategory.value = "";
                 newIssueAssignedTo.value = "";
 
-                // --- NEW CODE HERE ---
+                // --- MODIFIED CODE HERE ---
                 // Refresh the issues table to show the new entry and maintain fixed rows
-                refreshIssuesTable();
+                refreshIssuesTableData(); // Call the correctly named function
                 console.log("Issues table refreshed after new issue submission.");
-                // --- END NEW CODE ---
+                // --- END MODIFIED CODE ---
 
             } catch (error) {
                 window.showToast(`Error adding issue: ${error.message}`, "Error", 5000);
