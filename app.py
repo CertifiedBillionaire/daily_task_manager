@@ -76,7 +76,10 @@ def init_db():
     db = get_db()
     is_postgres = hasattr(db, 'dsn')
 
-    with db.cursor() as cur:
+    # --- NEW CODE HERE ---
+    # sqlite doesn't support "with db.cursor() as cur:", so use manual open/close
+    cur = db.cursor()
+    try:
         # --- Create 'issues' table with all columns ---
         # This will create the table on a fresh DB, or do nothing if it exists.
         cur.execute("""
@@ -95,8 +98,8 @@ def init_db():
             );
         """)
         db.commit()
-        
-        # --- Run ALTER TABLE commands to add missing columns ---
+
+        # --- Run ALTER TABLE commands to add missing columns (Postgres only) ---
         if is_postgres:
             try:
                 # Add 'area' column if it's missing from an old table
@@ -157,6 +160,10 @@ def init_db():
                 recurrence_pattern TEXT
             );
         """)
+        db.commit()
+    finally:
+        cur.close()
+    # --- END NEW CODE ---
 
     db.commit()
     print("Database initialized or already exists.")
@@ -392,20 +399,26 @@ def handle_issues():
             """)
             issues_from_db = cur.fetchall() # Fetch all results as tuples
 
+            def safe_iso(val):
+                """Return ISO string for datetimes/dates if possible; else string or None."""
+                if val is None:
+                    return None
+                return val.isoformat() if hasattr(val, "isoformat") else str(val)
+
             # Convert fetched tuples into a list of dictionaries for JSON response
             issue_list = []
             for issue in issues_from_db:
                 issue_list.append({
                     "id": issue[0],
                     "priority": issue[1],
-                    "date_logged": issue[2].isoformat() if issue[2] else None, # Convert datetime to string, handle None
-                    "last_updated": issue[3].isoformat() if issue[3] else None, # Convert datetime to string, handle None
+                    "date_logged": safe_iso(issue[2]), # Convert datetime to string, handle None
+                    "last_updated": safe_iso(issue[3]), # Convert datetime to string, handle None
                     "area": issue[4],
                     "equipment_location": issue[5],
                     "description": issue[6],
                     "notes": issue[7],
                     "status": issue[8],
-                    "target_date": issue[9].isoformat() if issue[9] else None, # Convert date to string, handle None
+                    "target_date": safe_iso(issue[9]), # Convert date to string, handle None
                     "assigned_to": issue[10]
                 })
             return jsonify(issue_list)

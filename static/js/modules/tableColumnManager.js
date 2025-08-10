@@ -64,11 +64,15 @@ export function initTableColumnManager() {
         });
     });
 
-    // Deselect column if click is outside the issues table
+    // Deselect column only if click is outside BOTH the table and the toolbar
     document.addEventListener('click', (event) => {
         const tableWrapper = document.querySelector('.issues-table');
-        // if click is NOT inside the table
-        if (tableWrapper && !tableWrapper.contains(event.target)) {
+        const toolbarWrapper = document.getElementById('issuesToolbarCompact');
+
+        const clickInsideTable  = tableWrapper && tableWrapper.contains(event.target);
+        const clickInsideToolbar = toolbarWrapper && toolbarWrapper.contains(event.target);
+
+        if (!clickInsideTable && !clickInsideToolbar) {
             activeColIndex = -1; // reset active column
             clearColumnSelection();
         }
