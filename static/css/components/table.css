@@ -1,7 +1,8 @@
 /* --- ENTIRE FILE REPLACEMENT --- */
 /* This file contains styling for the issues table. */
 .issues-table {
-    width: 100%;
+    width: 100%; /* Ensure table takes 100% of its parent's width */
+    min-width: 100%; /* NEW: Crucial - table will at least be 100% wide */
     border-collapse: collapse;
     margin-top: 20px;
     font-size: 0.9em;
@@ -101,10 +102,11 @@
 }
 
 .table-responsive {
-    max-width: 1400px; /* Adjust this value as needed */
+    width: 100%; /* Ensure it takes full available width */
+    /* REMOVED: max-width: 1400px; */ /* This was limiting its initial width */
     margin: 0 auto;
-    padding: 0 20px;
-    overflow-x: auto; /* NEW: Add horizontal scrolling for wider tables */
+    /* REMOVED: padding: 0 20px; */ /* This padding should be handled by the section-card */
+    overflow-x: auto; /* Add horizontal scrolling for wider tables */
 }
 /* --- END ENTIRE FILE REPLACEMENT --- */
 /* --- NEW CODE HERE --- */
