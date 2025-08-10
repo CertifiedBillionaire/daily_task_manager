@@ -1,0 +1,54 @@
+/* =========================================================================
+// ARCADE MANAGER - TABLE TOOLBAR STYLES
+// This file contains styles for the floating column alignment toolbar.
+// ========================================================================= */
+
+#columnAlignmentToolbar {
+    position: absolute; /* Will be positioned relative to its offset parent (main-content) */
+    background-color: var(--card-background-color); /* White background */
+    border: 1px solid var(--border-color-light);
+    border-radius: var(--border-radius-small);
+    box-shadow: var(--shadow-medium);
+    display: flex; /* Arrange buttons in a row */
+    gap: 2px; /* Small gap between buttons */
+    padding: 5px;
+    z-index: 50; /* Ensure it floats above table content */
+    opacity: 0; /* Start hidden */
+    visibility: hidden; /* Hide from screen readers when not active */
+    transform: translateY(10px); /* Start slightly below final position */
+    transition: opacity 0.2s ease-out, transform 0.2s ease-out, visibility 0.2s;
+}
+
+#columnAlignmentToolbar.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.toolbar-button {
+    background: none; /* No background by default */
+    border: none;
+    padding: 8px 10px;
+    cursor: pointer;
+    font-size: 1.1em;
+    color: var(--text-color-light); /* Lighter text color */
+    border-radius: 4px; /* Small rounded corners for buttons */
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.toolbar-button:hover {
+    background-color: var(--background-color-medium); /* Light hover background */
+    color: var(--primary-color); /* Primary color on hover */
+}
+
+/* Style for active (selected) alignment button */
+.toolbar-button.active {
+    background-color: var(--primary-color);
+    color: white;
+    box-shadow: 0 2px 5px rgba(33, 150, 243, 0.2);
+}
+
+.toolbar-button.active:hover {
+    background-color: var(--primary-color); /* Keep primary color on hover when active */
+    color: white;
+}

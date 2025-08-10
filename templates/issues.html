@@ -105,7 +105,12 @@
         </div>
         <p id="noIssuesMessage" style="text-align: center; padding: 20px; display: none; color: var(--text-color-light);">No active issues found.</p>
     </section>
-
+    {# Floating toolbar for column alignment options #}
+    <div id="columnAlignmentToolbar" class="column-toolbar hidden">
+        <button class="toolbar-button" data-align="left" title="Align Left"><i class="fas fa-align-left"></i></button>
+        <button class="toolbar-button" data-align="center" title="Align Center"><i class="fas fa-align-center"></i></button>
+        <button class="toolbar-button" data-align="right" title="Align Right"><i class="fas fa-align-right"></i></button>
+    </div>
 {% endblock %}
 
 <link rel="stylesheet" href="{{ url_for('static', filename='css/components/issues_table_menu.css') }}">
