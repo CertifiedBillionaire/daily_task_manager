@@ -296,3 +296,42 @@
     }
 }
 /* --- END NEW CODE --- */
+/* --- NEW CODE HERE --- */
+/* Basic styling for all form inputs, textareas, and selects within a form-group */
+.form-group input[type="text"],
+.form-group textarea,
+.form-group select,
+.form-group input[type="number"] { /* Added number type as well */
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-small);
+    background-color: var(--input-background-color);
+    color: var(--text-color);
+    font-size: 1em;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group input[type="text"]:focus,
+.form-group textarea:focus,
+.form-group select:focus,
+.form-group input[type="number"]:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.2);
+}
+
+.form-group textarea {
+    resize: vertical; /* Allow vertical resizing */
+    min-height: 80px; /* Ensure it has a decent starting height */
+}
+
+.form-group select {
+    appearance: none; /* Remove default system styling for dropdowns */
+    -webkit-appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%23666666" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>'); /* Custom dropdown arrow */
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 30px; /* Make space for the custom arrow */
+}
+/* --- END NEW CODE --- */
