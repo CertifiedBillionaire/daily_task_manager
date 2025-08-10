@@ -63,6 +63,16 @@ export function initTableColumnManager() {
             console.log('Active column:', idx);
         });
     });
+
+    // Deselect column if click is outside the issues table
+    document.addEventListener('click', (event) => {
+        const tableWrapper = document.querySelector('.issues-table');
+        // if click is NOT inside the table
+        if (tableWrapper && !tableWrapper.contains(event.target)) {
+            activeColIndex = -1; // reset active column
+            clearColumnSelection();
+        }
+    });
     // --- END NEW CODE ---
 
 
