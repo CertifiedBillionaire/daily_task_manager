@@ -15,6 +15,8 @@ import { initIssueOptions } from './modules/issueOptions.js';
 import { initSettingsPageListeners } from './modules/settings.js';
 import { resetOpeningChecklistStatus } from './modules/settings.js';
 import { initAddNewIssueForm } from './modules/addNewIssueForm.js';
+import { initTableResizers } from './modules/tableResizer.js';
+
 
 
 
@@ -166,6 +168,8 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("Add New Issue form listeners initialized."); // For debugging
         // And we call the function for the options menu separately.
         initIssueOptions();
+        initTableResizers(); // Initialize table column resizing
+        console.log("Table resizers initialized for Issues page."); // For debugging
     }
     
 
