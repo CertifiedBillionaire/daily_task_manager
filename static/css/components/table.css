@@ -6,6 +6,7 @@
     margin-top: 20px;
     font-size: 0.9em;
     border: 1px solid #e0e0e0; /* Subtle border around the entire table */
+    table-layout: fixed; /* NEW: This is crucial for fixed column widths */
 }
 
 /* We removed the individual bottom borders to avoid redundant lines */

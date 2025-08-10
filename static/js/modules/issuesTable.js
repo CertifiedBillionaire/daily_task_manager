@@ -8,6 +8,34 @@ export function initIssuesTable() {
     const issuesTableBody = document.getElementById('issuesTableBody');
     const noIssuesMessage = document.getElementById('noIssuesMessage');
 
+    // --- NEW CODE HERE ---
+    /**
+     * Helper function to format a date string into YYYY-MM-DD.
+     * Returns an empty string if the date is null or invalid.
+     * @param {string|null} dateString The date string from the API.
+     * @returns {string} Formatted date (YYYY-MM-DD) or empty string.
+     */
+    function formatDate(dateString) {
+        if (!dateString) {
+            return '';
+        }
+        try {
+            const date = new Date(dateString);
+            // Check if date is valid (e.g., avoids "Invalid Date" issues)
+            if (isNaN(date.getTime())) {
+                return '';
+            }
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        } catch (e) {
+            console.error("Error formatting date:", dateString, e);
+            return ''; // Return empty string on error
+        }
+    }
+    // --- END NEW CODE ---
+
     // This is the main function that fetches and renders the issues.
     async function fetchAndRenderIssues() {
         // Show a loading message while we fetch the data
@@ -47,23 +75,26 @@ export function initIssuesTable() {
                         row.classList.add('priority-IMMEDIATE');
                     }
                     
-                    // Create color-coded badges for priority and status (badges are not rendered here, just values)
                     // The class names here now match what's in issueOptions.js and issues_table_menu.css
                     row.dataset.issueId = issue.id;
 
-                    // --- NEW CODE HERE ---
-                    // Use the || '' operator to display empty string instead of null/undefined
+                    // --- MODIFIED CODE HERE ---
+                    // Use the formatDate helper and || '' operator for clean display
+                    const formattedDateLogged = formatDate(issue.date_logged);
+                    const formattedLastUpdated = formatDate(issue.last_updated);
+                    const formattedTargetDate = formatDate(issue.target_date); // Format target date too
+
                     row.innerHTML = `
                         <td>${issue.id || ''}</td>
                         <td>${issue.priority || ''}</td>
-                        <td>${issue.date_logged || ''}</td>
-                        <td>${issue.last_updated || ''}</td>
+                        <td>${formattedDateLogged}</td>
+                        <td>${formattedLastUpdated}</td>
                         <td>${issue.area || ''}</td>
                         <td>${issue.equipment_location || ''}</td>
                         <td>${issue.description || ''}</td>
                         <td>${issue.notes || ''}</td>
                         <td class="issue-status">${issue.status || ''}</td>
-                        <td>${issue.target_date || ''}</td>
+                        <td>${formattedTargetDate}</td>
                         <td>${issue.assigned_to || ''}</td>
                         
                         <td class="menu-container">
@@ -80,7 +111,7 @@ export function initIssuesTable() {
                             </ul>
                         </td>
                     `;
-                    // --- END NEW CODE ---
+                    // --- END MODIFIED CODE ---
                     
                     if (issuesTableBody) {
                         issuesTableBody.appendChild(row);
