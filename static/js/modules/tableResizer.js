@@ -16,6 +16,7 @@ export function initTableResizers() {
     let startWidth;
     let currentHeader; // The <th> element being resized
     let initialTableWidth; // To store the table's width when resizing starts
+    let currentColumnCells; // NEW: To store all <td> elements in the current column
 
     // Define default widths for each column in pixels
     // These values are chosen to provide a good initial layout for your table.
@@ -36,6 +37,19 @@ export function initTableResizers() {
     ];
 
     // --- MODIFIED CODE HERE ---
+    // Function to apply widths to both header and all cells in a column
+    function applyColumnWidth(colIndex, width) {
+        const header = headers[colIndex];
+        if (header) {
+            header.style.width = `${width}px`;
+        }
+        // Get all cells in this column (from all rows)
+        const allCellsInColumn = table.querySelectorAll(`td:nth-child(${colIndex + 1})`);
+        allCellsInColumn.forEach(cell => {
+            cell.style.width = `${width}px`;
+        });
+    }
+
     // Try to load saved widths from localStorage, otherwise use defaults
     let loadedWidths = [];
     const savedWidths = localStorage.getItem('issuesTableColumnWidths');
@@ -53,12 +67,12 @@ export function initTableResizers() {
         }
     }
 
-    // Apply initial/loaded widths on load
+    // Apply initial/loaded widths on load to both TH and TD elements
     let totalTableWidth = 0;
     headers.forEach((header, index) => {
         const widthToApply = loadedWidths[index] || DEFAULT_COLUMN_WIDTHS[index];
         if (widthToApply) {
-            header.style.width = `${widthToApply}px`;
+            applyColumnWidth(index, widthToApply); // Use the new helper function
             totalTableWidth += widthToApply;
         }
     });
@@ -70,6 +84,9 @@ export function initTableResizers() {
     function mouseDownHandler(e) {
         currentResizer = e.target;
         currentHeader = currentResizer.parentElement; // The <th> element
+        const colIndex = Array.from(headers).indexOf(currentHeader); // Get the index of the current header
+        currentColumnCells = table.querySelectorAll(`td:nth-child(${colIndex + 1})`); // NEW: Get all cells in this column
+
         startX = e.clientX; // Initial mouse X position
         startWidth = currentHeader.offsetWidth; // Initial width of the header
         initialTableWidth = table.offsetWidth; // Capture table's initial width
@@ -95,7 +112,13 @@ export function initTableResizers() {
         // Ensure minimum width for the column
         const MIN_COLUMN_WIDTH = 50; // pixels
         if (newColumnWidth > MIN_COLUMN_WIDTH) {
-            currentHeader.style.width = `${newColumnWidth}px`; // Apply new width to the column header
+            // Apply new width to the header
+            currentHeader.style.width = `${newColumnWidth}px`; 
+            
+            // NEW: Apply new width to all cells in the current column
+            currentColumnCells.forEach(cell => {
+                cell.style.width = `${newColumnWidth}px`;
+            });
 
             // Adjust the overall table width
             table.style.width = `${initialTableWidth + deltaX}px`; 
