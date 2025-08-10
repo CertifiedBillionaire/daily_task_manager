@@ -24,6 +24,48 @@ export function initTableColumnManager() {
 
     let activeHeader = null; 
 
+        // --- NEW CODE HERE ---
+    // Track which column is active
+    let activeColIndex = -1;
+
+    // helper: clear old selection
+    function clearColumnSelection() {
+        // clear header highlight
+        headers.forEach(h => h.classList.remove('col-selected'));
+        // clear cells highlight
+        const rows = table.querySelectorAll('tbody tr');
+        rows.forEach(row => {
+            const tds = row.querySelectorAll('td');
+            tds.forEach(td => td.classList.remove('col-selected'));
+        });
+    }
+
+    // helper: apply selection to header + cells
+    function applyColumnSelection(colIndex) {
+        if (colIndex < 0) return;
+        // highlight header
+        headers[colIndex]?.classList.add('col-selected');
+
+        // highlight each cell in that column
+        const rows = table.querySelectorAll('tbody tr');
+        rows.forEach(row => {
+            const tds = row.querySelectorAll('td');
+            if (tds[colIndex]) tds[colIndex].classList.add('col-selected');
+        });
+    }
+
+    // click on a header selects that column
+    headers.forEach((th, idx) => {
+        th.addEventListener('click', () => {
+            activeColIndex = idx;          // remember which column was clicked
+            clearColumnSelection();        // remove old highlight
+            applyColumnSelection(idx);     // add new highlight
+            console.log('Active column:', idx);
+        });
+    });
+    // --- END NEW CODE ---
+
+
     /**
      * Reusable function to set up collapsible behavior for a header and its content.
      * @param {string} headerId The ID of the clickable header element.

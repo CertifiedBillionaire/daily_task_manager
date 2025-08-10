@@ -140,3 +140,12 @@
     opacity: 0.5;
 }
 /* --- END NEW CODE --- */
+/* Visual highlight for the selected column */
+th.col-selected {
+    outline: 2px solid var(--primary-color);
+    outline-offset: -2px;
+}
+
+td.col-selected {
+    background: rgba(0,0,0,0.04); /* subtle */
+}
