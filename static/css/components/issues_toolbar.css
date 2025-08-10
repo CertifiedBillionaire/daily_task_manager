@@ -3,100 +3,131 @@
 // This file contains styles for the compact, collapsible toolbar on the Issues Management page.
 // ========================================================================= */
 
-.issues-toolbar-container {
-    background-color: var(--card-background-color); /* White background */
-    border: 1px solid var(--border-color-light);
-    border-radius: var(--border-radius); /* Use global border-radius */
-    box-shadow: var(--shadow-small); /* Subtle shadow */
-    margin-bottom: 1.5rem; /* Space below the toolbar */
-    overflow: hidden; /* Ensures content doesn't spill out when collapsed */
-}
-
-.issues-toolbar-header {
+/* Wrapper for the H2 title and the compact toolbar */
+.section-card-header-with-toolbar {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.75rem 1.25rem; /* Smaller padding for a compact look */
-    background-color: var(--card-background-color-secondary); /* Lighter background for header */
-    cursor: pointer;
-    border-bottom: 1px solid var(--border-color-light);
-    transition: background-color 0.2s ease-in-out;
+    justify-content: space-between; /* Pushes title to left, toolbar to right */
+    align-items: center; /* Vertically centers title and toolbar */
+    margin-bottom: 1.5rem; /* Space below this header group */
+    padding-bottom: 0.5rem; /* Small padding at bottom of this header group */
+    border-bottom: 1px solid var(--border-color-light); /* Subtle separator */
 }
 
-.issues-toolbar-header:hover {
-    background-color: #f0f4f8; /* Slightly darker on hover */
-}
-
-.issues-toolbar-header span {
-    margin: 0;
-    font-size: 1em; /* Smaller font size for subtlety */
-    font-weight: 600;
+.section-card-header-with-toolbar h2 {
+    margin: 0; /* Remove default margin to align properly */
+    font-size: 1.5em; /* Adjust font size if needed for better fit */
     color: var(--text-color-dark);
 }
 
-.issues-toolbar-header .toggle-icon {
-    transition: transform 0.3s ease-in-out;
-    font-size: 0.9em; /* Smaller icon */
+/* Main container for the compact toolbar */
+.issues-toolbar-compact {
+    display: flex; /* Arrange toggle and buttons side-by-side */
+    align-items: center;
+    background-color: var(--background-color-medium); /* Subtle background */
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-small);
+    box-shadow: var(--shadow-small);
+    overflow: hidden; /* Hide overflowing content when collapsed */
+    transition: all 0.3s ease-in-out; /* Smooth transitions for width/height */
+}
+
+/* Collapsible toggle button/area */
+.toolbar-toggle {
+    padding: 6px 10px; /* Small padding */
+    cursor: pointer;
+    background-color: var(--card-background-color-secondary); /* Lighter background for toggle */
+    border-right: 1px solid var(--border-color); /* Separator from buttons */
+    transition: background-color 0.2s ease;
+}
+
+.toolbar-toggle:hover {
+    background-color: #e0e4e8; /* Slightly darker on hover */
+}
+
+.toolbar-toggle .toggle-icon {
+    font-size: 0.9em; /* Small icon */
     color: var(--text-color-light);
+    transition: transform 0.3s ease-in-out;
 }
 
-/* Rotate icon when header is active (expanded) */
-.issues-toolbar-header.active .toggle-icon {
-    transform: rotate(180deg); /* Chevron down to up */
+/* Rotate icon when toolbar is active (expanded) */
+.issues-toolbar-compact.active .toolbar-toggle .toggle-icon {
+    transform: rotate(180deg);
 }
 
-.issues-toolbar-content {
-    max-height: 0; /* Initially hidden */
-    overflow: hidden;
-    transition: max-height 0.4s ease-in-out, padding 0.4s ease-in-out;
-    padding: 0 1.25rem; /* No padding when collapsed */
-}
-
-.issues-toolbar-content.active {
-    max-height: 200px; /* Max height for content (adjust as more buttons are added) */
-    padding: 0.75rem 1.25rem; /* Apply padding when active */
-}
-
+/* Group for the actual toolbar buttons */
 .toolbar-buttons-group {
     display: flex;
-    flex-wrap: wrap; /* Allow buttons to wrap to next line */
-    gap: 5px; /* Small gap between buttons */
+    flex-wrap: nowrap; /* Keep buttons in a single row */
     align-items: center;
+    max-width: 0; /* Initially hidden (collapsed) */
+    overflow: hidden;
+    transition: max-width 0.3s ease-in-out, padding 0.3s ease-in-out;
+    padding: 0;
 }
 
+/* When toolbar is active, expand the buttons group */
+.issues-toolbar-compact.active .toolbar-buttons-group {
+    max-width: 500px; /* Large enough to show all buttons */
+    padding: 6px 10px; /* Padding when expanded */
+}
+
+/* Individual toolbar buttons */
 .toolbar-button {
-    background-color: transparent; /* No background by default */
-    border: 1px solid var(--border-color-light); /* Subtle border */
-    padding: 6px 10px; /* Small padding for compact buttons */
+    background-color: transparent; /* No background */
+    border: none; /* No border */
+    padding: 4px 8px; /* Very small padding for compact buttons */
     cursor: pointer;
-    font-size: 0.9em; /* Small font size */
+    font-size: 1em; /* Icon size */
     color: var(--text-color-light);
     border-radius: var(--border-radius-small);
-    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
-    display: flex; /* For icon + text alignment */
-    align-items: center;
-    gap: 5px; /* Space between icon and text if any */
-}
-
-.toolbar-button i {
-    font-size: 1em; /* Icon size */
+    transition: background-color 0.2s ease, color 0.2s ease;
+    position: relative; /* For tooltip positioning */
 }
 
 .toolbar-button:hover {
-    background-color: var(--background-color-medium); /* Light hover background */
-    color: var(--primary-color); /* Primary color on hover */
-    border-color: var(--primary-color); /* Highlight border on hover */
+    background-color: var(--background-color-medium);
+    color: var(--primary-color);
 }
 
-/* Style for active (selected) toolbar buttons */
-.toolbar-button.active {
-    background-color: var(--primary-color);
+/* Tooltip for toolbar buttons (using title attribute) */
+.toolbar-button[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: 120%; /* Above the button */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--text-color-dark); /* Dark background */
     color: white;
-    border-color: var(--primary-color);
-    box-shadow: 0 2px 5px rgba(33, 150, 243, 0.2);
+    padding: 5px 8px;
+    border-radius: 4px;
+    font-size: 0.75em;
+    white-space: nowrap;
+    z-index: 60; /* Above the toolbar */
+    pointer-events: none; /* Don't block clicks */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease-out, visibility 0.2s ease-out;
 }
 
-.toolbar-button.active:hover {
-    background-color: var(--primary-color); /* Keep primary color on hover when active */
-    color: white;
+.toolbar-button[title]:hover::before { /* Arrow for tooltip */
+    content: '';
+    position: absolute;
+    bottom: 115%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: var(--text-color-dark) transparent transparent transparent;
+    z-index: 60;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease-out, visibility 0.2s ease-out;
+}
+
+.toolbar-button[title]:hover::after,
+.toolbar-button[title]:hover::before {
+    opacity: 1;
+    visibility: visible;
 }

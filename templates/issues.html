@@ -10,25 +10,6 @@
         </div>
     </div>
 
-    {# --- NEW CODE HERE --- #}
-    {# Compact Issues Toolbar Section #}
-    <div class="issues-toolbar-container">
-        <div class="issues-toolbar-header" id="issuesToolbarToggle">
-            <span>Issues Toolbar</span>
-            <i class="fas fa-chevron-down toggle-icon"></i>
-        </div>
-        <div class="issues-toolbar-content">
-            <div class="toolbar-buttons-group">
-                {# Placeholder for future buttons like Align, Filter, Sort, etc. #}
-                <button class="toolbar-button" title="Align Left"><i class="fas fa-align-left"></i></button>
-                <button class="toolbar-button" title="Align Center"><i class="fas fa-align-center"></i></button>
-                <button class="toolbar-button" title="Align Right"><i class="fas fa-align-right"></i></button>
-                {# Add more buttons here as needed #}
-            </div>
-        </div>
-    </div>
-    {# --- END NEW CODE --- #}
-
     {# Collapsible section for adding a new issue #}
     <section class="section-card collapsible-section">
         <div class="collapsible-header" id="addNewIssueToggle">
@@ -98,7 +79,24 @@
     </section>
     
     <section class="section-card">
-        <h2>Current Issues</h2>
+        <div class="section-card-header-with-toolbar"> {# NEW: Wrapper for title and toolbar #}
+            <h2>Current Issues</h2>
+            {# --- NEW CODE HERE --- #}
+            {# Compact Issues Toolbar #}
+            <div class="issues-toolbar-compact" id="issuesToolbarCompact">
+                <div class="toolbar-toggle" id="issuesToolbarToggle">
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </div>
+                <div class="toolbar-buttons-group">
+                    {# Placeholder for future buttons like Align, Filter, Sort, etc. #}
+                    <button class="toolbar-button" data-action="align-left" title="Align Left"><i class="fas fa-align-left"></i></button>
+                    <button class="toolbar-button" data-action="align-center" title="Align Center"><i class="fas fa-align-center"></i></button>
+                    <button class="toolbar-button" data-action="align-right" title="Align Right"><i class="fas fa-align-right"></i></button>
+                    {# Add more buttons here as needed #}
+                </div>
+            </div>
+            {# --- END NEW CODE --- #}
+        </div>
         <div class="table-responsive">
             <table class="issues-table">
                 <thead>
