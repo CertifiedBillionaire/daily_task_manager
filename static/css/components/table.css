@@ -228,4 +228,28 @@ td.col-selected {
   justify-content: flex-end;
 }
 /* --- END NEW CODE --- */
+/* --- NEW CODE HERE --- */
+.row-edit-btn {
+  border: 1px solid var(--border-color, #d9e0e6);
+  background: var(--card-background-color, #fff);
+  border-radius: 6px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+.row-edit-btn:hover {
+  background: var(--background-color-medium, #f2f5f8);
+}
+/* --- END NEW CODE --- */
+/* --- NEW CODE HERE --- */
+.danger-button {
+  border: none;
+  background: #e05353;
+  color: #fff;
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+.danger-button:hover { filter: brightness(0.95); }
+/* --- END NEW CODE --- */
 

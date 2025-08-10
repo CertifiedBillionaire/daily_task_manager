@@ -1,6 +1,6 @@
-// --- NEW FILE: static/js/modules/issueInlineEditor.js ---
-// Tiny inline editor: double-click a row to open an editor row under it.
-// Save = PUT /api/issues/<id>, then refresh table.
+/* --- ENTIRE FILE REPLACEMENT: static/js/modules/issueInlineEditor.js --- */
+// Tiny inline editor: double-click a row OR click the pencil to open an editor row.
+// Save = PUT /api/issues/<id>, Delete = DELETE /api/issues/<id>, then refresh table.
 
 import { refreshIssuesTableData } from './issuesTable.js';
 
@@ -101,8 +101,16 @@ function buildEditorRowFor(row, values) {
     return td;
   };
 
+  // actions cell (Delete, Save, Cancel) — click handlers are wired later
   const tdActions = () => {
     const td = makeTd('cell-actions');
+
+    const del = document.createElement('button');
+    del.type = 'button';
+    del.id = 'ie_delete';
+    del.className = 'danger-button';
+    del.innerHTML = '<i class="fa-solid fa-trash"></i> Delete';
+
     const save = document.createElement('button');
     save.type = 'button';
     save.id = 'ie_save';
@@ -115,13 +123,14 @@ function buildEditorRowFor(row, values) {
     cancel.className = 'secondary-button';
     cancel.textContent = 'Cancel';
 
+    td.appendChild(del);
     td.appendChild(save);
     td.appendChild(cancel);
     return td;
   };
 
   // 12 columns in order: ID, Priority, Date Added, Last Update, Area, Equipment,
-  // Description, Notes, Status, Target Date, Assigned, (menu/actions)
+  // Description, Notes, Status, Target Date, Assigned, (actions)
   tr.appendChild(tdReadonly(values.id));                                       // 0
   tr.appendChild(tdSelect(['IMMEDIATE','High','Medium','Low','CLEANING'],
                           values.priority, 'ie_priority'));                    // 1
@@ -159,57 +168,86 @@ function buildEditorRowFor(row, values) {
     }
   }
 
-  // open editor under a data row
   // --- NEW CODE HERE ---
-function openEditorUnder(row) {
-  closeEditor(); // only one open at a time
+  // delete an issue, then refresh table
+  async function deleteIssue(issueId) {
+    try {
+      const res = await fetch(`/api/issues/${issueId}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || data?.details || `HTTP ${res.status}`);
+      toast('Issue deleted', 'Success', 2000);
+      refreshIssuesTableData();
+    } catch (err) {
+      console.error(err);
+      toast(`Delete failed: ${err.message}`, 'Error', 4000);
+    }
+  }
+  // --- END NEW CODE ---
 
-  const issueId = row.dataset.issueId || getCellText(row, 0);
-  if (!issueId) return;
+  // open editor under a data row
+  // builds the row, copies header widths, wires buttons (save/cancel/delete)
+  function openEditorUnder(row) {
+    closeEditor(); // only one open at a time
 
-  // read current values from the visible row
-  const values = {
-    id:           issueId,
-    priority:     getCellText(row, 1),
-    date_added:   getCellText(row, 2),
-    last_updated: getCellText(row, 3),
-    area:         getCellText(row, 4),
-    equipment:    getCellText(row, 5),
-    description:  getCellText(row, 6),
-    notes:        getCellText(row, 7),
-    status:       getCellText(row, 8),
-    target_date:  getCellText(row, 9),
-    assigned_to:  getCellText(row, 10),
-  };
+    const issueId = row.dataset.issueId || getCellText(row, 0);
+    if (!issueId) return;
 
-  // build a row that matches the column layout (so widths line up)
-  const tr = buildEditorRowFor(row, values);
-
-  // insert right after the row being edited
-  row.after(tr);
-  openEditorRow = tr;
-
-  // wire buttons
-  const btnSave = tr.querySelector('#ie_save');
-  const btnCancel = tr.querySelector('#ie_cancel');
-
-  btnCancel.addEventListener('click', closeEditor);
-
-  btnSave.addEventListener('click', () => {
-    const payload = {
-      equipment_location: tr.querySelector('#ie_equipment').value.trim(),
-      area:               tr.querySelector('#ie_area').value.trim(),
-      priority:           tr.querySelector('#ie_priority').value,
-      status:             tr.querySelector('#ie_status').value,
-      description:        tr.querySelector('#ie_description').value.trim(),
-      notes:              tr.querySelector('#ie_notes').value.trim(),
-      assigned_to:        tr.querySelector('#ie_assigned').value.trim(),
-      target_date:        tr.querySelector('#ie_target').value || null
+    // read current values from the visible row
+    const values = {
+      id:           issueId,
+      priority:     getCellText(row, 1),
+      date_added:   getCellText(row, 2),
+      last_updated: getCellText(row, 3),
+      area:         getCellText(row, 4),
+      equipment:    getCellText(row, 5),
+      description:  getCellText(row, 6),
+      notes:        getCellText(row, 7),
+      status:       getCellText(row, 8),
+      target_date:  getCellText(row, 9),
+      assigned_to:  getCellText(row, 10),
     };
-    saveIssue(issueId, payload);
-  });
-}
-// --- END NEW CODE ---
+
+    // build a row that matches the column layout
+    const tr = buildEditorRowFor(row, values);
+
+    // copy header widths so cells line up perfectly
+    const headers = document.querySelectorAll('.issues-table th');
+    Array.from(tr.children).forEach((td, i) => {
+      if (headers[i]) td.style.width = headers[i].style.width;
+    });
+
+    // insert right after the row being edited
+    row.after(tr);
+    openEditorRow = tr;
+
+    // wire buttons
+    const btnSave   = tr.querySelector('#ie_save');
+    const btnCancel = tr.querySelector('#ie_cancel');
+    const btnDelete = tr.querySelector('#ie_delete');
+
+    btnCancel.addEventListener('click', closeEditor);
+
+    btnSave.addEventListener('click', () => {
+      const payload = {
+        equipment_location: tr.querySelector('#ie_equipment').value.trim(),
+        area:               tr.querySelector('#ie_area').value.trim(),
+        priority:           tr.querySelector('#ie_priority').value,
+        status:             tr.querySelector('#ie_status').value,
+        description:        tr.querySelector('#ie_description').value.trim(),
+        notes:              tr.querySelector('#ie_notes').value.trim(),
+        assigned_to:        tr.querySelector('#ie_assigned').value.trim(),
+        target_date:        tr.querySelector('#ie_target').value || null
+      };
+      saveIssue(issueId, payload);
+    });
+
+    btnDelete.addEventListener('click', () => {
+      const ok = confirm(`Delete issue ${issueId}? This cannot be undone.`);
+      if (!ok) return;
+      deleteIssue(issueId);
+      closeEditor();
+    });
+  }
 
   // double-click to edit (only for real rows with an id)
   tbody.addEventListener('dblclick', (e) => {
@@ -220,6 +258,32 @@ function openEditorUnder(row) {
     openEditorUnder(row);
   });
 
-  console.log('Inline editor ready (double-click a row).');
+  console.log('Inline editor ready (double-click a row or use the pencil).');
 }
 
+// --- NEW CODE HERE ---
+// Open the inline editor for a given issue id (used by pencil button)
+export function openInlineEditorFor(issueId) {
+  // try data-attribute first
+  let row = document.querySelector(`.issues-table tbody tr[data-issue-id="${issueId}"]`);
+  // fallback: match first cell text
+  if (!row) {
+    row = Array.from(document.querySelectorAll('.issues-table tbody tr'))
+      .find(r => (r.cells?.[0]?.textContent?.trim() === issueId));
+  }
+  if (!row) {
+    console.warn('InlineEditor: row not found for', issueId);
+    return;
+  }
+  row.scrollIntoView({ block: 'nearest' });
+  // open editor directly
+  const table = document.querySelector('.issues-table');
+  if (!table) return;
+  // use the same helper
+  // find module-scope function via closure:
+  // we can't call openEditorUnder from here if it's not exported,
+  // so simulate double-click which our init listener handles:
+  row.dispatchEvent(new MouseEvent('dblclick', { bubbles: true }));
+}
+// --- END NEW CODE ---
+/* --- END ENTIRE FILE --- */
