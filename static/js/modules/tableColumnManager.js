@@ -73,7 +73,39 @@ export function initTableColumnManager() {
             clearColumnSelection();
         }
     });
+        // --- NEW CODE HERE ---
+    // Align helper: applies text-align to the active column (header + cells)
+    function setColumnAlignment(colIndex, align) {
+        if (colIndex < 0) {
+            console.log('Pick a column first.');
+            return;
+        }
+
+        // header
+        if (headers[colIndex]) {
+            headers[colIndex].style.textAlign = align;
+        }
+
+        // all body cells in that column
+        const rows = table.querySelectorAll('tbody tr');
+        rows.forEach(row => {
+            const tds = row.querySelectorAll('td');
+            if (tds[colIndex]) {
+                tds[colIndex].style.textAlign = align;
+            }
+        });
+    }
+
+    // Hook up the three toolbar buttons
+    const btnAlignLeft   = document.querySelector('.toolbar-button[data-action="align-left"]');
+    const btnAlignCenter = document.querySelector('.toolbar-button[data-action="align-center"]');
+    const btnAlignRight  = document.querySelector('.toolbar-button[data-action="align-right"]');
+
+    btnAlignLeft  && btnAlignLeft.addEventListener('click',   () => setColumnAlignment(activeColIndex, 'left'));
+    btnAlignCenter&& btnAlignCenter.addEventListener('click', () => setColumnAlignment(activeColIndex, 'center'));
+    btnAlignRight && btnAlignRight.addEventListener('click',  () => setColumnAlignment(activeColIndex, 'right'));
     // --- END NEW CODE ---
+
 
 
     /**
