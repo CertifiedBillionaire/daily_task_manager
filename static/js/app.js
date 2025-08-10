@@ -16,6 +16,8 @@ import { initSettingsPageListeners } from './modules/settings.js';
 import { resetOpeningChecklistStatus } from './modules/settings.js';
 import { initAddNewIssueForm } from './modules/addNewIssueForm.js';
 import { initTableResizers } from './modules/tableResizer.js';
+import { initTableColumnManager } from './modules/tableColumnManager.js';
+
 
 
 
@@ -170,6 +172,8 @@ document.addEventListener('DOMContentLoaded', () => {
         initIssueOptions();
         initTableResizers(); // Initialize table column resizing
         console.log("Table resizers initialized for Issues page."); // For debugging
+        initTableColumnManager(); // Initialize table column manager for alignment
+        console.log("Table Column Manager initialized for Issues page."); // For debugging
     }
     
 
