@@ -15,6 +15,7 @@ export function initTableResizers() {
     let startX;
     let startWidth;
     let currentHeader; // The <th> element being resized
+    let initialTableWidth; // NEW: To store the table's width when resizing starts
 
     // Function to handle the mouse down event on a resizer
     function mouseDownHandler(e) {
@@ -22,36 +23,36 @@ export function initTableResizers() {
         currentHeader = currentResizer.parentElement; // The <th> element
         startX = e.clientX; // Initial mouse X position
         startWidth = currentHeader.offsetWidth; // Initial width of the header
+        initialTableWidth = table.offsetWidth; // NEW: Capture table's initial width
 
         // Add class to resizer for visual feedback (e.g., highlight)
         currentResizer.classList.add('is-resizing');
 
         // Attach event listeners to document for mousemove and mouseup
-        // This is crucial to allow dragging outside the header itself
         document.addEventListener('mousemove', mouseMoveHandler);
         document.addEventListener('mouseup', mouseUpHandler);
 
         console.log("Resizing started for column:", currentHeader.textContent.trim());
     }
 
-    // --- MODIFIED CODE HERE ---
     // Function to handle the mouse move event (actual resizing logic)
     function mouseMoveHandler(e) {
         // Prevent text selection during drag
         e.preventDefault(); 
 
-        // Calculate the new width
-        const newWidth = startWidth + (e.clientX - startX);
+        const deltaX = e.clientX - startX; // How much the mouse has moved
+        const newColumnWidth = startWidth + deltaX; // New width for the current column
         
-        // Apply the new width to the current header
-        // Ensure minimum width to prevent columns from disappearing or becoming too small
-        const MIN_WIDTH = 50; // pixels
-        if (newWidth > MIN_WIDTH) {
-            currentHeader.style.width = `${newWidth}px`;
-            // console.log(`Resizing column: ${currentHeader.textContent.trim()}, New Width: ${newWidth}px`); // For debugging
+        // Ensure minimum width for the column
+        const MIN_COLUMN_WIDTH = 50; // pixels
+        if (newColumnWidth > MIN_COLUMN_WIDTH) {
+            currentHeader.style.width = `${newColumnWidth}px`; // Apply new width to the column header
+
+            // NEW: Adjust the overall table width
+            // The table's new width is its initial width plus the change in column width
+            table.style.width = `${initialTableWidth + deltaX}px`; 
         }
     }
-    // --- END MODIFIED CODE ---
 
     // Function to handle the mouse up event (stop resizing)
     function mouseUpHandler() {
@@ -65,6 +66,7 @@ export function initTableResizers() {
         console.log("Resizing stopped for column:", currentHeader.textContent.trim());
 
         // --- Future Step: Save column widths to localStorage here ---
+        // This will now save the new pixel widths applied by JS
     }
 
     // Attach mouse down listeners to all resizer elements
