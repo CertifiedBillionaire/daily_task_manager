@@ -1,8 +1,8 @@
 /* --- ENTIRE FILE REPLACEMENT --- */
 /* This file contains styling for the issues table. */
 .issues-table {
-    width: 100%; /* Ensure table takes 100% of its parent's width */
-    min-width: 100%; /* Crucial - table will at least be 100% wide */
+    /* REMOVED: width: 100%; */ /* Let JS control total width */
+    /* REMOVED: min-width: 100%; */ /* Let JS control total width */
     border-collapse: collapse;
     margin-top: 20px;
     font-size: 0.9em;
