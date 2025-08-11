@@ -307,3 +307,46 @@
   transform: translateY(1px);
 }
 /* --- END NEW CODE HERE --- */
+/* --- NEW CODE HERE --- */
+/* Inventory page font pairing: Montserrat for headings, Inter for body */
+#games-summary h3,
+#game-inventory-section > h2,
+#games-table-section > h2,
+.content-header h2 {
+  font-family: 'Montserrat', 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  letter-spacing: 0.2px;
+}
+/* --- END NEW CODE HERE --- */
+/* --- NEW CODE HERE --- */
+.page-title-with-badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.uptime-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  border: 1px solid transparent;
+}
+
+/* Colors by % range */
+.uptime-badge.good {   /* >= 95% */
+  background: #e6ffed; color: #096b39; border-color: #b7f7c9;
+}
+.uptime-badge.warn {   /* 80% - 94% */
+  background: #fff4e5; color: #8a4b00; border-color: #ffd7a1;
+}
+.uptime-badge.bad {    /* < 80% */
+  background: #fee2e2; color: #991b1b; border-color: #fecaca;
+}
+.uptime-badge.neutral { /* loading/empty */
+  background: #f3f4f6; color: #374151; border-color: #e5e7eb;
+}
+/* --- END NEW CODE HERE --- */

@@ -80,7 +80,31 @@ export async function renderGamesTable() {
             upCountEl.textContent = upCount;
             downCountEl.textContent = downCount;
         }
+        // --- NEW CODE HERE ---
+        // Update "Current Game Uptime" badge (must be inside renderGamesTable where 'games' exists)
+        const uptimeEl = document.getElementById('uptime-badge');
+        if (uptimeEl) {
+            const total = games.length;
+            const upCountForUptime = games.filter(g => g.status === 'Up').length;
+            const uptime = total > 0 ? Math.round((upCountForUptime / total) * 100) : 100;
 
+            uptimeEl.textContent = `Current Game Uptime: ${uptime}%`;
+
+            // reset state classes
+            uptimeEl.classList.remove('good', 'warn', 'bad', 'neutral');
+
+            // color band
+            if (total === 0) {
+                uptimeEl.classList.add('neutral');
+            } else if (uptime >= 95) {
+                uptimeEl.classList.add('good');
+            } else if (uptime >= 80) {
+                uptimeEl.classList.add('warn');
+            } else {
+                uptimeEl.classList.add('bad');
+            }
+        }
+        // --- END NEW CODE HERE ---
         // Handle EDIT clicks
         container.querySelectorAll('.edit-game-btn').forEach(btn => {
             btn.addEventListener('click', () => {
