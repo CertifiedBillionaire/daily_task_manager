@@ -252,4 +252,27 @@ td.col-selected {
 }
 .danger-button:hover { filter: brightness(0.95); }
 /* --- END NEW CODE --- */
+/* --- NEW CODE HERE --- */
+.status-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1.4;
+  border: 1px solid transparent;
+}
+
+.status-badge.up {
+  background: #e6ffed;
+  color: #096b39;
+  border-color: #b7f7c9;
+}
+
+.status-badge.down {
+  background: #fff4e5;
+  color: #8a4b00;
+  border-color: #ffd7a1;
+}
+/* --- END NEW CODE HERE --- */
 

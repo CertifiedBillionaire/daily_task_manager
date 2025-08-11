@@ -2,7 +2,7 @@
 // gamesTableRenderer.js
 // Handles fetching and rendering the Game Inventory table
 
-import { openGameInlineEditor } from './gameInlineEditor.js'; // <-- add this import
+import { openGameInlineEditor } from './gameInlineEditor.js';
 
 export async function renderGamesTable() {
     const container = document.querySelector('#games-table-container');
@@ -26,7 +26,7 @@ export async function renderGamesTable() {
                         <th>Status</th>
                         <th>Down Reason</th>
                         <th>Last Updated</th>
-                        <th>Actions</th> <!-- added -->
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -37,11 +37,17 @@ export async function renderGamesTable() {
         } else {
             for (const game of games) {
                 const paddedId = String(game.id).padStart(3, '0');
+
+                // make the badge per-row
+                const statusBadge = (game.status === 'Up')
+                  ? `<span class="status-badge up">Up</span>`
+                  : `<span class="status-badge down">Down</span>`;
+
                 html += `
                     <tr data-row-id="${game.id}">
                         <td>${paddedId}</td>
                         <td>${game.name}</td>
-                        <td>${game.status}</td>
+                        <td>${statusBadge}</td>
                         <td>${game.down_reason || ''}</td>
                         <td>${game.updated_at || ''}</td>
                         <td>
