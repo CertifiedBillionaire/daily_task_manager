@@ -47,11 +47,23 @@ export async function renderGamesTable() {
         }
 
         html += `</tbody></table>`;
-
         container.innerHTML = html;
+
+        // --- NEW CODE HERE ---
+        // Update summary counters AFTER we render
+        const upCountEl = document.getElementById('games-up-count');
+        const downCountEl = document.getElementById('games-down-count');
+        if (upCountEl && downCountEl) {
+            const upCount = games.filter(g => g.status === 'Up').length;
+            const downCount = games.filter(g => g.status === 'Down').length;
+            upCountEl.textContent = upCount;
+            downCountEl.textContent = downCount;
+        }
+        // --- END NEW CODE HERE ---
+
     } catch (err) {
         console.error("❌ Failed to load games:", err);
         container.innerHTML = `<p style="color:red;">Error loading games</p>`;
     }
 }
-// --- END NEW CODE ---
+// --- END NEW CODE HERE ---
