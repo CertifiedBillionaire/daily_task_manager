@@ -1,330 +1,27 @@
-/* --- New Styles for Game Inventory Section --- */
-.game-inventory-section .form-group {
-    margin-bottom: 15px;
+/* --- ENTIRE FILE REPLACEMENT: game_inventory.css --- */
+/* Game Inventory — page-scoped styles only
+   - Header stack (title + info icon + uptime badge)
+   - Games table (simple, clean)
+   - Status badges (Up/Down)
+   - Compact “+ Add” dropdown next to "Current Games"
+   - Section title row
+*/
+
+/* ========== Header (title on top, uptime under) ========== */
+.page-header-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;            /* space between title and badge */
+  margin-bottom: 14px; /* room before content */
 }
 
-.game-inventory-section label {
-    display: block;
-    font-size: 0.95em;
-    color: #555555;
-    margin-bottom: 8px;
-    font-weight: 500;
-}
-
-.game-inventory-section input[type="text"],
-.game-inventory-section select {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-small);
-    font-size: 1em;
-    background-color: var(--input-background-color);
-    transition: all 0.2s ease;
-    outline: none;
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
-}
-
-.game-inventory-section input[type="text"]:focus,
-.game-inventory-section select:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.2);
-    background-color: var(--card-background-color);
-}
-
-.game-input-area {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    margin-bottom: 30px;
-    padding: 20px;
-    background-color: var(--input-background-color);
-    border-radius: var(--border-radius-small);
-    box-shadow: inset 0 1px 5px rgba(0,0,0,0.05);
-    border: 1px solid var(--border-color-light);
-    align-items: flex-end;
-}
-
-.game-input-area .form-group {
-    flex: 1;
-    min-width: 200px;
-    margin-bottom: 0;
-}
-
-.game-input-area .button-group {
-    display: flex;
-    gap: 15px;
-    margin-top: 0;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    flex-grow: 1;
-    min-width: 200px;
-}
-
-.game-inventory-section .add-game-button,
-.game-inventory-section .export-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    flex-grow: 1;
-    background-color: #4CAF50;
-    color: #FFFFFF;
-    border: none;
-    padding: 12px 20px;
-    border-radius: var(--border-radius-small);
-    font-size: 1em;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
-}
-
-.game-inventory-section .add-game-button:hover {
-    background-color: #43A047;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-}
-
-.game-inventory-section .export-button {
-    background-color: #FFC107;
-}
-
-.game-inventory-section .export-button:hover {
-    background-color: #FFA000;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-}
-
-/* --- DESKTOP TABLE STYLES --- */
-/* These rules apply to both tables on larger screens */
-.game-list-table, .issues-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 0;
-    background-color: var(--card-background-color);
-    border-radius: var(--border-radius-small);
-    overflow: hidden;
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    border: 1px solid var(--border-color-light);
-    border-top: none;
-}
-.game-list-table thead tr, .issues-table thead tr {
-    position: static; /* Revert header positioning */
-}
-.game-list-table th, .issues-table th,
-.game-list-table td, .issues-table td {
-    display: table-cell; /* Revert to table cell display */
-    text-align: left;
-    padding: 15px;
-    border-bottom: 1px solid #F0F0F0;
-    padding-left: 15px; /* Restore padding */
-}
-.game-list-table th, .issues-table th {
-    background-color: #F8F8F8;
-    font-size: 0.9em;
-    color: var(--text-color-light);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-.game-list-table td, .issues-table td {
-    font-size: 0.95em;
-    color: #444444;
-}
-.game-list-table tr:last-child td, .issues-table tr:last-child td {
-    border-bottom: none;
-}
-.game-list-table td::before, .issues-table td::before {
-    content: none; /* Remove pseudo-element for mobile labels */
-}
-.game-list-table tr, .issues-table tr {
-    border: none; /* Remove mobile border */
-    margin-bottom: 0; /* Remove mobile margin */
-}
-.game-list-table .action-buttons, .issues-table .action-buttons {
-    display: flex;
-    gap: 8px;
-    justify-content: flex-start; /* Revert button alignment */
-}
-
-
-/* --- Mobile styles that only apply on smaller screens --- */
-@media (max-width: 768px) {
-    /* Game Inventory: Mobile-specific stacking for inputs/buttons */
-    .game-input-area {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 15px;
-    }
-    .game-input-area .form-group {
-        width: 100%;
-        min-width: unset;
-    }
-    .game-input-area .button-group {
-        flex-direction: column;
-        gap: 10px;
-        width: 100%;
-    }
-    .game-inventory-section .add-game-button,
-    .game-inventory-section .export-button {
-        width: 100%;
-        flex-grow: unset;
-    }
-    
-    /* Game List Table: Stack table columns for mobile readability */
-    .game-list-table, .issues-table, .game-list-table thead, .issues-table thead, .game-list-table tbody, .issues-table tbody, .game-list-table th, .issues-table th, .game-list-table td, .issues-table td, .game-list-table tr, .issues-table tr {
-        display: block;
-    }
-    .game-list-table thead tr, .issues-table thead tr {
-        position: absolute;
-        top: -9999px;
-        left: -9999px;
-    }
-    .game-list-table tr, .issues-table tr {
-        border: 1px solid var(--border-color-light);
-        margin-bottom: 15px;
-        border-radius: var(--border-radius-small);
-        overflow: hidden;
-    }
-    .game-list-table td, .issues-table td {
-        border: none;
-        border-bottom: 1px solid #F0F0F0;
-        position: relative;
-        padding-left: 50%;
-        text-align: right;
-    }
-    .game-list-table td::before, .issues-table td::before {
-        content: attr(data-label);
-        position: absolute;
-        left: 15px;
-        width: 45%;
-        padding-right: 10px;
-        white-space: nowrap;
-        text-align: left;
-        font-weight: 600;
-        color: var(--text-color-light);
-    }
-    .game-list-table .action-buttons, .issues-table .action-buttons {
-        justify-content: flex-end;
-    }
-    
-}
-/* --- NEW CODE HERE --- */
-/* Game Inventory table (scoped to inventory page) */
-.games-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #fff;
-  border: 1px solid #e5e7eb; /* thin outer border */
-}
-
-.games-table thead th {
-  background: #f3f4f6;       /* light gray header */
-  font-weight: 600;
-  text-align: left;
-  border-bottom: 1px solid #e5e7eb;
-  padding: 12px 14px;
-}
-
-.games-table tbody td {
-  border-top: 1px solid #e5e7eb;  /* row lines */
-  padding: 12px 14px;             /* comfy cells */
-  vertical-align: middle;
-}
-
-/* Zebra rows */
-.games-table tbody tr:nth-child(even) {
-  background: #fafafa;
-}
-
-/* Row hover */
-.games-table tbody tr:hover {
-  background: #eef6ff;
-}
-
-/* Game status variants (page-specific) */
-.status-badge.up {
-  background: #e6ffed;
-  color: #096b39;
-  border-color: #b7f7c9;
-}
-.status-badge.down {
-  background: #fff4e5;
-  color: #8a4b00;
-  border-color: #ffd7a1;
-}
-/* --- END NEW CODE HERE --- */
-
-/* --- NEW CODE HERE --- */
-/* Small comfort tweaks for the Games table */
-.games-table {
-  border-radius: 8px;
-  overflow: hidden; /* keeps rounded corners on header/rows */
-}
-
-.games-table thead th {
-  background: #eceff3;      /* a touch darker */
-  font-weight: 700;          /* a bit bolder */
-}
-
-.games-table thead th,
-.games-table tbody td {
-  padding: 14px 16px;        /* a hair more room */
-  font-size: 0.95rem;        /* slightly larger text */
-}
-
-/* Nicer action buttons */
-.games-table .edit-game-btn,
-.games-table .delete-game-btn {
-  border: 1px solid #e5e7eb;
-  background: #fff;
-  border-radius: 9999px;     /* pill */
-  padding: 6px 10px;
-  line-height: 1;
+.title-row {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 6px;
-  cursor: pointer;
-  transition: background .15s ease, border-color .15s ease, transform .05s ease;
+  gap: 8px;            /* space between title and (i) */
 }
 
-.games-table .edit-game-btn:hover,
-.games-table .delete-game-btn:hover {
-  background: #f3f4f6;
-  border-color: #d1d5db;
-}
-
-.games-table .delete-game-btn:hover {
-  background: #fff1f2;       /* soft red hint */
-  border-color: #fecaca;
-}
-
-.games-table .edit-game-btn:active,
-.games-table .delete-game-btn:active {
-  transform: translateY(1px);
-}
-/* --- END NEW CODE HERE --- */
-/* --- NEW CODE HERE --- */
-/* Inventory page font pairing: Montserrat for headings, Inter for body */
-#games-summary h3,
-#game-inventory-section > h2,
-#games-table-section > h2,
-.content-header h2 {
-  font-family: 'Montserrat', 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  letter-spacing: 0.2px;
-}
-/* --- END NEW CODE HERE --- */
-/* --- NEW CODE HERE --- */
-.page-title-with-badge {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
+/* Uptime badge + color states */
 .uptime-badge {
   display: inline-flex;
   align-items: center;
@@ -335,39 +32,24 @@
   font-size: 0.9rem;
   border: 1px solid transparent;
 }
-
-/* Colors by % range */
-.uptime-badge.good {   /* >= 95% */
+.uptime-badge.large {
+  font-size: 1rem;     /* bigger text */
+  padding: 8px 12px;   /* bigger pill */
+}
+.uptime-badge.good {    /* >=95% */
   background: #e6ffed; color: #096b39; border-color: #b7f7c9;
 }
-.uptime-badge.warn {   /* 80% - 94% */
+.uptime-badge.warn {    /* 80–94% */
   background: #fff4e5; color: #8a4b00; border-color: #ffd7a1;
 }
-.uptime-badge.bad {    /* < 80% */
+.uptime-badge.bad {     /* <80% */
   background: #fee2e2; color: #991b1b; border-color: #fecaca;
 }
 .uptime-badge.neutral { /* loading/empty */
   background: #f3f4f6; color: #374151; border-color: #e5e7eb;
 }
-/* --- END NEW CODE HERE --- */
-/* --- NEW CODE HERE --- */
-.title-info {
-  border: 0;
-  background: transparent;
-  padding: 4px 6px;   /* was 0 — gives you a target to hover */
-  line-height: 1;
-  cursor: help;
-  color: #6b7280;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.95rem;
-}
 
-.title-info:hover { color: #374151; }   /* gray-700 */
-/* --- END NEW CODE HERE --- */
-/* --- NEW CODE HERE --- */
-/* CSS-only tooltip for the (i) button */
+/* Info (i) with CSS-only tooltip */
 .title-info {
   position: relative;
   border: 0;
@@ -381,16 +63,13 @@
   justify-content: center;
   font-size: 0.95rem;
 }
-
 .title-info:hover { color: #374151; }
-
-/* bubble */
 .title-info::after {
   content: attr(data-tooltip);
   position: absolute;
   bottom: calc(100% + 8px);
   left: 0;
-  background: #111827;      /* gray-900 */
+  background: #111827;
   color: #fff;
   font-size: 12px;
   padding: 6px 8px;
@@ -403,8 +82,6 @@
   transition: opacity .15s ease, transform .15s ease;
   z-index: 20;
 }
-
-/* small arrow */
 .title-info::before {
   content: "";
   position: absolute;
@@ -418,68 +95,30 @@
   transition: opacity .15s ease, transform .15s ease;
   z-index: 21;
 }
-
 .title-info:hover::after,
 .title-info:hover::before {
   opacity: 1;
   transform: translateY(0);
 }
-/* --- END NEW CODE HERE --- */
-/* --- NEW CODE HERE --- */
-/* Title on the left, uptime badge on the right */
-.page-header-bar {
+
+/* Optional: headings font pairing on this page only */
+.content-header h2,
+#games-table-section > h2 {
+  font-family: 'Montserrat', 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  letter-spacing: 0.2px;
+}
+
+/* ========== Section title row ("Current Games" + Add) ========== */
+.section-title-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  flex-wrap: wrap;            /* stacks nicely on small screens */
-  margin-bottom: 10px;        /* a little breathing room below */
+  margin-bottom: 10px;
 }
+.section-title-row h2 { margin: 0; }
 
-.page-title-left {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;                   /* space between title and (i) */
-}
-
-/* make the badge not feel cramped when it wraps under */
-@media (max-width: 640px) {
-  .page-header-bar .uptime-badge {
-    margin-top: 6px;
-  }
-}
-/* --- END NEW CODE HERE --- */
-/* --- NEW CODE HERE --- */
-/* Stack: title on top, big uptime under it */
-.page-header-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;            /* space between title and badge */
-  margin-bottom: 14px; /* a little room before the form */
-}
-
-.title-row {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;            /* space between title and (i) */
-}
-
-/* Bigger badge version */
-.uptime-badge.large {
-  font-size: 1rem;     /* bigger text */
-  padding: 8px 12px;   /* bigger pill */
-  display: inline-block;
-}
-/* --- END NEW CODE HERE --- */
-/* --- NEW CODE HERE --- */
-/* Top bar with the compact Add button */
-.inventory-actions-bar {
-  display: flex;
-  justify-content: flex-end;
-  margin: 8px 0 12px;
-}
-
-/* The + Add button */
+/* ========== Compact “+ Add” dropdown ========== */
 .add-compact-btn {
   display: inline-flex;
   align-items: center;
@@ -494,7 +133,6 @@
 }
 .add-compact-btn:hover { background:#f8fafc; border-color:#d1d5db; }
 
-/* Dropdown panel */
 .add-dropdown { position: relative; }
 .add-dropdown-panel {
   position: absolute;
@@ -508,7 +146,6 @@
   padding: 12px;
   z-index: 50;
 }
-
 .add-dropdown-panel .form-row {
   display: grid;
   gap: 6px;
@@ -541,14 +178,98 @@
 .add-dropdown-panel .add-game-button:hover {
   background: #f3f4f6;
 }
-/* --- END NEW CODE HERE --- */
-/* --- NEW CODE HERE --- */
-.section-title-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 10px;
+
+/* ========== Games table ========== */
+.games-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;      /* rounded corners */
+  overflow: hidden;        /* keep corners on header/rows */
 }
-.section-title-row h2 { margin: 0; }
+.games-table thead th {
+  background: #eceff3;     /* slightly darker header */
+  font-weight: 700;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 14px 16px;
+}
+.games-table tbody td {
+  border-top: 1px solid #e5e7eb;
+  padding: 14px 16px;
+  vertical-align: middle;
+  font-size: 0.95rem;
+}
+/* zebra + hover */
+.games-table tbody tr:nth-child(even) { background: #fafafa; }
+.games-table tbody tr:hover { background: #eef6ff; }
+
+/* action buttons inside table */
+.games-table .edit-game-btn,
+.games-table .delete-game-btn {
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  border-radius: 9999px;
+  padding: 6px 10px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: background .15s ease, border-color .15s ease, transform .05s ease;
+}
+.games-table .edit-game-btn:hover,
+.games-table .delete-game-btn:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+.games-table .delete-game-btn:hover {
+  background: #fff1f2;       /* soft red hint */
+  border-color: #fecaca;
+}
+.games-table .edit-game-btn:active,
+.games-table .delete-game-btn:active {
+  transform: translateY(1px);
+}
+
+/* ========== Status badges (Up/Down) ========== */
+.status-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1.4;
+  border: 1px solid transparent;
+}
+.status-badge.up {
+  background: #e6ffed; color: #096b39; border-color: #b7f7c9;
+}
+.status-badge.down {
+  background: #fff4e5; color: #8a4b00; border-color: #ffd7a1;
+}
+/* --- END ENTIRE FILE REPLACEMENT --- */
+/* --- NEW CODE HERE --- */
+/* Let the table scroll sideways on small screens */
+#games-table-container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch; /* smooth on iOS */
+  padding-bottom: 4px;               /* room for scrollbar */
+}
+
+/* Keep columns readable: set a minimum width */
+.games-table {
+  min-width: 700px; /* adjust later if you want */
+}
+
+/* On very small screens, nudge spacing down a bit */
+@media (max-width: 480px) {
+  .games-table thead th,
+  .games-table tbody td {
+    padding: 10px 12px;   /* was 14px 16px */
+    font-size: 0.9rem;    /* was 0.95rem */
+  }
+}
 /* --- END NEW CODE HERE --- */
