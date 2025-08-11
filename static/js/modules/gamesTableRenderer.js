@@ -1,21 +1,22 @@
 // =========================================================================
-// ARCADE MANAGER - GAME INVENTORY TABLE RENDERER
-// Renders the Games table, wires row actions (Edit/Delete), and updates uptime.
-//
-// What this file does:
-// - Fetches /api/games and renders into #games-table-container
-// - Shows Up/Down badges and a “Last Updated” column (time trimming next step)
-// - Uses a compact three-dot (kebab) Actions menu per row
-// - Wires Edit (inline editor) and Delete (with confirm) actions
-// - Updates the “Current Game Uptime: XX%” badge under the title
-//
-// Connected files:
-// - ./gameInlineEditor.js  (provides openGameInlineEditor)
-// - static/css/sections/game_inventory.css  (table, badges, kebab styles)
-// - templates/game_inventory.html  (has #games-table-container and header badge)
-//
-// Exports:
-// - renderGamesTable()
+/* ARCADE MANAGER - GAME INVENTORY TABLE RENDERER
+   Renders the Games table, wires row actions (Edit/Delete), and updates uptime.
+
+   What this file does:
+   - Fetches /api/games and renders into #games-table-container
+   - Shows Up/Down badges and a “Last Updated” column (now DATE ONLY)
+   - Uses a compact three-dot (kebab) Actions menu per row
+   - Wires Edit (inline editor) and Delete (with confirm) actions
+   - Updates the “Current Game Uptime: XX%” badge under the title
+
+   Connected files:
+   - ./gameInlineEditor.js  (provides openGameInlineEditor)
+   - static/css/sections/game_inventory.css  (table, badges, kebab styles)
+   - templates/game_inventory.html  (#games-table-container + uptime badge)
+
+   Exports:
+   - renderGamesTable()
+*/
 // =========================================================================
 
 import { openGameInlineEditor } from './gameInlineEditor.js';
@@ -67,7 +68,9 @@ export async function renderGamesTable() {
             <td>${escapeHtml(game.name)}</td>
             <td>${statusBadge}</td>
             <td>${escapeHtml(game.down_reason || '')}</td>
-            <td>${escapeHtml(game.updated_at || '')}</td>
+            <td title="${escapeHtml(game.updated_at || '')}">
+              ${formatDateOnly(game.updated_at)}
+            </td>
             <td>
               <div class="kebab-wrap">
                 <button class="kebab-btn"
@@ -239,3 +242,14 @@ async function safeJson(res) {
   try { return await res.json(); }
   catch { return {}; }
 }
+
+// --- NEW CODE HERE ---
+// Date-only formatter for "Last Updated"
+function formatDateOnly(v) {
+  if (!v) return '';
+  const d = new Date(v);
+  if (isNaN(d)) return '';
+  const opts = { year: 'numeric', month: 'short', day: 'numeric' };
+  return d.toLocaleDateString(undefined, opts); // e.g., "Aug 10, 2025"
+}
+// --- END NEW CODE HERE ---

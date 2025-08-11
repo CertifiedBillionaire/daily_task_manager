@@ -118,3 +118,23 @@
 @media (max-width:400px) {
   .games-table thead th, .games-table tbody td { padding:8px 10px; font-size:.88rem; }
 }
+/* --- NEW CODE HERE --- */
+/* Column alignment:
+   1 = ID (center), 2 = Name (left), 3 = Status (center),
+   4 = Down Reason (left), 5 = Last Updated (left), 6 = Actions (center)
+*/
+.games-table thead th:nth-child(1),
+.games-table tbody td:nth-child(1) { text-align: center; }
+
+.games-table thead th:nth-child(2),
+.games-table tbody td:nth-child(2) { text-align: left; }
+
+.games-table thead th:nth-child(3),
+.games-table tbody td:nth-child(3) { text-align: center; }
+
+.games-table thead th:nth-child(4),
+.games-table tbody td:nth-child(4) { text-align: left; }
+
+.games-table thead th:nth-child(6),
+.games-table tbody td:nth-child(6) { text-align: center; }
+/* --- END NEW CODE HERE --- */
