@@ -71,15 +71,6 @@ export async function renderGamesTable() {
         html += `</tbody></table>`;
         container.innerHTML = html;
 
-        // Update summary counters
-        const upCountEl = document.getElementById('games-up-count');
-        const downCountEl = document.getElementById('games-down-count');
-        if (upCountEl && downCountEl) {
-            const upCount = games.filter(g => g.status === 'Up').length;
-            const downCount = games.filter(g => g.status === 'Down').length;
-            upCountEl.textContent = upCount;
-            downCountEl.textContent = downCount;
-        }
         // --- NEW CODE HERE ---
         // Update "Current Game Uptime" badge (must be inside renderGamesTable where 'games' exists)
         const uptimeEl = document.getElementById('uptime-badge');
