@@ -256,3 +256,54 @@
   border-color: #ffd7a1;
 }
 /* --- END NEW CODE HERE --- */
+
+/* --- NEW CODE HERE --- */
+/* Small comfort tweaks for the Games table */
+.games-table {
+  border-radius: 8px;
+  overflow: hidden; /* keeps rounded corners on header/rows */
+}
+
+.games-table thead th {
+  background: #eceff3;      /* a touch darker */
+  font-weight: 700;          /* a bit bolder */
+}
+
+.games-table thead th,
+.games-table tbody td {
+  padding: 14px 16px;        /* a hair more room */
+  font-size: 0.95rem;        /* slightly larger text */
+}
+
+/* Nicer action buttons */
+.games-table .edit-game-btn,
+.games-table .delete-game-btn {
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  border-radius: 9999px;     /* pill */
+  padding: 6px 10px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: background .15s ease, border-color .15s ease, transform .05s ease;
+}
+
+.games-table .edit-game-btn:hover,
+.games-table .delete-game-btn:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.games-table .delete-game-btn:hover {
+  background: #fff1f2;       /* soft red hint */
+  border-color: #fecaca;
+}
+
+.games-table .edit-game-btn:active,
+.games-table .delete-game-btn:active {
+  transform: translateY(1px);
+}
+/* --- END NEW CODE HERE --- */
