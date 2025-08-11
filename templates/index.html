@@ -75,8 +75,13 @@
       <div class="card-progress">0/53 Done</div>
     </div>
 
-    <!-- Log a New Issue -->
-    <div class="dashboard-card action-card color-orange" id="addNewIssueCard">
+    <!-- Log a New Issue (live counts + click opens quick-add modal) -->
+    <div class="dashboard-card action-card color-orange card-clickable" id="addNewIssueCard" tabindex="0" aria-label="Log a New Issue">
+      <!-- floating + button -->
+      <button class="card-fab" id="addIssueFab" type="button" aria-label="Add new issue">
+        <i class="fa-solid fa-plus"></i>
+      </button>
+
       <div class="card-content-top">
         <div class="card-icon"><i class="fa-solid fa-circle-plus"></i></div>
         <div class="card-text-group">
@@ -84,8 +89,18 @@
           <p class="card-description">Quickly log a new issue.</p>
         </div>
       </div>
-    </div>
 
+      <div class="card-metrics">
+        <div class="metric">
+          <div class="metric-label">Open</div>
+          <div class="metric-value" id="issuesOpenCount">—</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Awaiting Parts</div>
+          <div class="metric-chip" id="issuesAwaitingPartsCount">—</div>
+        </div>
+      </div>
+    </div>
     <!-- Log PMs -->
     <div class="dashboard-card action-card color-green" id="addPMCard">
       <div class="card-content-top">
@@ -97,7 +112,7 @@
       </div>
     </div>
 
-    <!-- Update Down Games (tap the whole card) -->
+    <!-- Update Down Games -->
     <div class="dashboard-card action-card color-red card-clickable" id="downGamesCard" tabindex="0" aria-label="Update Down Games">
       <div class="card-content-top">
         <div class="card-icon"><i class="fa-solid fa-gamepad"></i></div>
@@ -119,7 +134,7 @@
     </div>
   </div>
 
-  <!-- Simple modal for quick update -->
+  <!-- Simple modal: Update Down Games -->
   <div id="downGamesModal" class="simple-modal" hidden>
     <div class="simple-modal__overlay" data-close></div>
     <div class="simple-modal__panel" role="dialog" aria-modal="true" aria-labelledby="dgm-title">
@@ -127,8 +142,58 @@
         <h3 id="dgm-title">Update Down Games</h3>
         <button class="simple-modal__close" type="button" aria-label="Close" data-close>&times;</button>
       </div>
-      <div class="simple-modal__body" id="dgm-body">
-        <!-- Filled by JS -->
+      <div class="simple-modal__body" id="dgm-body"></div>
+    </div>
+  </div>
+
+  <!-- Simple modal: Quick Add Issue -->
+  <div id="addIssueModal" class="simple-modal" hidden>
+    <div class="simple-modal__overlay" data-close></div>
+    <div class="simple-modal__panel" role="dialog" aria-modal="true" aria-labelledby="ai-title">
+      <div class="simple-modal__header">
+        <h3 id="ai-title">Log a New Issue</h3>
+        <a href="/issues" class="ai-link">Open full Issues page</a>
+        <button class="simple-modal__close" type="button" aria-label="Close" data-close>&times;</button>
+      </div>
+      <div class="simple-modal__body">
+        <form id="ai-form" class="ai-form" autocomplete="off">
+          <div class="ai-row">
+            <label for="ai-desc">Description <span class="req">*</span></label>
+            <textarea id="ai-desc" rows="3" placeholder="What’s wrong?" required></textarea>
+          </div>
+
+          <div class="ai-grid">
+            <div class="ai-col">
+              <label for="ai-priority">Priority</label>
+              <select id="ai-priority">
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+                <option value="IMMEDIATE">IMMEDIATE</option>
+                <option value="Low">Low</option>
+                <option value="CLEANING">CLEANING</option>
+              </select>
+            </div>
+            <div class="ai-col">
+              <label for="ai-area">Area</label>
+              <input id="ai-area" type="text" placeholder="e.g., Game Room">
+            </div>
+          </div>
+
+          <div class="ai-grid">
+            <div class="ai-col">
+              <label for="ai-equip">Equipment/Location</label>
+              <input id="ai-equip" type="text" placeholder="e.g., Pac-Man, Aisle 3">
+            </div>
+            <div class="ai-col">
+              <label for="ai-notes">Notes</label>
+              <input id="ai-notes" type="text" placeholder="Optional notes">
+            </div>
+          </div>
+
+          <div class="ai-actions">
+            <button id="ai-submit" type="submit" class="ai-btn">Add Issue</button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
@@ -138,4 +203,6 @@
   {{ super() }}
   <script type="module" src="{{ url_for('static', filename='js/modules/dashboardDownGamesCard.js') }}"></script>
   <script type="module" src="{{ url_for('static', filename='js/modules/downGamesQuickUpdate.js') }}"></script>
+  <script type="module" src="{{ url_for('static', filename='js/modules/dashboardIssuesCard.js') }}"></script>
+  <script type="module" src="{{ url_for('static', filename='js/modules/dashboardIssuesQuickAdd.js') }}"></script>
 {% endblock %}

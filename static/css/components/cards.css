@@ -249,3 +249,108 @@
   display: none; /* shown when there’s text */
 }
 #dgm-search-clear:hover { color: #5f6368; }
+/* Card metrics (shared look for dashboard cards) */
+.card-metrics,
+.down-games-metrics {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+
+.metric { text-align: center; min-width: 90px; }
+.metric-label { font-size: 0.8rem; color: #6b7280; }
+.metric-value { font-size: 1.6rem; font-weight: 700; color: #111827; }
+
+/* pill-style chip for secondary numbers (e.g., uptime / awaiting parts) */
+.metric-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  border: 1px solid #e5e7eb;
+  font-weight: 700;
+  color: #111827;
+  background: #f9fafb;
+}
+/* Quick Add Issue modal — tiny form layout */
+.ai-link {
+  margin-left: auto;
+  font-size: 0.9rem;
+  color: var(--primary-color);
+  text-decoration: none;
+}
+.ai-link:hover { text-decoration: underline; }
+
+.ai-form .req { color: #dc2626; }
+
+.ai-row { display: grid; gap: 6px; margin-bottom: 10px; }
+.ai-row textarea {
+  width: 100%; border: 1px solid #e5e7eb; border-radius: 8px; padding: 8px 10px; font: inherit;
+  background: #fff;
+}
+
+.ai-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.ai-col label { display: block; font-size: 0.9rem; color: #6b7280; margin-bottom: 4px; }
+.ai-col input,
+.ai-col select {
+  width: 100%; border: 1px solid #e5e7eb; border-radius: 8px; padding: 8px 10px; font: inherit; background: #fff;
+}
+
+.ai-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
+.ai-btn {
+  border: 1px solid #e5e7eb; background: #fff; border-radius: 8px; padding: 8px 12px; font-weight: 700; cursor: pointer;
+}
+.ai-btn:hover { background: #f3f4f6; }
+
+/* tiny green notice (reuse pattern) */
+.ai-toast {
+  margin: 10px 16px 0 16px;
+  background: #e6ffed; color: #065f46; border: 1px solid #b7f7c9;
+  border-radius: 8px; padding: 8px 10px; font-weight: 700;
+  transition: opacity .2s ease; opacity: 0;
+}
+.ai-toast.is-error {
+  background: #fee2e2; color: #7f1d1d; border-color: #fecaca;
+}
+
+/* small screens */
+@media (max-width: 560px) {
+  .ai-grid { grid-template-columns: 1fr; }
+}
+/* =========================================================================
+   ARCADE MANAGER - DASHBOARD CARD FAB
+   Small floating + button for “Log a New Issue” card.
+   Connected: templates/index.html (#addIssueFab)
+   ========================================================================= */
+.card-fab {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 40px;
+  height: 40px;
+  border-radius: 9999px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  color: #111827;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0,0,0,.06);
+  transition: background .15s ease, border-color .15s ease, transform .05s ease;
+  z-index: 2; /* sit above card content */
+}
+.card-fab:hover {
+  background: #f8fafc;
+  border-color: #d1d5db;
+}
+.card-fab:active {
+  transform: translateY(1px);
+}
+.card-fab:focus-visible {
+  outline: 2px solid #c7d2fe;  /* subtle focus ring */
+  outline-offset: 2px;
+}
