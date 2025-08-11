@@ -209,4 +209,50 @@
     .game-list-table .action-buttons, .issues-table .action-buttons {
         justify-content: flex-end;
     }
+    
 }
+/* --- NEW CODE HERE --- */
+/* Game Inventory table (scoped to inventory page) */
+.games-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border: 1px solid #e5e7eb; /* thin outer border */
+}
+
+.games-table thead th {
+  background: #f3f4f6;       /* light gray header */
+  font-weight: 600;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 12px 14px;
+}
+
+.games-table tbody td {
+  border-top: 1px solid #e5e7eb;  /* row lines */
+  padding: 12px 14px;             /* comfy cells */
+  vertical-align: middle;
+}
+
+/* Zebra rows */
+.games-table tbody tr:nth-child(even) {
+  background: #fafafa;
+}
+
+/* Row hover */
+.games-table tbody tr:hover {
+  background: #eef6ff;
+}
+
+/* Game status variants (page-specific) */
+.status-badge.up {
+  background: #e6ffed;
+  color: #096b39;
+  border-color: #b7f7c9;
+}
+.status-badge.down {
+  background: #fff4e5;
+  color: #8a4b00;
+  border-color: #ffd7a1;
+}
+/* --- END NEW CODE HERE --- */
