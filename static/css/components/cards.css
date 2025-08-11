@@ -191,3 +191,36 @@
   color: #7f1d1d;
   border-color: #fecaca;
 }
+/* Search box in modal */
+.dgm-search { display: flex; align-items: center; gap: 8px; margin: 8px 0 12px; }
+.dgm-search input {
+  flex: 1; border: 1px solid #e5e7eb; border-radius: 8px; padding: 8px 10px; font: inherit; background: #fff;
+}
+
+/* List + rows */
+.dgm-list { list-style: none; padding: 0; margin: 0; }
+.dgm-item {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  padding: 10px 4px; border-bottom: 1px solid #f3f4f6;
+}
+.dgm-item:last-child { border-bottom: 0; }
+.dgm-item--empty { justify-content: flex-start; color: #6b7280; }
+.dgm-left { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
+.dgm-name { font-weight: 600; color: #111827; }
+.dgm-reason { color: #6b7280; }
+.dgm-right { display: flex; align-items: center; gap: 10px; }
+
+/* Status badges */
+.dgm-badge {
+  display: inline-flex; padding: 2px 8px; border-radius: 9999px;
+  font-size: .75rem; font-weight: 700; border: 1px solid transparent;
+}
+.dgm-badge--up   { background: #e6ffed; color: #096b39; border-color: #b7f7c9; }
+.dgm-badge--down { background: #fff4e5; color: #8a4b00; border-color: #ffd7a1; }
+
+/* Toggle button */
+.dgm-toggle-btn {
+  border: 1px solid #e5e7eb; background: #fff; border-radius: 8px; padding: 6px 10px;
+  font-weight: 600; cursor: pointer;
+}
+.dgm-toggle-btn:hover { background: #f3f4f6; }

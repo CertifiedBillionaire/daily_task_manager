@@ -1,17 +1,22 @@
 // =========================================================================
-// ARCADE MANAGER - DASHBOARD QUICK UPDATE (DOWN GAMES)
-// Opens a minimal modal listing games that are Down and lets you mark them Up.
+// ARCADE MANAGER - DASHBOARD QUICK UPDATE (ALL GAMES SEARCH & TOGGLE)
+// Opens a modal from the “Update Down Games” card, lets you search ALL games,
+// and flip status: Mark Up (if Down) / Mark Down (if Up).
 //
 // What this file does:
-// - Makes the "Update Down Games" card open a modal
-// - Lists all games with status === "Down" (name + reason)
-// - "Mark Up" asks to confirm, then PUT /api/games/<id> { status: "Up", down_reason: null }
-// - On success: removes item, refreshes counts, and shows a green notice
+// - Card click opens a modal
+// - Loads all games (GET /api/games)
+// - Renders a small search box; filters as you type
+// - Shows status badges per row
+// - Action button: Mark Up / Mark Down (with confirm)
+// - If Mark Down, asks for an optional reason
+// - On success: updates in-memory list, re-renders, refreshes dashboard counts,
+//   and shows a tiny green notice at the top of the modal
 //
 // Connected files:
 // - templates/index.html (modal markup + #downGamesCard)
-// - dashboardDownGamesCard.js (refreshes counts/uptime)
-// - static/css/components/cards.css (modal + toast styles)
+// - dashboardDownGamesCard.js (refreshes count/uptime on the card)
+// - static/css/components/cards.css (modal + list + toast + search input styles)
 // - Backend: GET /api/games, PUT /api/games/<id>
 // =========================================================================
 
@@ -19,10 +24,14 @@ import { initDownGamesCard } from './dashboardDownGamesCard.js';
 
 const sel = (q, root = document) => root.querySelector(q);
 
+let allGames = [];
+let lastTerm = '';
+
 function getEls() {
   return {
     card: sel('#downGamesCard'),
     modal: sel('#downGamesModal'),
+    panel: sel('#downGamesModal .simple-modal__panel'),
     body: sel('#dgm-body'),
   };
 }
@@ -54,55 +63,15 @@ function onEscClose(e) {
   }
 }
 
-function renderEmpty(body) {
-  body.innerHTML = `
-    <div class="dgm-empty">
-      <i class="fas fa-check-circle"></i>
-      <p>All games are up. 🎉</p>
-    </div>
-  `;
-}
-
-function rowTemplate(g) {
-  const reason = g.down_reason ? ` — <span class="dgm-reason">${escapeHtml(g.down_reason)}</span>` : '';
-  return `
-    <li class="dgm-item" data-id="${escapeAttr(g.id)}">
-      <div class="dgm-main">
-        <span class="dgm-name">${escapeHtml(g.name || 'Unnamed')}</span>${reason}
-      </div>
-      <button class="dgm-up-btn" type="button" data-name="${escapeAttr(g.name || 'Unnamed')}">Mark Up</button>
-    </li>
-  `;
-}
-
-async function loadDownList(body) {
-  body.innerHTML = `<div class="dgm-loading"><i class="fas fa-spinner fa-spin"></i> Loading…</div>`;
-  try {
-    const games = await fetchGames();
-    const down = games.filter(g => g.status === 'Down');
-    if (down.length === 0) {
-      renderEmpty(body);
-      return;
-    }
-    const items = down.map(rowTemplate).join('');
-    body.innerHTML = `<ul class="dgm-list">${items}</ul>`;
-  } catch (e) {
-    console.error('QuickUpdate: failed to load', e);
-    body.innerHTML = `<p class="dgm-error">Failed to load games.</p>`;
-  }
-}
-
 function showToast(text, type = 'success') {
-  const modal = sel('#downGamesModal');
-  const panel = modal?.querySelector('.simple-modal__panel');
-  const body = modal?.querySelector('.simple-modal__body');
+  const { modal, panel, body } = getEls();
   if (!panel || !body) return;
 
   let toast = modal.querySelector('.dgm-toast');
   if (!toast) {
     toast = document.createElement('div');
     toast.className = 'dgm-toast';
-    panel.insertBefore(toast, body); // show above the list
+    panel.insertBefore(toast, body); // above the list
   }
   toast.textContent = text;
   toast.classList.toggle('is-error', type === 'error');
@@ -114,7 +83,98 @@ function showToast(text, type = 'success') {
   }, 2000);
 }
 
-async function markUp(id, btn, name) {
+/* ---------- rendering ---------- */
+
+function renderShell(body) {
+  body.innerHTML = `
+    <div class="dgm-search">
+      <input id="dgm-search-input" type="text" placeholder="Search games…" aria-label="Search games">
+    </div>
+    <ul class="dgm-list" id="dgm-list"></ul>
+  `;
+}
+
+function rowTemplate(g) {
+  const badge =
+    g.status === 'Down'
+      ? `<span class="dgm-badge dgm-badge--down">Down</span>`
+      : `<span class="dgm-badge dgm-badge--up">Up</span>`;
+
+  const reason =
+    g.status === 'Down' && g.down_reason
+      ? ` — <span class="dgm-reason">${escapeHtml(g.down_reason)}</span>`
+      : '';
+
+  const action =
+    g.status === 'Down'
+      ? `<button class="dgm-toggle-btn" type="button" data-action="up" data-name="${escapeAttr(g.name || 'Unnamed')}" data-id="${escapeAttr(g.id)}">Mark Up</button>`
+      : `<button class="dgm-toggle-btn" type="button" data-action="down" data-name="${escapeAttr(g.name || 'Unnamed')}" data-id="${escapeAttr(g.id)}">Mark Down</button>`;
+
+  return `
+    <li class="dgm-item" data-id="${escapeAttr(g.id)}">
+      <div class="dgm-left">
+        <span class="dgm-name">${escapeHtml(g.name || 'Unnamed')}</span>${reason}
+      </div>
+      <div class="dgm-right">
+        ${badge}
+        ${action}
+      </div>
+    </li>
+  `;
+}
+
+function drawList(games, term = '') {
+  const list = sel('#dgm-list');
+  if (!list) return;
+
+  const lc = term.trim().toLowerCase();
+  // sort: Down first, then name
+  const sorted = [...games].sort((a, b) => {
+    const aDown = a.status === 'Down' ? 1 : 0;
+    const bDown = b.status === 'Down' ? 1 : 0;
+    if (aDown !== bDown) return bDown - aDown;
+    const an = (a.name || '').toLowerCase();
+    const bn = (b.name || '').toLowerCase();
+    return an.localeCompare(bn);
+  });
+
+  const filtered = lc
+    ? sorted.filter(g =>
+        (g.name || '').toLowerCase().includes(lc) ||
+        String(g.id || '').toLowerCase().includes(lc)
+      )
+    : sorted;
+
+  if (filtered.length === 0) {
+    list.innerHTML = `<li class="dgm-item dgm-item--empty"><div class="dgm-left">No games match “${escapeHtml(term)}”.</div></li>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(rowTemplate).join('');
+}
+
+async function loadAll(body) {
+  body.innerHTML = `<div class="dgm-loading"><i class="fas fa-spinner fa-spin"></i> Loading…</div>`;
+  try {
+    allGames = await fetchGames();
+    renderShell(body);
+    const input = sel('#dgm-search-input');
+    input.value = lastTerm;
+    drawList(allGames, lastTerm);
+
+    input.addEventListener('input', () => {
+      lastTerm = input.value;
+      drawList(allGames, lastTerm);
+    });
+  } catch (e) {
+    console.error('QuickUpdate: failed to load', e);
+    body.innerHTML = `<p class="dgm-error">Failed to load games.</p>`;
+  }
+}
+
+/* ---------- actions ---------- */
+
+async function markStatus(id, target, btn, name, reason = null) {
   try {
     btn.disabled = true;
     btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
@@ -122,58 +182,73 @@ async function markUp(id, btn, name) {
     const res = await fetch(`/api/games/${encodeURIComponent(id)}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status: 'Up', down_reason: null }),
+      body: JSON.stringify({ status: target, down_reason: reason }),
     });
     if (!res.ok) {
       const err = await safeJson(res);
       throw new Error(err.error || res.statusText);
     }
 
-    // remove item
-    const li = btn.closest('.dgm-item');
-    if (li) li.remove();
-
-    // refresh dashboard counts
-    await initDownGamesCard();
-
-    // if list empty, show empty state
-    const list = sel('.dgm-list');
-    if (!list || list.children.length === 0) {
-      const body = sel('#dgm-body');
-      renderEmpty(body);
+    // update local copy
+    const idx = allGames.findIndex(g => String(g.id) === String(id));
+    if (idx !== -1) {
+      allGames[idx] = {
+        ...allGames[idx],
+        status: target,
+        down_reason: target === 'Down' ? (reason || null) : null,
+      };
     }
 
-    showToast(`Marked Up: ${name}`, 'success');
+    // refresh dashboard counters
+    await initDownGamesCard();
+
+    // redraw list (keeps search term)
+    drawList(allGames, lastTerm);
+
+    // toast
+    showToast(
+      target === 'Up' ? `Marked Up: ${name}` : `Marked Down: ${name}`,
+      'success'
+    );
   } catch (e) {
-    console.error('Mark Up failed', e);
+    console.error('Mark status failed', e);
     btn.disabled = false;
-    btn.textContent = 'Mark Up';
-    showToast('Failed to mark up.', 'error');
-    alert('Failed to mark up. See console for details.');
+    btn.textContent = target === 'Up' ? 'Mark Up' : 'Mark Down';
+    showToast('Update failed.', 'error');
+    alert('Failed to update. See console for details.');
   }
 }
 
+/* ---------- wiring ---------- */
+
 function wireModalEvents(modal, body) {
-  // close on overlay or X
+  // Close on overlay or X
   modal.addEventListener('click', (e) => {
-    if (e.target.matches('[data-close]')) {
-      closeModal(modal);
-    }
+    if (e.target.matches('[data-close]')) closeModal(modal);
   });
 
-  // delegate clicks on "Mark Up" with confirm
+  // Delegate clicks on Mark Up / Mark Down
   body.addEventListener('click', async (e) => {
-    const btn = e.target.closest('.dgm-up-btn');
+    const btn = e.target.closest('.dgm-toggle-btn');
     if (!btn) return;
-    const li = btn.closest('.dgm-item');
-    const id = li?.getAttribute('data-id');
-    const name = btn.getAttribute('data-name') || li?.querySelector('.dgm-name')?.textContent || 'this game';
-    if (!id) return;
 
-    const ok = confirm(`Put “${name}” back in service (Up)?`);
-    if (!ok) return;
+    const id = btn.getAttribute('data-id');
+    const name = btn.getAttribute('data-name') || 'this game';
+    const action = btn.getAttribute('data-action'); // 'up' | 'down'
+    if (!id || !action) return;
 
-    await markUp(id, btn, name);
+    if (action === 'up') {
+      const ok = confirm(`Put “${name}” back in service (Up)?`);
+      if (!ok) return;
+      await markStatus(id, 'Up', btn, name, null);
+    } else {
+      const ok = confirm(`Mark “${name}” as Down?`);
+      if (!ok) return;
+      // Optional reason
+      let reason = prompt('Reason (optional):', '');
+      if (reason === null) reason = ''; // cancelled prompt → treat as empty
+      await markStatus(id, 'Down', btn, name, reason.trim() || null);
+    }
   });
 }
 
@@ -181,32 +256,32 @@ export function initDownGamesQuickUpdate() {
   const { card, modal, body } = getEls();
   if (!card || !modal || !body) return;
 
-  // open on click
+  // Open on click
   card.addEventListener('click', () => {
     openModal(modal);
-    loadDownList(body);
+    loadAll(body);
   });
 
-  // open on Enter/Space (keyboard)
+  // Open on Enter/Space (keyboard)
   card.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       openModal(modal);
-      loadDownList(body);
+      loadAll(body);
     }
   });
 
   wireModalEvents(modal, body);
 }
 
-// auto-init
+// Auto-init
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initDownGamesQuickUpdate);
 } else {
   initDownGamesQuickUpdate();
 }
 
-/* helpers */
+/* ---------- helpers ---------- */
 function escapeHtml(s) {
   return String(s ?? '').replace(/[&<>"']/g, c => (
     { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]
