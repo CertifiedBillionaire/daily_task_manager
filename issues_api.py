@@ -1,93 +1,47 @@
 # =========================================================================
-# ARCADE MANAGER - ISSUES API
-# Routes for Issues (GET/POST/PUT/DELETE), counts, equipment suggestions,
-# and permanent sequential IDs like ISS-001.
+# ARCADE MANAGER - ISSUES API ROUTES
+# REST endpoints for Issues: list, create (padded IDs), update, delete,
+# counts, and location suggestions. Works on Postgres (Render) + SQLite (local).
 #
 # What this file does:
-# - Exposes: /api/issues (GET, POST), /api/issues/<id> (PUT, DELETE)
-# - Exposes: /api/urgent_issues_count (GET)
-# - Exposes: /api/equipment_locations (GET)
-# - Provides: get_next_issue_id() using settings.issue_counter
-# - One-time helper: /admin/seed_issue_counter to sync counter to current max
+# - GET  /api/issues                     → list issues (newest first)
+# - POST /api/issues                     → create issue with zero-padded id (001, 002…)
+# - PUT  /api/issues/<issue_id>          → update selected fields + bump last_updated
+# - DELETE /api/issues/<issue_id>        → delete issue by id
+# - GET  /api/urgent_issues_count        → count Open + (IMMEDIATE or High)
+# - GET  /api/equipment_locations        → recent distinct equipment_location suggestions
 #
 # Connected files:
-# - app.py (calls register_issue_routes(app, get_db))
-# - templates/issues.html (table UI)
-# - static/js/modules/tableRenderer.js (renders Issues table)
+# - app.py                 (calls register_issue_routes(app, get_db))
+# - issues_db.py           (next_issue_id for padded IDs; optional helpers)
+# - templates/issues.html  (frontend)
+# - static/js/*            (dashboard/issues UIs)
 # =========================================================================
 
 from flask import request, jsonify
+from psycopg2 import sql
+
+# Optional helper: zero-padded IDs via id_sequences table
+# (We rely on next_issue_id() to lazily ensure the sequence row exists)
+try:
+    from issues_db import next_issue_id  # returns "001", "002", ...
+except Exception:
+    next_issue_id = None  # fallback handled in POST
+
+def _is_postgres(db):
+    return hasattr(db, "dsn")
+
+def _safe_iso(val):
+    """Return ISO string for datetimes/dates if possible; else str/None."""
+    if val is None:
+        return None
+    return val.isoformat() if hasattr(val, "isoformat") else str(val)
 
 def register_issue_routes(app, get_db):
-    """
-    Call this from app.py:
-        from issues_api import register_issue_routes
-        register_issue_routes(app, get_db)
-    """
-
-    # -------- Helpers --------
-    def _is_postgres(db):
-        return hasattr(db, 'dsn')
-
-    def _safe_iso(val):
-        if val is None:
-            return None
-        return val.isoformat() if hasattr(val, "isoformat") else str(val)
-
-    def get_next_issue_id():
-        """
-        Returns next ID like 'ISS-001' using settings.issue_counter.
-        Works on SQLite and Postgres.
-        """
-        db = get_db()
-        cur = db.cursor()
-        try:
-            if _is_postgres(db):
-                # Postgres: upsert + atomic increment with RETURNING
-                cur.execute("BEGIN;")
-                cur.execute(
-                    "INSERT INTO settings (key, value) VALUES (%s, %s) "
-                    "ON CONFLICT (key) DO NOTHING;",
-                    ('issue_counter', '0')
-                )
-                cur.execute(
-                    "UPDATE settings SET value = ((value::int) + 1)::text "
-                    "WHERE key = %s RETURNING value;",
-                    ('issue_counter',)
-                )
-                new_val = cur.fetchone()[0]
-                db.commit()
-            else:
-                # SQLite: immediate lock to avoid races
-                cur.execute("BEGIN IMMEDIATE;")
-                cur.execute(
-                    "INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?);",
-                    ('issue_counter', '0')
-                )
-                cur.execute(
-                    "UPDATE settings SET value = CAST(value AS INTEGER) + 1 WHERE key = ?;",
-                    ('issue_counter',)
-                )
-                cur.execute("SELECT value FROM settings WHERE key = ?;", ('issue_counter',))
-                row = cur.fetchone()
-                new_val = row[0] if row else '1'
-                db.commit()
-        except Exception:
-            db.rollback()
-            raise
-        finally:
-            cur.close()
-
-        try:
-            n = int(str(new_val))
-        except:
-            n = 1
-        return f"ISS-{n:03d}"
-
-    # -------- Routes --------
+    # ----------------------------- List + Create -----------------------------
 
     @app.route('/api/issues', methods=['GET', 'POST'])
-    def api_issues():
+    def issues_collection():
         db = get_db()
         cur = db.cursor()
 
@@ -104,232 +58,185 @@ def register_issue_routes(app, get_db):
 
                 data = []
                 for r in rows:
-                    # rows may be tuples or rows; use index access like original code
+                    # r can be tuple (pg) or sqlite Row; index by position
                     data.append({
-                        "id": r[0],
-                        "priority": r[1],
-                        "date_logged": _safe_iso(r[2]),
-                        "last_updated": _safe_iso(r[3]),
-                        "area": r[4],
+                        "id":               r[0],
+                        "priority":         r[1],
+                        "date_logged":      _safe_iso(r[2]),
+                        "last_updated":     _safe_iso(r[3]),
+                        "area":             r[4],
                         "equipment_location": r[5],
-                        "description": r[6],
-                        "notes": r[7],
-                        "status": r[8],
-                        "target_date": _safe_iso(r[9]),
-                        "assigned_to": r[10],
+                        "description":      r[6],
+                        "notes":            r[7],
+                        "status":           r[8],
+                        "target_date":      _safe_iso(r[9]),
+                        "assigned_to":      r[10],
                     })
                 return jsonify(data)
             except Exception as e:
-                print(f"ERROR: Failed to fetch issues: {e}")
-                return jsonify({"error": "Failed to retrieve issues", "details": str(e)}), 500
+                app.logger.error(f"/api/issues GET failed: {e}")
+                return jsonify({"error": "Failed to retrieve issues"}), 500
             finally:
                 cur.close()
 
-        # POST
+        # POST (create)
         try:
-            data = request.get_json(force=True) or {}
-
-            description = data.get('description')
-            priority = data.get('priority')
-            status = data.get('status')
-            area = data.get('area', '')
-            equipment_location = data.get('equipment_location', '')
-            notes = data.get('notes', '')
-            target_date = data.get('target_date')
-            assigned_to = data.get('assigned_to', '')
+            body = request.get_json(force=True) or {}
+            description = body.get('description', '').strip()
+            priority    = body.get('priority', '').strip()
+            status      = body.get('status', '').strip()
+            area        = body.get('area', '').strip()
+            equip_loc   = body.get('equipment_location', '').strip()
+            notes       = body.get('notes', '').strip()
+            target_date = body.get('target_date')  # may be None/'' (client raw)
+            assigned_to = body.get('assigned_to', '').strip()
 
             if not description or not priority or not status:
                 return jsonify({"error": "Missing required fields: description, priority, status"}), 400
 
-            issue_id = get_next_issue_id()
+            # padded ID if helper is available, else timestamp fallback
+            if next_issue_id:
+                issue_id = next_issue_id(db)  # "001"
+            else:
+                import time
+                issue_id = f"{int(time.time())}"
 
             is_pg = _is_postgres(db)
-            ph = '%s' if is_pg else '?'
-            sql_insert = (
-                f"INSERT INTO issues (id, description, priority, status, area, equipment_location, "
-                f"notes, target_date, assigned_to, last_updated) "
-                f"VALUES ({ph}, {ph}, {ph}, {ph}, {ph}, {ph}, {ph}, {ph}, {ph}, CURRENT_TIMESTAMP);"
-            )
-            params = (issue_id, description, priority, status, area, equipment_location, notes, target_date, assigned_to)
-
             cur = db.cursor()
             try:
-                cur.execute(sql_insert, params)
+                if is_pg:
+                    cur.execute(sql.SQL("""
+                        INSERT INTO issues
+                          (id, description, priority, status, area, equipment_location,
+                           notes, target_date, assigned_to, last_updated)
+                        VALUES
+                          (%s, %s, %s, %s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP);
+                    """), (issue_id, description, priority, status, area, equip_loc, notes, target_date, assigned_to))
+                else:
+                    cur.execute("""
+                        INSERT INTO issues
+                          (id, description, priority, status, area, equipment_location,
+                           notes, target_date, assigned_to, last_updated)
+                        VALUES
+                          (?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP);
+                    """, (issue_id, description, priority, status, area, equip_loc, notes, target_date, assigned_to))
                 db.commit()
                 return jsonify({"message": "Issue added successfully!", "issue_id": issue_id}), 201
             except Exception as e:
                 db.rollback()
-                print(f"ERROR: Failed to add issue: {e}")
-                return jsonify({"error": "Failed to add issue", "details": str(e)}), 500
+                app.logger.error(f"/api/issues POST failed: {e}")
+                return jsonify({"error": "Failed to add issue"}), 500
             finally:
                 cur.close()
-
         except Exception as e:
-            print(f"ERROR: POST /api/issues failed: {e}")
+            app.logger.error(f"/api/issues POST outer failure: {e}")
             return jsonify({"error": "Server error"}), 500
+
+    # ----------------------------- Update -----------------------------------
 
     @app.route('/api/issues/<issue_id>', methods=['PUT'])
-    def api_issue_update(issue_id):
+    def issues_update(issue_id):
+        db = get_db()
+        is_pg = _is_postgres(db)
+        ph = '%s' if is_pg else '?'
+
+        body = request.get_json(force=True) or {}
+        allowed = ['description', 'area', 'equipment_location', 'priority',
+                   'status', 'notes', 'assigned_to', 'target_date']
+
+        set_parts = []
+        values = []
+        for k in allowed:
+            if k in body:
+                set_parts.append(f"{k} = {ph}")
+                values.append(body[k])
+
+        if not set_parts:
+            return jsonify({"error": "No fields to update"}), 400
+
+        set_parts.append("last_updated = CURRENT_TIMESTAMP")
+        sql_str = f"UPDATE issues SET {', '.join(set_parts)} WHERE id = {ph};"
+
+        cur = db.cursor()
         try:
-            db = get_db()
-            is_pg = _is_postgres(db)
-            ph = '%s' if is_pg else '?'
-
-            data = request.get_json(force=True) or {}
-            allowed = ['description', 'area', 'equipment_location',
-                       'priority', 'status', 'notes', 'assigned_to', 'target_date']
-
-            set_parts = []
-            values = []
-            for key in allowed:
-                if key in data:
-                    set_parts.append(f"{key} = {ph}")
-                    values.append(data[key])
-
-            if not set_parts:
-                return jsonify({"error": "No fields to update"}), 400
-
-            set_parts.append("last_updated = CURRENT_TIMESTAMP")
-            sql_str = f"UPDATE issues SET {', '.join(set_parts)} WHERE id = {ph};"
-
-            cur = db.cursor()
-            try:
-                cur.execute(sql_str, (*values, issue_id))
-                if cur.rowcount == 0:
-                    db.commit()
-                    return jsonify({"error": "Issue not found"}), 404
+            cur.execute(sql_str, (*values, issue_id))
+            if cur.rowcount == 0:
                 db.commit()
-                return jsonify({"message": "Issue updated", "issue_id": issue_id})
-            except Exception as e:
-                db.rollback()
-                print(f"ERROR: update_issue failed: {e}")
-                return jsonify({"error": "Failed to update issue", "details": str(e)}), 500
-            finally:
-                cur.close()
-
+                return jsonify({"error": "Issue not found"}), 404
+            db.commit()
+            return jsonify({"message": "Issue updated", "issue_id": issue_id})
         except Exception as e:
-            print(f"ERROR: update_issue outer failure: {e}")
-            return jsonify({"error": "Server error"}), 500
+            db.rollback()
+            app.logger.error(f"/api/issues PUT failed: {e}")
+            return jsonify({"error": "Failed to update issue"}), 500
+        finally:
+            cur.close()
+
+    # ----------------------------- Delete -----------------------------------
 
     @app.route('/api/issues/<issue_id>', methods=['DELETE'])
-    def api_issue_delete(issue_id):
-        try:
-            db = get_db()
-            is_pg = _is_postgres(db)
-            ph = '%s' if is_pg else '?'
+    def issues_delete(issue_id):
+        db = get_db()
+        is_pg = _is_postgres(db)
+        ph = '%s' if is_pg else '?'
 
-            cur = db.cursor()
-            try:
-                cur.execute(f"DELETE FROM issues WHERE id = {ph};", (issue_id,))
-                if cur.rowcount == 0:
-                    db.commit()
-                    return jsonify({"error": "Issue not found"}), 404
+        cur = db.cursor()
+        try:
+            cur.execute(f"DELETE FROM issues WHERE id = {ph};", (issue_id,))
+            if cur.rowcount == 0:
                 db.commit()
-                return jsonify({"message": "Issue deleted", "issue_id": issue_id})
-            except Exception as e:
-                db.rollback()
-                print(f"ERROR: delete_issue failed: {e}")
-                return jsonify({"error": "Failed to delete issue", "details": str(e)}), 500
-            finally:
-                cur.close()
+                return jsonify({"error": "Issue not found"}), 404
+            db.commit()
+            return jsonify({"message": "Issue deleted", "issue_id": issue_id})
         except Exception as e:
-            print(f"ERROR: delete_issue outer failure: {e}")
-            return jsonify({"error": "Server error"}), 500
+            db.rollback()
+            app.logger.error(f"/api/issues DELETE failed: {e}")
+            return jsonify({"error": "Failed to delete issue"}), 500
+        finally:
+            cur.close()
+
+    # ----------------------------- Counts -----------------------------------
 
     @app.route('/api/urgent_issues_count', methods=['GET'])
-    def api_urgent_issues_count():
+    def urgent_issues_count():
+        """Open AND (IMMEDIATE or High)."""
+        db = get_db()
+        cur = db.cursor()
         try:
-            db = get_db()
-            cur = db.cursor()
-            try:
-                cur.execute("""
-                    SELECT COUNT(*) FROM issues
-                    WHERE status = 'Open' AND (priority = 'IMMEDIATE' OR priority = 'High');
-                """)
-                count = cur.fetchone()[0]
-                return jsonify({"count": count})
-            finally:
-                cur.close()
+            cur.execute(sql.SQL("""
+                SELECT COUNT(*)
+                FROM issues
+                WHERE status = 'Open' AND (priority = 'IMMEDIATE' OR priority = 'High');
+            """))
+            count = cur.fetchone()[0]
+            return jsonify({"count": int(count)})
         except Exception as e:
-            print(f"ERROR: urgent_issues_count: {e}")
+            app.logger.error(f"/api/urgent_issues_count failed: {e}")
             return jsonify({"count": 0, "error": "Database error fetching count"}), 500
+        finally:
+            cur.close()
+
+    # ------------------------ Location suggestions --------------------------
 
     @app.route('/api/equipment_locations', methods=['GET'])
-    def api_equipment_locations():
-        """
-        Returns unique equipment_location values (newest first).
-        """
+    def equipment_locations():
+        """Distinct equipment_location values (newest first, limit 50)."""
+        db = get_db()
+        cur = db.cursor()
         try:
-            db = get_db()
-            cur = db.cursor()
-            try:
-                cur.execute("""
-                    SELECT equipment_location, MAX(date_logged) AS last_used
-                    FROM issues
-                    WHERE equipment_location IS NOT NULL AND TRIM(equipment_location) <> ''
-                    GROUP BY equipment_location
-                    ORDER BY last_used DESC
-                    LIMIT 50;
-                """)
-                rows = cur.fetchall()
-                items = [r[0] for r in rows if r and r[0]]
-                return jsonify({"items": items})
-            finally:
-                cur.close()
+            cur.execute("""
+                SELECT equipment_location, MAX(date_logged) AS last_used
+                FROM issues
+                WHERE equipment_location IS NOT NULL AND TRIM(equipment_location) <> ''
+                GROUP BY equipment_location
+                ORDER BY last_used DESC
+                LIMIT 50;
+            """)
+            rows = cur.fetchall()
+            items = [r[0] for r in rows if r and r[0]]
+            return jsonify({"items": items})
         except Exception as e:
-            print(f"ERROR: equipment_locations failed: {e}")
+            app.logger.error(f"/api/equipment_locations failed: {e}")
             return jsonify({"items": [], "error": "failed"}), 500
-
-    @app.route('/admin/seed_issue_counter')
-    def seed_issue_counter():
-        """
-        ONE-TIME helper.
-        Sets settings.issue_counter to the max numeric part found in existing 'ISS-xxx' IDs.
-        Run once locally, then remove/disable.
-        """
-        try:
-            db = get_db()
-            cur = db.cursor()
-            try:
-                cur.execute("SELECT id FROM issues;")
-                rows = cur.fetchall()
-            finally:
-                pass
-
-            max_n = 0
-            for row in rows:
-                raw = row[0] if isinstance(row, (list, tuple)) else row
-                s = str(raw or "")
-                if s.startswith("ISS-"):
-                    try:
-                        n = int(s.split("-", 1)[1])
-                        if n > max_n:
-                            max_n = n
-                    except:
-                        continue
-
-            if _is_postgres(db):
-                cur.execute(
-                    "INSERT INTO settings (key, value) VALUES (%s, %s) "
-                    "ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value;",
-                    ('issue_counter', str(max_n))
-                )
-            else:
-                cur.execute(
-                    "INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?);",
-                    ('issue_counter', str(max_n))
-                )
-                cur.execute(
-                    "UPDATE settings SET value = ? WHERE key = ?;",
-                    (str(max_n), 'issue_counter')
-                )
-
-            db.commit()
+        finally:
             cur.close()
-            return jsonify({"message": "issue_counter seeded", "value": max_n}), 200
-        except Exception as e:
-            try:
-                db.rollback()
-            except:
-                pass
-            return jsonify({"error": "seed failed", "details": str(e)}), 500
