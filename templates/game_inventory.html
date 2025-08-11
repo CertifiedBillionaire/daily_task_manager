@@ -5,11 +5,25 @@
 {% block content %}
     <div class="content-header">
         <h2>Game Inventory Management</h2>
-        <p>Manage your arcade game assets, status, and history.</p>
+        <p>Manage your arcade game assets and their operational status.</p>
     </div>
 
+    <!-- --- NEW CODE HERE --- -->
+    <!-- Summary Section -->
+    <section id="games-summary" class="section-card" style="display:flex; gap:2rem; margin-bottom:1rem;">
+        <div style="flex:1; background:#e6ffed; padding:1rem; border-radius:8px; text-align:center;">
+            <h3>✅ Games Up</h3>
+            <p id="games-up-count" style="font-size:1.5rem; font-weight:bold;">0</p>
+        </div>
+        <div style="flex:1; background:#fff4e5; padding:1rem; border-radius:8px; text-align:center;">
+            <h3>⚠️ Games Down</h3>
+            <p id="games-down-count" style="font-size:1.5rem; font-weight:bold;">0</p>
+        </div>
+    </section>
+
+    <!-- Add Game Form -->
     <section id="game-inventory-section" class="section-card">
-        <h2>Game Inventory</h2>
+        <h2>Add a Game</h2>
         <div class="game-input-area">
             <div class="form-group">
                 <label for="gameNameInput">Game Name:</label>
@@ -18,27 +32,46 @@
             <div class="form-group">
                 <label for="gameStatusSelect">Status:</label>
                 <select id="gameStatusSelect">
-                    <option value="active">Active</option>
-                    <option value="new">New</option>
-                    <option value="trashed">Trashed</option>
+                    <option value="Up">Up</option>
+                    <option value="Down">Down</option>
                 </select>
             </div>
+            <div class="form-group" id="downReasonGroup" style="display:none;">
+                <label for="gameDownReason">Reason (if Down):</label>
+                <input type="text" id="gameDownReason" placeholder="e.g., Card reader jam">
+            </div>
             <div class="button-group">
-                <button class="add-game-button" id="addGameButton"><i class="fas fa-plus-circle"></i> Add Game</button>
-                <button class="export-button" id="exportGameListButton"><i class="fas fa-file-excel"></i> Export to Excel</button>
+                <button class="add-game-button" id="addGameButton">
+                    <i class="fas fa-plus-circle"></i> Add Game
+                </button>
             </div>
         </div>
-
-        <table class="game-list-table">
-            <thead>
-                <tr>
-                    <th>Game Name</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody id="gameListBody">
-            </tbody>
-        </table>
     </section>
+
+    <!-- Games Table -->
+    <section id="games-table-section" class="section-card" style="margin-top:1.5rem;">
+        <h2>Current Games</h2>
+        <div id="games-table-container"></div>
+    </section>
+    <!-- --- END NEW CODE HERE --- -->
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <!-- --- NEW CODE HERE --- -->
+    <script type="module">
+    import { renderGamesTable } from "/static/js/modules/gamesTableRenderer.js";
+    import { initAddNewGameForm } from "/static/js/modules/addNewGameForm.js";
+
+    const statusSelect = document.getElementById('gameStatusSelect');
+    const downReasonGroup = document.getElementById('downReasonGroup');
+    statusSelect.addEventListener('change', () => {
+        downReasonGroup.style.display = statusSelect.value === 'Down' ? 'block' : 'none';
+    });
+
+    // Init page
+    renderGamesTable();
+    initAddNewGameForm();
+    </script>
+    <!-- --- END NEW CODE HERE --- -->
 {% endblock %}
