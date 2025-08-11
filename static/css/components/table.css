@@ -275,4 +275,37 @@ td.col-selected {
   border-color: #ffd7a1;
 }
 /* --- END NEW CODE HERE --- */
+/* --- NEW CODE HERE --- */
+/* Basic grid so the table looks like a real table */
+.games-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border: 1px solid #e5e7eb; /* thin outer border */
+}
+
+.games-table thead th {
+  background: #f3f4f6;       /* light gray header */
+  font-weight: 600;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 12px 14px;
+}
+
+.games-table tbody td {
+  border-top: 1px solid #e5e7eb;  /* row lines */
+  padding: 12px 14px;             /* comfy cells */
+  vertical-align: middle;
+}
+
+/* Zebra rows so it’s easier to scan */
+.games-table tbody tr:nth-child(even) {
+  background: #fafafa;
+}
+
+/* Hover so you see the row you’re on */
+.games-table tbody tr:hover {
+  background: #eef6ff;
+}
+/* --- END NEW CODE HERE --- */
 
