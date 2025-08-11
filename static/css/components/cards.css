@@ -1,218 +1,134 @@
 /*
- * This file contains the styling for all the dashboard cards.
- * It defines the general look of the cards, their colors, and internal layout.
- * To change how all cards look, edit the .dashboard-card rule.
+ * Dashboard Cards (clean version)
+ * Look, colors, layout for all cards. Small extras for “Update Down Games”.
  */
+
 .dashboard-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 30px;
-    margin-bottom: 50px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  margin-bottom: 50px;
 }
 
 .dashboard-card {
-    background-color: #FFFFFF;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    padding: 25px;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px; /* Adds space between icon, title, and text */
-    border-top: 6px solid transparent;
-    position: relative;
-
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.08);
+  padding: 25px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  border-top: 6px solid transparent;
+  position: relative;
+  transition: transform .15s ease, box-shadow .15s ease;
 }
-/* --- Card Color Variations --- */
+.dashboard-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-large);
+}
+
+/* Color accents */
 .color-purple { border-top-color: #673AB7; }
 .color-red    { border-top-color: #F44336; }
 .color-blue   { border-top-color: #2196F3; }
 .color-orange { border-top-color: #FF9800; }
 .color-green  { border-top-color: #4CAF50; }
-.color-yellow {border-top-color:  #FFC107; }
-.color-black  {border-top-color:  black;   }
-.dashboard-card:hover {
-    transform: translateY(-8px);
-    box-shadow: var(--shadow-large);
-}
+.color-yellow { border-top-color: #FFC107; }
+.color-black  { border-top-color: #000; }
 
+/* Icon bubble */
 .card-icon {
-    width: 55px;
-    height: 55px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2em;
-    color: #FFFFFF;
-    margin-bottom: 18px;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+  width: 55px; height: 55px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2em; color: #fff; margin-bottom: 18px;
+  box-shadow: 0 3px 8px rgba(0,0,0,.15);
 }
+.dashboard-card.color-green  .card-icon { background: #66BB6A; }
+.dashboard-card.color-purple .card-icon { background: #9C27B0; }
+.dashboard-card.color-blue   .card-icon { background: var(--primary-color); }
+.dashboard-card.color-red    .card-icon { background: #F44336; }
+.dashboard-card.color-orange .card-icon { background: #FF9800; }
+.dashboard-card.color-yellow .card-icon { background: #FFC107; }
 
-.dashboard-card.color-green .card-icon { background-color: #66BB6A; }
-.dashboard-card.color-purple .card-icon { background-color: #9C27B0; }
-.dashboard-card.color-blue .card-icon { background-color: var(--primary-color); }
-.dashboard-card.color-red .card-icon { background-color: #F44336; }
-.dashboard-card.color-orange .card-icon { background-color: #FF9800; }
-.dashboard-card.color-yellow .card-icon { background-color: #FFC107; }
-
+/* Titles / text */
 .dashboard-card h3 {
-    font-size: 1.3em;
-    font-weight: 600;
-    color: var(--text-color-dark);
-    margin-top: 0;
-    margin-bottom: 10px;
+  font-size: 1.3em; font-weight: 600; color: var(--text-color-dark);
+  margin: 0 0 10px 0;
 }
+.card-description { font-size: .95em; color: var(--text-color-light); margin-bottom: 20px; flex-grow: 1; }
 
-.card-description {
-    font-size: 0.95em;
-    color: var(--text-color-light);
-    margin-bottom: 20px;
-    flex-grow: 1;
-}
+.card-content-top { display: flex; flex-direction: column; align-items: center; }
+.card-text-group  { text-align: center; }
 
-.card-value {
-    font-size: 2.8em;
-    font-weight: 700;
-    color: var(--text-color);
-    margin-bottom: 12px;
-}
-
+/* (Optional legacy button styles kept; not used on new card) */
 .card-action-button {
-    background-color: var(--primary-color);
-    color: #FFFFFF;
-    border: none;
-    padding: 12px 20px;
-    border-radius: var(--border-radius-small);
-    font-size: 1em;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
-    align-self: flex-start;
-    box-shadow: 0 3px 8px rgba(33, 150, 243, 0.2);
+  background: var(--primary-color); color: #fff; border: none; padding: 12px 20px;
+  border-radius: var(--border-radius-small); font-size: 1em; font-weight: 600;
+  cursor: pointer; transition: background-color .25s, transform .25s, box-shadow .25s;
+  align-self: flex-start; box-shadow: 0 3px 8px rgba(33,150,243,.2);
 }
+.card-action-button:hover { background: #1976D2; transform: translateY(-3px); box-shadow: 0 6px 15px rgba(33,150,243,.3); }
+.card-action-button:active { transform: translateY(0); box-shadow: 0 2px 5px rgba(33,150,243,.2); }
 
-.card-action-button:hover {
-    background-color: #1976D2;
-    transform: translateY(-3px);
-    box-shadow: 0 6px 15px rgba(33, 150, 243, 0.3);
-}
-
-.card-action-button:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 5px rgba(33, 150, 243, 0.2);
-}
-.card-content-top {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.card-text-group {
-    text-align: center;
-}
+/* Per-card menus (existing) */
 .card-menu-button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    position: absolute;
-    top: 20px; /* Moved down slightly */
-    right: 20px; /* Moved left slightly */
-    color: #6c7a89;
-    padding: 0;
+  background: none; border: none; cursor: pointer; position: absolute; top: 20px; right: 20px; color: #6c7a89; padding: 0;
 }
-
-.card-menu-button i {
-    font-size: 1.2em; /* Makes the icon slightly bigger */
-}
-
+.card-menu-button i { font-size: 1.2em; }
 .card-menu-container .card-menu-button {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background-color: #f0f4f8;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: background-color 0.2s ease;
+  width: 32px; height: 32px; border-radius: 50%; background: #f0f4f8;
+  display: flex; justify-content: center; align-items: center; transition: background-color .2s;
 }
+.card-desktop-menu { display: none; padding-top: 15px; font-size: .9em; color: var(--text-color-light); }
+.card-desktop-menu span { cursor: pointer; padding: 5px; transition: color .2s; }
+.card-desktop-menu span:hover { color: var(--primary-color); }
 
-.card-progress {
-    margin-top: auto;
-    padding: 5px 12px;
-    background-color: #f0f4f8;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 500;
-    color: #6c7a89;
-}
-
-.dashboard-card.completed {
-    opacity: 0.6; /* Makes the card slightly transparent */
-    background-color: #f0f4f8; /* A lighter, grayed-out background */
-    color: #a0a7ad; /* Lighter text color */
-    box-shadow: none; /* Remove shadow to reduce prominence */
-    transform: none; /* Remove hover effect */
-    cursor: default; /* Change cursor to indicate no interaction */
-    border-top-color: #d1d5db; /* Gray out the top border color */
-    pointer-events: none; /* Disable all mouse events on the card */
-}
-
-/* Ensure child elements also inherit the muted look */
-.dashboard-card.completed .card-icon {
-    background-color: #bdc3c7 !important; /* Mute the icon background */
-    box-shadow: none;
-}
-
-.dashboard-card.completed h3,
-.dashboard-card.completed .card-description,
-.dashboard-card.completed .card-progress {
-    color: #a0a7ad !important; /* Ensure text is muted */
-}
-
-/* Hide menu/desktop links when completed */
-.dashboard-card.completed .card-menu-container,
-.dashboard-card.completed .card-desktop-menu {
-    display: none;
-}
-
-/* Base styles for the desktop menu links */
-.card-desktop-menu {
-    display: none;
-    padding-top: 15px;
-    font-size: 0.9em;
-    color: var(--text-color-light);
-}
-
-.card-desktop-menu span {
-    cursor: pointer;
-    padding: 5px;
-    transition: color 0.2s ease;
-}
-
-.card-desktop-menu span:hover {
-    color: var(--primary-color);
-}
-
-/* This rule hides the menu button on desktop screens and shows the desktop links */
 @media (min-width: 768px) {
-    .card-menu-container {
-        display: none;
-    }
-    .card-desktop-menu {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
+  .card-menu-container { display: none; }
+  .card-desktop-menu { display: flex; flex-direction: column; align-items: center; }
+}
+@media (max-width: 767px) {
+  .card-menu-container { display: block; }
+  .card-desktop-menu { display: none; }
 }
 
-/* This rule hides the desktop links on mobile and shows the menu button */
-@media (max-width: 767px) {
-    .card-menu-container {
-        display: block;
-    }
-    .card-desktop-menu {
-        display: none;
-    }
+/* Completed (existing) */
+.dashboard-card.completed {
+  opacity: .6; background: #f0f4f8; color: #a0a7ad; box-shadow: none; transform: none;
+  cursor: default; border-top-color: #d1d5db; pointer-events: none;
 }
+.dashboard-card.completed .card-icon { background: #bdc3c7 !important; box-shadow: none; }
+.dashboard-card.completed h3, .dashboard-card.completed .card-description, .dashboard-card.completed .card-progress { color: #a0a7ad !important; }
+.dashboard-card.completed .card-menu-container, .dashboard-card.completed .card-desktop-menu { display: none; }
+
+/* Progress pill (existing) */
+.card-progress {
+  margin-top: auto; padding: 5px 12px; background: #f0f4f8; border-radius: 20px;
+  font-size: .8rem; font-weight: 500; color: #6c7a89;
+}
+
+/* ---------- NEW: Update Down Games card bits ---------- */
+
+/* Make the new card tappable (we’ll wire click later) */
+.card-clickable { cursor: pointer; }
+
+/* Simple metrics row */
+.down-games-metrics {
+  display: flex; gap: 18px; align-items: baseline; justify-content: center;
+}
+.metric { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.metric-label { font-size: .8rem; color: #6b7280; }
+.metric-value {
+  font-size: 2.2rem; font-weight: 800; line-height: 1;
+  color: var(--text-color-dark);
+}
+
+/* Uptime chip (pill) */
+.metric-chip {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 4px 10px; border-radius: 9999px; font-weight: 700; font-size: .9rem;
+  border: 1px solid #e5e7eb; background: #f3f4f6; color: #374151;
+}
+/* if you later want color states, mirror uptime-badge.good/warn/bad */

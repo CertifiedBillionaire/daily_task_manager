@@ -1,98 +1,126 @@
-{% extends 'base.html' %} {# This line tells Flask/Jinja2 to use your base.html as the layout foundation #}
+{% extends 'base.html' %}
 
-{% block title %}Arcade Manager Dashboard{% endblock %} {# Sets the title for this specific page #}
+{% block title %}Arcade Manager Dashboard{% endblock %}
 
-{% block content %} {# This block will contain all the unique content for the Dashboard page #}
-    <div class="content-header">
-        <div class="dashboard-overview-header">
-            <div class="content-header-left">
-                <h2>Arcade Operations Overview</h2>
-                <p id="currentDayDate">Sunday, July 27, 2025</p>
-            </div>
-            <div class="urgent-issue">
-                <i class="fas fa-exclamation-triangle"></i>
-                <span id="urgentIssue">No Urgent Issues</span>
-            </div>
-        </div>
+{% block content %}
+  <div class="content-header">
+    <div class="dashboard-overview-header">
+      <div class="content-header-left">
+        <h2>Arcade Operations Overview</h2>
+        <p id="currentDayDate">Sunday, July 27, 2025</p>
+      </div>
+      <div class="urgent-issue">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span id="urgentIssue">No Urgent Issues</span>
+      </div>
     </div>
-    <div class="dashboard-grid">
-        <div class="dashboard-card action-card color-yellow" id="startOpeningChecklist" data-id="opening-checklist" data-color="yellow">
-            
-            <div class="card-menu-container">
-                <button class="card-menu-button">
-                    <i class="fa-solid fa-ellipsis-vertical"></i>
-                </button>
-                <div class="card-menu">
-                    <ul>
-                        <li data-action="reset-checklist">Reset Progress</li>
-                    </ul>
-                </div>
-            </div>
+  </div>
 
-            <div class="card-content-top">
-                <div class="card-icon"><i class="fa-solid fa-list-check"></i></div>
-                
-                <div class="card-text-group">
-                    <h3>Start Opening Checklist</h3>
-                    <p class="card-description">Begin your daily opening routine.</p>
-                </div>
-            </div>
-
-            <div class="card-desktop-menu">
-                <span data-action="reset-checklist">• Reset Progress</span>
-            </div>
-
-            <div class="card-progress">19/19 Done</div>
+  <div class="dashboard-grid">
+    <!-- Opening Checklist -->
+    <div class="dashboard-card action-card color-yellow" id="startOpeningChecklist" data-id="opening-checklist" data-color="yellow">
+      <div class="card-menu-container">
+        <button class="card-menu-button">
+          <i class="fa-solid fa-ellipsis-vertical"></i>
+        </button>
+        <div class="card-menu">
+          <ul>
+            <li data-action="reset-checklist">Reset Progress</li>
+          </ul>
         </div>
+      </div>
 
-        <div class="dashboard-card action-card color-blue" id="inspectArcadeGame">
-            
-            <div class="card-menu-container">
-                <button class="card-menu-button">
-                    <i class="fa-solid fa-ellipsis-vertical"></i>
-                </button>
-                <div class="card-menu">
-                    <ul>
-                        <li data-action="inspect-all">Inspect All</li>
-                        <li data-action="reset-progress">Reset Progress</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="card-content-top">
-                <div class="card-icon"><i class="fa-solid fa-book"></i></div>
-                <div class="card-text-group">
-                    <h3>Inspect a Game</h3>
-                    <p class="card-description">Perform a detailed check on a single game.</p>
-                </div>
-            </div>
-            
-            <div class="card-desktop-menu">
-                <span data-action="inspect-all">• Inspect All</span>
-                <span data-action="reset-progress">• Reset Progress</span>
-            </div>
-
-            <div class="card-progress">0/53 Done</div>
+      <div class="card-content-top">
+        <div class="card-icon"><i class="fa-solid fa-list-check"></i></div>
+        <div class="card-text-group">
+          <h3>Start Opening Checklist</h3>
+          <p class="card-description">Begin your daily opening routine.</p>
         </div>
+      </div>
 
-        <div class="dashboard-card action-card color-orange" id="addNewIssueCard">
-            <div class="card-content-top">
-                <div class="card-icon"><i class="fa-solid fa-circle-plus"></i></div>
-                <div class="card-text-group">
-                    <h3>Log a New Issue</h3>
-                    <p class="card-description">Quickly log a new issue.</p>
-                </div>
-            </div>
-        </div>
-        
-        <div class="dashboard-card action-card color-green" id="addPMCard">
-            <div class="card-content-top">
-                <div class="card-icon"><i class="fa-solid fa-list-check"></i></div>
-                <div class="card-text-group">
-                    <h3>Log PMs</h3>
-                    <p class="card-description">Log completed preventative maintenance.</p>
-                </div>
-            </div>
-        </div>
+      <div class="card-desktop-menu">
+        <span data-action="reset-checklist">• Reset Progress</span>
+      </div>
+
+      <div class="card-progress">19/19 Done</div>
     </div>
+
+    <!-- Inspect a Game -->
+    <div class="dashboard-card action-card color-blue" id="inspectArcadeGame">
+      <div class="card-menu-container">
+        <button class="card-menu-button">
+          <i class="fa-solid fa-ellipsis-vertical"></i>
+        </button>
+        <div class="card-menu">
+          <ul>
+            <li data-action="inspect-all">Inspect All</li>
+            <li data-action="reset-progress">Reset Progress</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card-content-top">
+        <div class="card-icon"><i class="fa-solid fa-book"></i></div>
+        <div class="card-text-group">
+          <h3>Inspect a Game</h3>
+          <p class="card-description">Perform a detailed check on a single game.</p>
+        </div>
+      </div>
+
+      <div class="card-desktop-menu">
+        <span data-action="inspect-all">• Inspect All</span>
+        <span data-action="reset-progress">• Reset Progress</span>
+      </div>
+
+      <div class="card-progress">0/53 Done</div>
+    </div>
+
+    <!-- Log a New Issue -->
+    <div class="dashboard-card action-card color-orange" id="addNewIssueCard">
+      <div class="card-content-top">
+        <div class="card-icon"><i class="fa-solid fa-circle-plus"></i></div>
+        <div class="card-text-group">
+          <h3>Log a New Issue</h3>
+          <p class="card-description">Quickly log a new issue.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Log PMs -->
+    <div class="dashboard-card action-card color-green" id="addPMCard">
+      <div class="card-content-top">
+        <div class="card-icon"><i class="fa-solid fa-list-check"></i></div>
+        <div class="card-text-group">
+          <h3>Log PMs</h3>
+          <p class="card-description">Log completed preventative maintenance.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Update Down Games (tap the whole card) -->
+    <div class="dashboard-card action-card color-red card-clickable" id="downGamesCard" tabindex="0" aria-label="Update Down Games">
+      <div class="card-content-top">
+        <div class="card-icon"><i class="fa-solid fa-gamepad"></i></div>
+        <div class="card-text-group">
+          <h3>Update Down Games</h3>
+        </div>
+      </div>
+
+      <div class="down-games-metrics">
+        <div class="metric">
+          <div class="metric-label">Down</div>
+          <div class="metric-value" id="downGamesCount">—</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Uptime</div>
+          <div class="metric-chip" id="downGamesUptime">--%</div>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock content %}
+
+{% block scripts %}
+  {{ super() }}
+  <script type="module" src="{{ url_for('static', filename='js/modules/dashboardDownGamesCard.js') }}"></script>
+{% endblock %}
