@@ -118,9 +118,24 @@
       </div>
     </div>
   </div>
+
+  <!-- Simple modal for quick update -->
+  <div id="downGamesModal" class="simple-modal" hidden>
+    <div class="simple-modal__overlay" data-close></div>
+    <div class="simple-modal__panel" role="dialog" aria-modal="true" aria-labelledby="dgm-title">
+      <div class="simple-modal__header">
+        <h3 id="dgm-title">Update Down Games</h3>
+        <button class="simple-modal__close" type="button" aria-label="Close" data-close>&times;</button>
+      </div>
+      <div class="simple-modal__body" id="dgm-body">
+        <!-- Filled by JS -->
+      </div>
+    </div>
+  </div>
 {% endblock content %}
 
 {% block scripts %}
   {{ super() }}
   <script type="module" src="{{ url_for('static', filename='js/modules/dashboardDownGamesCard.js') }}"></script>
+  <script type="module" src="{{ url_for('static', filename='js/modules/downGamesQuickUpdate.js') }}"></script>
 {% endblock %}

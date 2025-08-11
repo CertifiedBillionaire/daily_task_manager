@@ -132,3 +132,62 @@
   border: 1px solid #e5e7eb; background: #f3f4f6; color: #374151;
 }
 /* if you later want color states, mirror uptime-badge.good/warn/bad */
+/* Simple modal used by Update Down Games */
+.simple-modal[hidden] { display: none; }
+.simple-modal { position: fixed; inset: 0; z-index: 200; }
+.simple-modal__overlay { position: absolute; inset: 0; background: rgba(0,0,0,.35); }
+.simple-modal__panel {
+  position: relative;
+  margin: 25vh auto 0;   /* was 8vh — moves it lower */
+  max-width: 560px;
+  width: calc(100% - 32px);
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.25);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.simple-modal__header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px; border-bottom: 1px solid #e5e7eb;
+}
+.simple-modal__close {
+  border: none; background: transparent; font-size: 22px; line-height: 1; cursor: pointer;
+}
+.simple-modal__body { padding: 12px 16px; max-height: 60vh; overflow: auto; }
+
+.dgm-loading, .dgm-error, .dgm-empty { text-align: center; color: #6b7280; padding: 16px 0; }
+.dgm-empty i { color: #10b981; margin-right: 6px; }
+
+.dgm-list { list-style: none; padding: 0; margin: 0; }
+.dgm-item {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 10px 4px; border-bottom: 1px solid #f3f4f6;
+}
+.dgm-item:last-child { border-bottom: 0; }
+.dgm-name { font-weight: 600; color: #111827; }
+.dgm-reason { color: #6b7280; }
+
+.dgm-up-btn {
+  border: 1px solid #e5e7eb; background: #fff; border-radius: 8px; padding: 6px 10px;
+  font-weight: 600; cursor: pointer;
+}
+.dgm-up-btn:hover { background: #f3f4f6; }
+/* Tiny green notice inside the modal */
+.dgm-toast {
+  margin: 10px 16px 0 16px;
+  background: #e6ffed;
+  color: #065f46;
+  border: 1px solid #b7f7c9;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-weight: 700;
+  transition: opacity .2s ease;
+  opacity: 0; /* fades in when shown */
+}
+.dgm-toast.is-error {
+  background: #fee2e2;
+  color: #7f1d1d;
+  border-color: #fecaca;
+}
