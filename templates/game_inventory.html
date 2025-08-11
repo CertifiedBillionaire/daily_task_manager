@@ -3,119 +3,120 @@
 {% block title %}Game Inventory Management{% endblock %}
 
 {% block content %}
-    <div class="content-header">
-    <!-- --- NEW CODE HERE --- -->
+  <div class="content-header">
+    <!-- Header: title + (i) + big uptime under -->
     <div class="page-header-stack">
-        <div class="title-row">
+      <div class="title-row">
         <h2>Game Inventory Management</h2>
         <button class="title-info" type="button" aria-label="About this page"
                 data-tooltip="Manage your arcade game assets and their operational status.">
-            <i class="fas fa-info-circle"></i>
+          <i class="fas fa-info-circle"></i>
         </button>
-        </div>
-        <span id="uptime-badge" class="uptime-badge large neutral">Current Game Uptime: --%</span>
+      </div>
+      <span id="uptime-badge" class="uptime-badge large neutral">Current Game Uptime: --%</span>
     </div>
-    <!-- --- END NEW CODE HERE --- -->
-    </div>
+  </div>
 
+  <!-- Current Games + compact Add dropdown (right side) -->
+  <section id="games-table-section" class="section-card" style="margin-top:1.5rem;">
+    <div class="section-title-row">
+      <h2>Current Games</h2>
 
-
-    <!-- Compact “Add Game” dropdown (keeps the same input IDs) -->
-    <div class="inventory-actions-bar">
-    <div class="add-dropdown">
+      <div class="add-dropdown">
         <!-- Toggle button -->
         <button id="addGameToggleBtn" class="add-compact-btn" type="button"
                 aria-expanded="false" aria-controls="addGameDropdown">
-        <i class="fas fa-plus"></i> Add
+          <i class="fas fa-plus"></i> Add
         </button>
 
-        <!-- Hidden panel (we'll style + toggle next) -->
+        <!-- Hidden dropdown panel -->
         <div id="addGameDropdown" class="add-dropdown-panel" style="display:none;">
-        <div class="form-row">
+          <div class="form-row">
             <label for="gameNameInput">Name</label>
             <input type="text" id="gameNameInput" placeholder="e.g., Pac-Man Arcade" required>
-        </div>
+          </div>
 
-        <div class="form-row">
+          <div class="form-row">
             <label for="gameStatusSelect">Status</label>
             <select id="gameStatusSelect">
-            <option value="Up">Up</option>
-            <option value="Down">Down</option>
+              <option value="Up">Up</option>
+              <option value="Down">Down</option>
             </select>
-        </div>
+          </div>
 
-        <div class="form-row" id="downReasonGroup" style="display:none;">
+          <div class="form-row" id="downReasonGroup" style="display:none;">
             <label for="gameDownReason">Reason</label>
             <input type="text" id="gameDownReason" placeholder="Reason if Down">
-        </div>
+          </div>
 
-        <div class="form-actions">
+          <div class="form-actions">
             <button id="addGameButton" class="add-game-button" type="button">
-            <i class="fas fa-plus-circle"></i> Add Game
+              <i class="fas fa-plus-circle"></i> Add Game
             </button>
+          </div>
         </div>
-        </div>
+      </div>
     </div>
-    </div>
-    <!-- --- END NEW CODE HERE --- -->
 
-    <!-- keep the table section below as-is -->
-    <section id="games-table-section" class="section-card" style="margin-top:1.5rem;">
-    <h2>Current Games</h2>
     <div id="games-table-container"></div>
-    </section>
-
+  </section>
 {% endblock %}
 
 {% block scripts %}
-    {{ super() }}
-    <!-- --- NEW CODE HERE --- -->
-    <script type="module">
+  {{ super() }}
+  <script type="module">
     import { renderGamesTable } from "/static/js/modules/gamesTableRenderer.js";
     import { initAddNewGameForm } from "/static/js/modules/addNewGameForm.js";
-    // Compact Add dropdown toggle
+
+    // --- Compact Add dropdown toggle ---
     const addToggleBtn = document.getElementById('addGameToggleBtn');
     const addPanel     = document.getElementById('addGameDropdown');
     const statusSelect = document.getElementById('gameStatusSelect');
     const reasonGroup  = document.getElementById('downReasonGroup');
 
     function setPanel(open) {
-        addPanel.style.display = open ? 'block' : 'none';
-        addToggleBtn?.setAttribute('aria-expanded', String(open));
+      if (!addPanel || !addToggleBtn) return;
+      addPanel.style.display = open ? 'block' : 'none';
+      addToggleBtn.setAttribute('aria-expanded', String(open));
+      // focus name when opening
+      if (open) {
+        const nameInput = document.getElementById('gameNameInput');
+        nameInput?.focus();
+      }
     }
 
+    // open/close by button
     addToggleBtn?.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const open = addPanel.style.display !== 'none';
-        setPanel(!open);
+      e.stopPropagation();
+      const open = addPanel?.style.display !== 'none';
+      setPanel(!open);
     });
 
-    // Close when clicking outside
+    // close on outside click
     document.addEventListener('click', (e) => {
-        if (!addPanel || addPanel.style.display === 'none') return;
-        if (addPanel.contains(e.target) || addToggleBtn.contains(e.target)) return;
-        setPanel(false);
+      if (!addPanel || addPanel.style.display === 'none') return;
+      if (addPanel.contains(e.target) || addToggleBtn.contains(e.target)) return;
+      setPanel(false);
     });
 
-    // Show/hide Reason field if Status == Down
+    // show/hide Reason when Status changes
     statusSelect?.addEventListener('change', () => {
-        if (!reasonGroup) return;
-        reasonGroup.style.display = statusSelect.value === 'Down' ? 'block' : 'none';
-        if (statusSelect.value !== 'Down') {
-            const input = document.getElementById('gameDownReason');
-            if (input) input.value = '';
-        }
+      if (!reasonGroup) return;
+      const show = statusSelect.value === 'Down';
+      reasonGroup.style.display = show ? 'block' : 'none';
+      if (!show) {
+        const input = document.getElementById('gameDownReason');
+        if (input) input.value = '';
+      }
     });
 
-
-    const downReasonGroup = document.getElementById('downReasonGroup');
-    statusSelect.addEventListener('change', () => {
-        downReasonGroup.style.display = statusSelect.value === 'Down' ? 'block' : 'none';
-    });
+    // set initial Reason visibility on load
+    if (statusSelect && reasonGroup) {
+      reasonGroup.style.display = statusSelect.value === 'Down' ? 'block' : 'none';
+    }
 
     // Init page
     renderGamesTable();
     initAddNewGameForm();
-    </script>
-    <!-- --- END NEW CODE HERE --- -->
+  </script>
 {% endblock %}

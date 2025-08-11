@@ -542,3 +542,13 @@
   background: #f3f4f6;
 }
 /* --- END NEW CODE HERE --- */
+/* --- NEW CODE HERE --- */
+.section-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.section-title-row h2 { margin: 0; }
+/* --- END NEW CODE HERE --- */
