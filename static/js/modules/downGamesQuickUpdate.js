@@ -6,18 +6,21 @@
 // What this file does:
 // - Card click opens a modal
 // - Loads all games (GET /api/games)
-// - Renders a small search box; filters as you type
+// - Renders a small search box with a Clear (×) button
+// - Filters as you type
 // - Shows status badges per row
-// - Action button: Mark Up / Mark Down (with confirm)
-// - If Mark Down, asks for an optional reason
+// - Action button: Mark Up / Mark Down (with confirm + optional reason for Down)
 // - On success: updates in-memory list, re-renders, refreshes dashboard counts,
 //   and shows a tiny green notice at the top of the modal
 //
 // Connected files:
 // - templates/index.html (modal markup + #downGamesCard)
 // - dashboardDownGamesCard.js (refreshes count/uptime on the card)
-// - static/css/components/cards.css (modal + list + toast + search input styles)
+// - static/css/components/cards.css (modal + list + toast + search styles)
 // - Backend: GET /api/games, PUT /api/games/<id>
+//
+// Exports:
+// - initDownGamesQuickUpdate()
 // =========================================================================
 
 import { initDownGamesCard } from './dashboardDownGamesCard.js';
@@ -89,6 +92,7 @@ function renderShell(body) {
   body.innerHTML = `
     <div class="dgm-search">
       <input id="dgm-search-input" type="text" placeholder="Search games…" aria-label="Search games">
+      <button id="dgm-search-clear" type="button" aria-label="Clear search" title="Clear">&times;</button>
     </div>
     <ul class="dgm-list" id="dgm-list"></ul>
   `;
@@ -153,18 +157,36 @@ function drawList(games, term = '') {
   list.innerHTML = filtered.map(rowTemplate).join('');
 }
 
+function toggleClearBtnVisibility(input, clearBtn) {
+  if (!clearBtn) return;
+  clearBtn.style.display = input.value ? 'inline-flex' : 'none';
+}
+
 async function loadAll(body) {
   body.innerHTML = `<div class="dgm-loading"><i class="fas fa-spinner fa-spin"></i> Loading…</div>`;
   try {
     allGames = await fetchGames();
     renderShell(body);
+
     const input = sel('#dgm-search-input');
+    const clearBtn = sel('#dgm-search-clear');
+
     input.value = lastTerm;
     drawList(allGames, lastTerm);
+    toggleClearBtnVisibility(input, clearBtn);
 
     input.addEventListener('input', () => {
       lastTerm = input.value;
       drawList(allGames, lastTerm);
+      toggleClearBtnVisibility(input, clearBtn);
+    });
+
+    clearBtn?.addEventListener('click', () => {
+      input.value = '';
+      lastTerm = '';
+      drawList(allGames, '');
+      toggleClearBtnVisibility(input, clearBtn);
+      input.focus();
     });
   } catch (e) {
     console.error('QuickUpdate: failed to load', e);
@@ -244,9 +266,8 @@ function wireModalEvents(modal, body) {
     } else {
       const ok = confirm(`Mark “${name}” as Down?`);
       if (!ok) return;
-      // Optional reason
       let reason = prompt('Reason (optional):', '');
-      if (reason === null) reason = ''; // cancelled prompt → treat as empty
+      if (reason === null) reason = '';
       await markStatus(id, 'Down', btn, name, reason.trim() || null);
     }
   });

@@ -224,3 +224,28 @@
   font-weight: 600; cursor: pointer;
 }
 .dgm-toggle-btn:hover { background: #f3f4f6; }
+/* Search with tiny clear (×) */
+.dgm-search { position: relative; display: flex; align-items: center; gap: 8px; margin: 8px 0 12px; }
+.dgm-search input {
+  flex: 1;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 8px 32px 8px 10px; /* room for the × */
+  font: inherit;
+  background: #fff;
+}
+#dgm-search-clear {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  font-size: 18px;
+  line-height: 1;
+  color: #9aa0a6;
+  padding: 2px;
+  cursor: pointer;
+  display: none; /* shown when there’s text */
+}
+#dgm-search-clear:hover { color: #5f6368; }
