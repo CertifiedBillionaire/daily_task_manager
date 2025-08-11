@@ -1,346 +1,120 @@
-/* --- ENTIRE FILE REPLACEMENT: game_inventory.css --- */
-/* Game Inventory — page-scoped styles only
-   - Header stack (title + info icon + uptime badge)
-   - Games table (simple, clean)
-   - Status badges (Up/Down)
-   - Compact “+ Add” dropdown next to "Current Games"
-   - Section title row
-*/
+/* =========================================================================
+   ARCADE MANAGER — GAME INVENTORY STYLES (page-scoped)
+   What: header (title + info + uptime), compact +Add dropdown, games table,
+         status badges, three-dot actions menu, responsive tweaks.
+   Connected to: templates/game_inventory.html, gamesTableRenderer.js, addNewGameForm.js
+   ========================================================================== */
 
-/* ========== Header (title on top, uptime under) ========== */
-.page-header-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;            /* space between title and badge */
-  margin-bottom: 14px; /* room before content */
-}
+/* ========== Header: title + (i) + big uptime under ========== */
+.page-header-stack { display:flex; flex-direction:column; gap:8px; margin-bottom:14px; }
+.title-row { display:inline-flex; align-items:center; gap:8px; }
 
-.title-row {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;            /* space between title and (i) */
-}
-
-/* Uptime badge + color states */
+/* Uptime badge */
 .uptime-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 10px;
-  border-radius: 9999px;
-  font-weight: 700;
-  font-size: 0.9rem;
-  border: 1px solid transparent;
+  display:inline-flex; align-items:center; gap:6px;
+  padding:6px 10px; border-radius:9999px; font-weight:700; font-size:.9rem; border:1px solid transparent;
 }
-.uptime-badge.large {
-  font-size: 1rem;     /* bigger text */
-  padding: 8px 12px;   /* bigger pill */
-}
-.uptime-badge.good {    /* >=95% */
-  background: #e6ffed; color: #096b39; border-color: #b7f7c9;
-}
-.uptime-badge.warn {    /* 80–94% */
-  background: #fff4e5; color: #8a4b00; border-color: #ffd7a1;
-}
-.uptime-badge.bad {     /* <80% */
-  background: #fee2e2; color: #991b1b; border-color: #fecaca;
-}
-.uptime-badge.neutral { /* loading/empty */
-  background: #f3f4f6; color: #374151; border-color: #e5e7eb;
-}
+.uptime-badge.large { font-size:1rem; padding:8px 12px; }
+.uptime-badge.good    { background:#e6ffed; color:#096b39; border-color:#b7f7c9; }
+.uptime-badge.warn    { background:#fff4e5; color:#8a4b00; border-color:#ffd7a1; }
+.uptime-badge.bad     { background:#fee2e2; color:#991b1b; border-color:#fecaca; }
+.uptime-badge.neutral { background:#f3f4f6; color:#374151; border-color:#e5e7eb; }
 
-/* Info (i) with CSS-only tooltip */
-.title-info {
-  position: relative;
-  border: 0;
-  background: transparent;
-  padding: 4px 6px;
-  line-height: 1;
-  cursor: help;
-  color: #6b7280;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.95rem;
-}
-.title-info:hover { color: #374151; }
+/* Info (i) with tooltip */
+.title-info { position:relative; border:0; background:transparent; padding:4px 6px; line-height:1; cursor:help; color:#6b7280; display:inline-flex; align-items:center; justify-content:center; font-size:.95rem; }
+.title-info:hover { color:#374151; }
 .title-info::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  bottom: calc(100% + 8px);
-  left: 0;
-  background: #111827;
-  color: #fff;
-  font-size: 12px;
-  padding: 6px 8px;
-  border-radius: 6px;
-  white-space: nowrap;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.18);
-  opacity: 0;
-  transform: translateY(4px);
-  pointer-events: none;
-  transition: opacity .15s ease, transform .15s ease;
-  z-index: 20;
+  content:attr(data-tooltip); position:absolute; bottom:calc(100% + 8px); left:0;
+  background:#111827; color:#fff; font-size:12px; padding:6px 8px; border-radius:6px; white-space:nowrap;
+  box-shadow:0 6px 18px rgba(0,0,0,.18); opacity:0; transform:translateY(4px); pointer-events:none;
+  transition:opacity .15s ease, transform .15s ease; z-index:20;
 }
 .title-info::before {
-  content: "";
-  position: absolute;
-  bottom: 100%;
-  left: 10px;
-  border-width: 6px;
-  border-style: solid;
-  border-color: transparent transparent #111827 transparent;
-  opacity: 0;
-  transform: translateY(4px);
-  transition: opacity .15s ease, transform .15s ease;
-  z-index: 21;
+  content:""; position:absolute; bottom:100%; left:10px; border:6px solid transparent; border-bottom-color:#111827;
+  opacity:0; transform:translateY(4px); transition:opacity .15s ease, transform .15s ease; z-index:21;
 }
-.title-info:hover::after,
-.title-info:hover::before {
-  opacity: 1;
-  transform: translateY(0);
-}
+.title-info:hover::after, .title-info:hover::before { opacity:1; transform:translateY(0); }
 
-/* Optional: headings font pairing on this page only */
-.content-header h2,
-#games-table-section > h2 {
-  font-family: 'Montserrat', 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  letter-spacing: 0.2px;
+/* Optional: headings font pairing (local to this page) */
+.content-header h2, #games-table-section > h2 {
+  font-family:'Montserrat','Inter',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  letter-spacing:.2px;
 }
 
 /* ========== Section title row ("Current Games" + Add) ========== */
-.section-title-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 10px;
-}
-.section-title-row h2 { margin: 0; }
+.section-title-row { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px; }
+.section-title-row h2 { margin:0; }
 
 /* ========== Compact “+ Add” dropdown ========== */
 .add-compact-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  border: 1px solid #e5e7eb;
-  background: #fff;
-  border-radius: 9999px;
-  padding: 6px 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background .15s ease, border-color .15s ease;
+  display:inline-flex; align-items:center; gap:6px;
+  border:1px solid #e5e7eb; background:#fff; border-radius:9999px; padding:6px 12px;
+  font-weight:600; cursor:pointer; transition:background .15s, border-color .15s;
 }
 .add-compact-btn:hover { background:#f8fafc; border-color:#d1d5db; }
 
-.add-dropdown { position: relative; }
+.add-dropdown { position:relative; }
 .add-dropdown-panel {
-  position: absolute;
-  right: 0;
-  top: calc(100% + 8px);
-  width: 280px;
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  box-shadow: 0 10px 28px rgba(0,0,0,.08);
-  padding: 12px;
-  z-index: 50;
+  position:absolute; right:0; top:calc(100% + 8px); width:280px; background:#fff;
+  border:1px solid #e5e7eb; border-radius:10px; box-shadow:0 10px 28px rgba(0,0,0,.08);
+  padding:12px; z-index:50;
 }
-.add-dropdown-panel .form-row {
-  display: grid;
-  gap: 6px;
-  margin-bottom: 10px;
+.add-dropdown-panel .form-row { display:grid; gap:6px; margin-bottom:10px; }
+.add-dropdown-panel label { font-size:.85rem; color:#6b7280; }
+.add-dropdown-panel input, .add-dropdown-panel select {
+  width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:8px 10px; font:inherit; background:#fff;
 }
-.add-dropdown-panel label {
-  font-size: .85rem;
-  color: #6b7280;
-}
-.add-dropdown-panel input,
-.add-dropdown-panel select {
-  width: 100%;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 8px 10px;
-  font: inherit;
-  background: #fff;
-}
-.add-dropdown-panel .form-actions {
-  display: flex;
-  justify-content: flex-end;
-}
+.add-dropdown-panel .form-actions { display:flex; justify-content:flex-end; }
 .add-dropdown-panel .add-game-button {
-  border: 1px solid #e5e7eb;
-  background: #fff;
-  border-radius: 8px;
-  padding: 8px 10px;
-  cursor: pointer;
+  border:1px solid #e5e7eb; background:#fff; border-radius:8px; padding:8px 10px; cursor:pointer;
 }
-.add-dropdown-panel .add-game-button:hover {
-  background: #f3f4f6;
-}
+.add-dropdown-panel .add-game-button:hover { background:#f3f4f6; }
 
 /* ========== Games table ========== */
+#games-table-container { overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:4px; }
+
 .games-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;      /* rounded corners */
-  overflow: hidden;        /* keep corners on header/rows */
+  width:100%; min-width:600px; border-collapse:collapse; background:#fff;
+  border:1px solid #e5e7eb; border-radius:8px; overflow:hidden;
 }
 .games-table thead th {
-  background: #eceff3;     /* slightly darker header */
-  font-weight: 700;
-  text-align: left;
-  border-bottom: 1px solid #e5e7eb;
-  padding: 14px 16px;
+  background:#eceff3; font-weight:700; text-align:left; border-bottom:1px solid #e5e7eb; padding:14px 16px;
 }
-.games-table tbody td {
-  border-top: 1px solid #e5e7eb;
-  padding: 14px 16px;
-  vertical-align: middle;
-  font-size: 0.95rem;
-}
-/* zebra + hover */
-.games-table tbody tr:nth-child(even) { background: #fafafa; }
-.games-table tbody tr:hover { background: #eef6ff; }
+.games-table tbody td { border-top:1px solid #e5e7eb; padding:14px 16px; vertical-align:middle; font-size:.95rem; }
+.games-table tbody tr:nth-child(even) { background:#fafafa; }
+.games-table tbody tr:hover { background:#eef6ff; }
 
-/* action buttons inside table */
-.games-table .edit-game-btn,
-.games-table .delete-game-btn {
-  border: 1px solid #e5e7eb;
-  background: #fff;
-  border-radius: 9999px;
-  padding: 6px 10px;
-  line-height: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  cursor: pointer;
-  transition: background .15s ease, border-color .15s ease, transform .05s ease;
-}
-.games-table .edit-game-btn:hover,
-.games-table .delete-game-btn:hover {
-  background: #f3f4f6;
-  border-color: #d1d5db;
-}
-.games-table .delete-game-btn:hover {
-  background: #fff1f2;       /* soft red hint */
-  border-color: #fecaca;
-}
-.games-table .edit-game-btn:active,
-.games-table .delete-game-btn:active {
-  transform: translateY(1px);
-}
+/* Status badges */
+.status-badge { display:inline-block; padding:2px 8px; border-radius:9999px; font-size:.85rem; font-weight:600; line-height:1.4; border:1px solid transparent; }
+.status-badge.up   { background:#e6ffed; color:#096b39; border-color:#b7f7c9; }
+.status-badge.down { background:#fff4e5; color:#8a4b00; border-color:#ffd7a1; }
 
-/* ========== Status badges (Up/Down) ========== */
-.status-badge {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 9999px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  line-height: 1.4;
-  border: 1px solid transparent;
-}
-.status-badge.up {
-  background: #e6ffed; color: #096b39; border-color: #b7f7c9;
-}
-.status-badge.down {
-  background: #fff4e5; color: #8a4b00; border-color: #ffd7a1;
-}
-/* --- END ENTIRE FILE REPLACEMENT --- */
-/* --- NEW CODE HERE --- */
-/* Let the table scroll sideways on small screens */
-#games-table-container {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch; /* smooth on iOS */
-  padding-bottom: 4px;               /* room for scrollbar */
-}
-
-/* Keep columns readable: set a minimum width */
-.games-table {
-  min-width: 700px; /* adjust later if you want */
-}
-
-/* On very small screens, nudge spacing down a bit */
-@media (max-width: 480px) {
-  .games-table thead th,
-  .games-table tbody td {
-    padding: 10px 12px;   /* was 14px 16px */
-    font-size: 0.9rem;    /* was 0.95rem */
-  }
-}
-/* --- END NEW CODE HERE --- */
-/* --- NEW CODE HERE --- */
-/* Mobile: make the table feel lighter + less zoomed */
-.games-table {
-  min-width: 600px; /* was 700 — smaller so it fits better on phones */
-}
-
-@media (max-width: 640px) {
-  .games-table thead th,
-  .games-table tbody td {
-    padding: 10px 12px;   /* was 14px 16px */
-    font-size: 0.9rem;    /* was 0.95rem */
-  }
-
-  /* smaller action buttons on mobile */
-  .games-table .edit-game-btn,
-  .games-table .delete-game-btn {
-    padding: 4px 8px;     /* was 6px 10px */
-    font-size: 0.9rem;
-  }
-}
-
-@media (max-width: 400px) {
-  .games-table thead th,
-  .games-table tbody td {
-    padding: 8px 10px;    /* a touch tighter on very small phones */
-    font-size: 0.88rem;
-  }
-}
-/* --- END NEW CODE HERE --- */
-/* --- NEW CODE HERE --- */
-/* Three-dot actions menu */
-.kebab-wrap { position: relative; display: inline-block; }
+/* ========== Three-dot (kebab) menu ========== */
+.kebab-wrap { position:relative; display:inline-block; }
 
 .kebab-btn {
-  border: 1px solid #e5e7eb;
-  background: #fff;
-  border-radius: 9999px;
-  padding: 6px 10px;
-  line-height: 1;
-  cursor: pointer;
+  border:none; background:transparent; width:36px; height:36px; border-radius:9999px;
+  display:inline-flex; align-items:center; justify-content:center; cursor:pointer;
 }
-.kebab-btn:hover { background: #f3f4f6; border-color: #d1d5db; }
+.kebab-btn i { font-size:20px; color:#111; } /* bigger + black */
+.kebab-btn:hover { background:#f3f4f6; }
+.kebab-btn:focus { outline:2px solid #c7d2fe; outline-offset:2px; }
 
 .kebab-menu {
-  position: absolute;
-  right: 0;
-  top: calc(100% + 6px);
-  min-width: 140px;
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  box-shadow: 0 10px 28px rgba(0,0,0,.08);
-  padding: 6px;
-  z-index: 60;
+  position:absolute; right:0; top:calc(100% + 6px); min-width:140px; background:#fff;
+  border:1px solid #e5e7eb; border-radius:10px; box-shadow:0 10px 28px rgba(0,0,0,.08);
+  padding:6px; z-index:80;
 }
-
 .kebab-menu .menu-item {
-  width: 100%;
-  text-align: left;
-  background: transparent;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 10px;
-  font: inherit;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  width:100%; text-align:left; background:transparent; border:none; border-radius:8px;
+  padding:8px 10px; font:inherit; cursor:pointer; display:flex; align-items:center; gap:8px;
 }
-.kebab-menu .menu-item:hover { background: #f3f4f6; }
-/* --- END NEW CODE HERE --- */
+.kebab-menu .menu-item:hover { background:#f3f4f6; }
+
+/* ========== Mobile tweaks ========== */
+@media (max-width:640px) {
+  .games-table thead th, .games-table tbody td { padding:10px 12px; font-size:.9rem; }
+}
+@media (max-width:400px) {
+  .games-table thead th, .games-table tbody td { padding:8px 10px; font-size:.88rem; }
+}

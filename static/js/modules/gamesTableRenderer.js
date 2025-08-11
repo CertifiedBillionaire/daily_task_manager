@@ -1,25 +1,26 @@
 // =========================================================================
 // ARCADE MANAGER - GAME INVENTORY TABLE RENDERER
-// Renders the Games table, wires row actions, and updates the uptime badge.
+// Renders the Games table, wires row actions (Edit/Delete), and updates uptime.
 //
 // What this file does:
-// - Fetches /api/games and renders a table into #games-table-container
-// - Shows status badges (Up/Down) and a “Last Updated” column (unchanged for now)
-// - Replaces per-row Action buttons with a compact three-dot (kebab) menu
+// - Fetches /api/games and renders into #games-table-container
+// - Shows Up/Down badges and a “Last Updated” column (time trimming next step)
+// - Uses a compact three-dot (kebab) Actions menu per row
 // - Wires Edit (inline editor) and Delete (with confirm) actions
-// - Updates the “Current Game Uptime: XX%” badge under the page title
+// - Updates the “Current Game Uptime: XX%” badge under the title
 //
-// Depends on:
-// - ./gameInlineEditor.js  (openGameInlineEditor)
-// - Backend endpoints: GET /api/games, DELETE /api/games/:id
-// - Template anchor: #games-table-container (in templates/game_inventory.html)
-// - Styles in: static/css/sections/game_inventory.css (.games-table, .status-badge, kebab menu)
+// Connected files:
+// - ./gameInlineEditor.js  (provides openGameInlineEditor)
+// - static/css/sections/game_inventory.css  (table, badges, kebab styles)
+// - templates/game_inventory.html  (has #games-table-container and header badge)
 //
 // Exports:
 // - renderGamesTable()
 // =========================================================================
 
 import { openGameInlineEditor } from './gameInlineEditor.js';
+
+let outsideClickHandlerAttached = false; // ensure we attach once
 
 export async function renderGamesTable() {
   const container = document.querySelector('#games-table-container');
@@ -53,15 +54,15 @@ export async function renderGamesTable() {
       html += `<tr><td colspan="6" style="text-align:center;">No games found</td></tr>`;
     } else {
       for (const game of games) {
-        const idNum = String(game.id ?? '').trim();
-        const paddedId = idNum ? String(idNum).padStart(3, '0') : '';
+        const idRaw = game.id ?? '';
+        const paddedId = String(idRaw).padStart(3, '0');
         const statusBadge =
           game.status === 'Down'
             ? `<span class="status-badge down">Down</span>`
             : `<span class="status-badge up">Up</span>`;
 
         html += `
-          <tr data-row-id="${escapeAttr(game.id)}">
+          <tr data-row-id="${escapeAttr(String(game.id))}">
             <td>${paddedId}</td>
             <td>${escapeHtml(game.name)}</td>
             <td>${statusBadge}</td>
@@ -73,20 +74,20 @@ export async function renderGamesTable() {
                         type="button"
                         aria-expanded="false"
                         aria-haspopup="true"
-                        aria-controls="kebab-menu-${escapeAttr(game.id)}"
-                        data-id="${escapeAttr(game.id)}">
+                        aria-controls="kebab-menu-${escapeAttr(String(game.id))}"
+                        data-id="${escapeAttr(String(game.id))}">
                   <i class="fas fa-ellipsis-v"></i>
                 </button>
 
-                <div id="kebab-menu-${escapeAttr(game.id)}" class="kebab-menu" style="display:none;">
+                <div id="kebab-menu-${escapeAttr(String(game.id))}" class="kebab-menu" style="display:none;">
                   <button class="menu-item edit-game-btn"
-                          data-id="${escapeAttr(game.id)}"
+                          data-id="${escapeAttr(String(game.id))}"
                           data-name="${encodeURIComponent(game.name || '')}"
                           data-status="${escapeAttr(game.status || 'Up')}"
                           data-reason="${encodeURIComponent(game.down_reason || '')}">
                     <i class="fas fa-pencil"></i> Edit
                   </button>
-                  <button class="menu-item delete-game-btn" data-id="${escapeAttr(game.id)}">
+                  <button class="menu-item delete-game-btn" data-id="${escapeAttr(String(game.id))}">
                     <i class="fas fa-trash"></i> Delete
                   </button>
                 </div>
@@ -100,23 +101,14 @@ export async function renderGamesTable() {
     html += `</tbody></table>`;
     container.innerHTML = html;
 
-    // ---- Uptime badge update (keep here so it runs after fetch/render) ----
-    const uptimeEl = document.getElementById('uptime-badge');
-    if (uptimeEl) {
-      const total = games.length;
-      const upCount = games.filter(g => g.status === 'Up').length;
-      const uptime = total > 0 ? Math.round((upCount / total) * 100) : 100;
+    // Uptime badge
+    updateUptimeBadge(games);
 
-      uptimeEl.textContent = `Current Game Uptime: ${uptime}%`;
-      uptimeEl.classList.remove('good', 'warn', 'bad', 'neutral');
-      if (total === 0) uptimeEl.classList.add('neutral');
-      else if (uptime >= 95) uptimeEl.classList.add('good');
-      else if (uptime >= 80) uptimeEl.classList.add('warn');
-      else uptimeEl.classList.add('bad');
-    }
-
-    // ---- Events: kebab toggle, edit, delete, outside click close ----
+    // Events (menu toggle, edit, delete)
     wireInteractions(container);
+
+    // Attach outside-click closer ONCE (fixes stuck menus after cancel)
+    attachOutsideCloseOnce();
 
   } catch (err) {
     console.error("❌ Failed to load games:", err);
@@ -126,14 +118,30 @@ export async function renderGamesTable() {
 
 /* ===================== Internal helpers ===================== */
 
+function updateUptimeBadge(games) {
+  const uptimeEl = document.getElementById('uptime-badge');
+  if (!uptimeEl) return;
+
+  const total = games.length;
+  const upCount = games.filter(g => g.status === 'Up').length;
+  const uptime = total > 0 ? Math.round((upCount / total) * 100) : 100;
+
+  uptimeEl.textContent = `Current Game Uptime: ${uptime}%`;
+  uptimeEl.classList.remove('good', 'warn', 'bad', 'neutral');
+  if (total === 0) uptimeEl.classList.add('neutral');
+  else if (uptime >= 95) uptimeEl.classList.add('good');
+  else if (uptime >= 80) uptimeEl.classList.add('warn');
+  else uptimeEl.classList.add('bad');
+}
+
 function wireInteractions(container) {
-  // Close all menus helper
+  // Close all menus inside this container
   const closeAllKebabMenus = () => {
     container.querySelectorAll('.kebab-menu').forEach(m => (m.style.display = 'none'));
     container.querySelectorAll('.kebab-btn').forEach(b => b.setAttribute('aria-expanded', 'false'));
   };
 
-  // Use one delegated listener for all clicks inside the table container
+  // One delegated listener for clicks within the table container
   container.addEventListener('click', async (e) => {
     const kebabBtn = e.target.closest('.kebab-btn');
     const editBtn  = e.target.closest('.edit-game-btn');
@@ -142,8 +150,8 @@ function wireInteractions(container) {
     // Toggle kebab menu
     if (kebabBtn) {
       e.stopPropagation();
-      const id = kebabBtn.getAttribute('data-id');
-      const menu = container.querySelector(`#kebab-menu-${CSS.escape(id)}`);
+      const id = kebabBtn.getAttribute('data-id') || '';
+      const menu = container.querySelector(`#kebab-menu-${cssEscape(id)}`);
       const isOpen = menu && menu.style.display !== 'none';
 
       closeAllKebabMenus();
@@ -154,23 +162,23 @@ function wireInteractions(container) {
       return;
     }
 
-    // Edit → open inline editor
+    // Edit
     if (editBtn) {
       e.preventDefault();
-      const id = Number(editBtn.getAttribute('data-id'));
-      const rowEl = container.querySelector(`tr[data-row-id="${CSS.escape(String(id))}"]`);
+      const id = editBtn.getAttribute('data-id') || '';
+      const rowEl = container.querySelector(`tr[data-row-id="${cssEscape(id)}"]`);
       const name = decodeURIComponent(editBtn.getAttribute('data-name') || '');
       const status = editBtn.getAttribute('data-status') || 'Up';
       const down_reason = decodeURIComponent(editBtn.getAttribute('data-reason') || '');
       closeAllKebabMenus();
-      openGameInlineEditor({ rowEl, id, name, status, down_reason });
+      openGameInlineEditor({ rowEl, id: Number(id), name, status, down_reason });
       return;
     }
 
-    // Delete → confirm + call API + refresh
+    // Delete
     if (delBtn) {
       e.preventDefault();
-      const id = delBtn.getAttribute('data-id');
+      const id = delBtn.getAttribute('data-id') || '';
       closeAllKebabMenus();
       if (!confirm("Delete this game?")) return;
 
@@ -181,8 +189,7 @@ function wireInteractions(container) {
           alert(`Error deleting game: ${err.error || res.statusText}`);
           return;
         }
-        // Refresh table (& uptime)
-        await renderGamesTable();
+        await renderGamesTable(); // refresh table & uptime
       } catch (err) {
         console.error("❌ Failed to delete game:", err);
         alert("Failed to delete game. See console for details.");
@@ -190,20 +197,30 @@ function wireInteractions(container) {
       return;
     }
 
-    // Click anywhere else inside the table → close menus if click isn't inside a menu
-    if (!e.target.closest('.kebab-menu')) {
+    // Click inside container but not on a menu or kebab → close menus
+    if (!e.target.closest('.kebab-menu') && !e.target.closest('.kebab-btn')) {
       closeAllKebabMenus();
     }
   });
+}
 
-  // Also close menus if user clicks outside the container altogether
+// Attach a single outside-click handler (no { once:true }, no stacking)
+function attachOutsideCloseOnce() {
+  if (outsideClickHandlerAttached) return;
   document.addEventListener('click', (e) => {
-    if (!container.contains(e.target)) {
-      // Close if the click isn’t inside the table area
+    const container = document.querySelector('#games-table-container');
+    if (!container) return;
+
+    const clickedInsideContainer = container.contains(e.target);
+    const onMenuOrBtn = e.target.closest('.kebab-menu') || e.target.closest('.kebab-btn');
+
+    // If click is outside container OR inside but not on the menu/btn → close all
+    if (!clickedInsideContainer || !onMenuOrBtn) {
       container.querySelectorAll('.kebab-menu').forEach(m => (m.style.display = 'none'));
       container.querySelectorAll('.kebab-btn').forEach(b => b.setAttribute('aria-expanded', 'false'));
     }
-  }, { capture: true });
+  }, true); // capture so this runs before bubbling handlers
+  outsideClickHandlerAttached = true;
 }
 
 function escapeHtml(s) {
@@ -211,11 +228,13 @@ function escapeHtml(s) {
     { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]
   ));
 }
-
 function escapeAttr(s) {
   return String(s ?? '').replace(/"/g, '&quot;');
 }
-
+function cssEscape(s) {
+  if (window.CSS && CSS.escape) return CSS.escape(s);
+  return String(s).replace(/"/g, '\\"');
+}
 async function safeJson(res) {
   try { return await res.json(); }
   catch { return {}; }
