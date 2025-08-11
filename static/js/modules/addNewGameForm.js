@@ -1,59 +1,119 @@
-// --- NEW CODE HERE ---
+// --- ENTIRE FILE REPLACEMENT ---
 // addNewGameForm.js
-// Handles the "Add Game" form submission for the Game Inventory page
+// Handles the "Add Game" compact dropdown form on the Inventory page.
 
 import { renderGamesTable } from './gamesTableRenderer.js';
 
 export function initAddNewGameForm() {
-    console.log("📌 initAddNewGameForm() running");
-    const addBtn = document.getElementById('addGameButton');
-    const nameInput = document.getElementById('gameNameInput');
-    const statusSelect = document.getElementById('gameStatusSelect');
-    const downReasonInput = document.getElementById('gameDownReason');
+  console.log("📌 initAddNewGameForm()");
 
-    if (!addBtn || !nameInput || !statusSelect) {
-        console.error("❌ addNewGameForm: form elements not found");
-        return;
+  // Elements
+  const addBtn          = document.getElementById('addGameButton');
+  const nameInput       = document.getElementById('gameNameInput');
+  const statusSelect    = document.getElementById('gameStatusSelect');
+  const downReasonInput = document.getElementById('gameDownReason');
+  const reasonGroup     = document.getElementById('downReasonGroup');
+  const dropdownPanel   = document.getElementById('addGameDropdown');
+  const toggleBtn       = document.getElementById('addGameToggleBtn');
+
+  // Safety check
+  if (!addBtn || !nameInput || !statusSelect) {
+    console.error("❌ addNewGameForm: form elements not found");
+    return;
+  }
+
+  // Helpers
+  const safeJson = async (res) => { try { return await res.json(); } catch { return {}; } };
+
+  const showReason = () => {
+    if (!reasonGroup) return;
+    const show = statusSelect.value === 'Down';
+    reasonGroup.style.display = show ? 'block' : 'none';
+    if (!show && downReasonInput) downReasonInput.value = '';
+  };
+
+  const setBusy = (btn, busy) => {
+    if (!btn) return;
+    if (busy) {
+      btn.disabled = true;
+      if (!btn.dataset.label) btn.dataset.label = btn.innerHTML;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding…';
+    } else {
+      btn.disabled = false;
+      if (btn.dataset.label) btn.innerHTML = btn.dataset.label;
+    }
+  };
+
+  const closeDropdown = () => {
+    if (dropdownPanel) dropdownPanel.style.display = 'none';
+    if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'false');
+  };
+
+  const clearForm = () => {
+    nameInput.value = '';
+    statusSelect.value = 'Up';
+    if (downReasonInput) downReasonInput.value = '';
+    showReason();
+  };
+
+  // Submit handler
+  const submit = async () => {
+    const name = nameInput.value.trim();
+    const status = statusSelect.value;
+    const down_reason = (status === 'Down' && downReasonInput) ? downReasonInput.value.trim() : null;
+
+    if (!name) {
+      alert("Please enter a game name.");
+      nameInput.focus();
+      return;
     }
 
-    addBtn.addEventListener('click', async (e) => {
-        console.log("📌 Add Game button clicked");
+    try {
+      setBusy(addBtn, true);
+
+      const res = await fetch('/api/games', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, status, down_reason })
+      });
+
+      if (!res.ok) {
+        const err = await safeJson(res);
+        alert(`Error adding game: ${err.error || res.statusText}`);
+        return;
+      }
+
+      // Success → clear + close + refresh
+      clearForm();
+      closeDropdown();
+      await renderGamesTable();
+
+    } catch (err) {
+      console.error("❌ Failed to add game:", err);
+      alert("Failed to add game. See console for details.");
+    } finally {
+      setBusy(addBtn, false);
+    }
+  };
+
+  // Wire events
+  addBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    submit();
+  });
+
+  // Enter key inside dropdown submits
+  if (dropdownPanel) {
+    dropdownPanel.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
         e.preventDefault();
-
-        const name = nameInput.value.trim();
-        const status = statusSelect.value;
-        const downReason = (status === 'Down') ? downReasonInput.value.trim() : null;
-
-        if (!name) {
-            alert("Please enter a game name.");
-            return;
-        }
-
-        try {
-            const res = await fetch('/api/games', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, status, down_reason: downReason })
-            });
-
-            if (!res.ok) {
-                const err = await res.json();
-                alert(`Error adding game: ${err.error || res.statusText}`);
-                return;
-            }
-
-            // Clear inputs
-            nameInput.value = '';
-            statusSelect.value = 'Up';
-            downReasonInput.value = '';
-            document.getElementById('downReasonGroup').style.display = 'none';
-
-            // Refresh table
-            await renderGamesTable();
-        } catch (err) {
-            console.error("❌ Failed to add game:", err);
-            alert("Failed to add game. See console for details.");
-        }
+        submit();
+      }
     });
+  }
+
+  // Reason show/hide on Status change + initial state
+  statusSelect.addEventListener('change', showReason);
+  showReason();
 }
-// --- END NEW CODE HERE ---
+// --- END ENTIRE FILE REPLACEMENT ---
