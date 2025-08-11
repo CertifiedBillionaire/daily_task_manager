@@ -1,0 +1,178 @@
+// --- FULL FILE REWRITE START ---
+// =========================================================================
+// ARCADE MANAGER - TABLE RESIZER MODULE
+// Resizes columns by setting widths on <col> elements so headers + cells match.
+// Enforces a per-column minimum based on content. Saves/loads widths.
+// =========================================================================
+
+export function initTableResizers() {
+  const table = document.querySelector('.issues-table');
+  if (!table) {
+    console.warn("Table Resizer: '.issues-table' not found. Resizer not active.");
+    return;
+  }
+
+  const headers = table.querySelectorAll('thead th');
+  const cols    = table.querySelectorAll('colgroup col'); // one <col> per column
+
+  if (headers.length === 0 || cols.length === 0 || headers.length !== cols.length) {
+    console.warn("Table Resizer: headers/cols mismatch. Make sure <colgroup> has same count as <th>.");
+    return;
+  }
+
+  // Defaults (used if nothing saved yet)
+  const DEFAULT_COLUMN_WIDTHS = [
+    100, // Issue ID
+    100, // Priority
+    120, // Date Added
+    120, // Last Update
+    100, // Area
+    150, // Equipment Name
+    250, // Problem Description
+    150, // Notes
+    100, // Status
+    120, // Target Date
+    150, // Assigned Employee
+    50   // Options
+  ];
+
+  // State for dragging
+  let currentResizer = null;
+  let currentHeader  = null;
+  let currentColIndex = -1;
+  let startX = 0;
+  let startWidth = 0;
+
+  // Per-column minimums computed from content
+  let COL_MIN_WIDTHS = [];
+
+  // ---------- Helpers ----------
+
+  // Set one column's width via <col>; TH/TD widths are left to follow the <col>
+  function applyColumnWidth(colIndex, width) {
+    const col = cols[colIndex];
+    if (col) col.style.width = `${width}px`;
+
+    // Let <col> be the single source of truth
+    const header = headers[colIndex];
+    if (header) header.style.width = '';
+
+    const cells = table.querySelectorAll(`tbody td:nth-child(${colIndex + 1})`);
+    cells.forEach(td => (td.style.width = ''));
+  }
+
+  // Measure minimum width needed for header + first few body cells
+  function computeMinWidthForCol(colIndex) {
+    const BUFFER = 16;  // little padding so text isn't glued to edge
+    const FLOOR  = 50;  // absolute minimum
+    const CEIL   = 600; // keep things reasonable
+
+    let min = 0;
+
+    // header content
+    const h = headers[colIndex];
+    if (h) min = Math.max(min, h.scrollWidth);
+
+    // up to 25 body cells (fast enough, good sample)
+    const bodyCells = table.querySelectorAll(`tbody td:nth-child(${colIndex + 1})`);
+    let count = 0;
+    for (const td of bodyCells) {
+      min = Math.max(min, td.scrollWidth);
+      if (++count >= 25) break;
+    }
+
+    return Math.max(FLOOR, Math.min(min + BUFFER, CEIL));
+  }
+
+  // Load saved widths (array of numbers) or []
+  function loadSavedWidths() {
+    try {
+      const raw = localStorage.getItem('issuesTableColumnWidths');
+      if (!raw) return [];
+      const arr = JSON.parse(raw);
+      return Array.isArray(arr) && arr.length === cols.length ? arr : [];
+    } catch {
+      return [];
+    }
+  }
+
+  // Save widths from <col> elements
+  function saveWidths() {
+    const widths = Array.from(cols).map(c => Math.round(c.getBoundingClientRect().width));
+    localStorage.setItem('issuesTableColumnWidths', JSON.stringify(widths));
+    console.log('Column widths saved:', widths);
+  }
+
+  // ---------- Init widths ----------
+
+  // Compute per-column mins from current content
+  COL_MIN_WIDTHS = Array.from(headers).map((_, i) => computeMinWidthForCol(i));
+  console.log('Min widths (content-based):', COL_MIN_WIDTHS);
+
+  // Apply saved/default widths, clamped to min. Do NOT set table width.
+  const saved = loadSavedWidths();
+  headers.forEach((th, i) => {
+    const base = saved[i] ?? DEFAULT_COLUMN_WIDTHS[i] ?? Math.ceil(th.getBoundingClientRect().width) ?? 100;
+    const minW = COL_MIN_WIDTHS[i] ?? 50;
+    applyColumnWidth(i, Math.max(base, minW));
+  });
+
+  // ---------- Drag handlers ----------
+
+  function mouseDownHandler(e) {
+    currentResizer = e.target;
+    currentHeader  = currentResizer?.parentElement || null;
+    if (!currentHeader) return;
+
+    currentColIndex = Array.from(headers).indexOf(currentHeader);
+    if (currentColIndex < 0) return;
+
+    startX = e.clientX;
+
+    // use the current <col> visual width as baseline
+    const colW = cols[currentColIndex].getBoundingClientRect().width;
+    const thW  = currentHeader.getBoundingClientRect().width;
+    startWidth = Math.max(colW, thW);
+
+    currentResizer.classList.add('is-resizing');
+
+    document.addEventListener('mousemove', mouseMoveHandler);
+    document.addEventListener('mouseup', mouseUpHandler);
+  }
+
+  function mouseMoveHandler(e) {
+    e.preventDefault();
+
+    const deltaX = e.clientX - startX;
+    const minW = COL_MIN_WIDTHS[currentColIndex] ?? 50;
+
+    // clamp so you can't go smaller than content
+    const newW = Math.max(minW, startWidth + deltaX);
+
+    // set width on the <col> so header + cells stay in sync
+    cols[currentColIndex].style.width = `${newW}px`;
+  }
+
+  function mouseUpHandler() {
+    if (currentResizer) currentResizer.classList.remove('is-resizing');
+
+    document.removeEventListener('mousemove', mouseMoveHandler);
+    document.removeEventListener('mouseup', mouseUpHandler);
+
+    saveWidths();
+
+    // clear state
+    currentResizer = null;
+    currentHeader = null;
+    currentColIndex = -1;
+  }
+
+  // Attach listeners to each header's .resizer
+  headers.forEach((th) => {
+    const resizer = th.querySelector('.resizer');
+    if (resizer) resizer.addEventListener('mousedown', mouseDownHandler);
+  });
+
+  console.log('Table resizers initialized (colgroup-based).');
+}
+// --- FULL FILE REWRITE END ---

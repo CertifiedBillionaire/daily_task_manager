@@ -22,6 +22,8 @@ from werkzeug.utils import secure_filename # For securely handling uploaded file
 
 # Your Custom Modules
 import tpt_processor # Contains logic for TPT calculations
+from games_db import ensure_games_table
+
 
 
 # --- 2. Flask App Instance Initialization ---
@@ -79,6 +81,8 @@ def init_db():
     # --- NEW CODE HERE ---
     # sqlite doesn't support "with db.cursor() as cur:", so use manual open/close
     cur = db.cursor()
+    ensure_games_table(db)
+
     try:
         # --- Create 'issues' table with all columns ---
         # This will create the table on a fresh DB, or do nothing if it exists.
@@ -524,6 +528,90 @@ def equipment_locations():
     except Exception as e:
         print(f"ERROR: equipment_locations failed: {e}")
         return jsonify({"items": [], "error": "failed"}), 500
+
+
+@app.route('/api/issues/<issue_id>', methods=['PUT'])
+def update_issue(issue_id):
+    """
+    Update fields on an issue and bump last_updated.
+    Works on SQLite (local) and Postgres (Render).
+    Allowed fields: description, area, equipment_location, priority, status, notes, assigned_to, target_date
+    """
+    try:
+        db = get_db()
+        is_postgres = hasattr(db, 'dsn')
+
+        data = request.get_json(force=True) or {}
+
+        allowed = ['description', 'area', 'equipment_location',
+                   'priority', 'status', 'notes', 'assigned_to', 'target_date']
+
+        # build dynamic SET clause
+        set_parts = []
+        values = []
+        placeholder = '%s' if is_postgres else '?'
+
+        for key in allowed:
+            if key in data:
+                set_parts.append(f"{key} = {placeholder}")
+                values.append(data[key])
+
+        if not set_parts:
+            return jsonify({"error": "No fields to update"}), 400
+
+        # always update last_updated
+        set_parts.append("last_updated = CURRENT_TIMESTAMP")
+
+        sql_str = f"UPDATE issues SET {', '.join(set_parts)} WHERE id = {placeholder};"
+
+        cur = db.cursor()
+        try:
+            cur.execute(sql_str, (*values, issue_id))
+            if cur.rowcount == 0:
+                db.commit()
+                return jsonify({"error": "Issue not found"}), 404
+            db.commit()
+            return jsonify({"message": "Issue updated", "issue_id": issue_id})
+        except Exception as e:
+            db.rollback()
+            print(f"ERROR: update_issue failed: {e}")
+            return jsonify({"error": "Failed to update issue", "details": str(e)}), 500
+        finally:
+            cur.close()
+
+    except Exception as e:
+        print(f"ERROR: update_issue outer failure: {e}")
+        return jsonify({"error": "Server error"}), 500
+
+# --- NEW CODE HERE ---
+@app.route('/api/issues/<issue_id>', methods=['DELETE'])
+def delete_issue(issue_id):
+    """
+    Delete an issue by id. Works on SQLite (local) and Postgres (Render).
+    """
+    try:
+        db = get_db()
+        is_postgres = hasattr(db, 'dsn')
+        placeholder = '%s' if is_postgres else '?'
+
+        cur = db.cursor()
+        try:
+            cur.execute(f"DELETE FROM issues WHERE id = {placeholder};", (issue_id,))
+            if cur.rowcount == 0:
+                db.commit()
+                return jsonify({"error": "Issue not found"}), 404
+            db.commit()
+            return jsonify({"message": "Issue deleted", "issue_id": issue_id})
+        except Exception as e:
+            db.rollback()
+            print(f"ERROR: delete_issue failed: {e}")
+            return jsonify({"error": "Failed to delete issue", "details": str(e)}), 500
+        finally:
+            cur.close()
+    except Exception as e:
+        print(f"ERROR: delete_issue outer failure: {e}")
+        return jsonify({"error": "Server error"}), 500
+# --- END NEW CODE ---
 
 
 # --- 8. Application Entry Point ---

@@ -1,0 +1,206 @@
+/* --- ENTIRE FILE REPLACEMENT --- */
+/* This file contains styling for the issues table. */
+.issues-table {
+    /* REMOVED: width: 100%; */ /* Let JS control total width */
+    /* REMOVED: min-width: 100%; */ /* Let JS control total width */
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 0.9em;
+    border: 1px solid #e0e0e0; /* Subtle border around the entire table */
+    table-layout: fixed; /* Crucial for fixed column widths */
+}
+
+/* We removed the individual bottom borders to avoid redundant lines */
+.issues-table th,
+.issues-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #f0f0f0; /* Very subtle line between rows */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap; /* Keep text on a single line */
+}
+
+/* NEW: This is for data cells (td) only, to break long words */
+.issues-table td {
+    word-break: break-all; /* Break words to fit within cell, even without spaces */
+    width: auto; /* NEW: Ensure td's defer to th's width */
+
+}
+
+.issues-table th {
+    background-color: #F8F9FA;
+    color: var(--text-color-dark);
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+/* Hover effect for table rows */
+.issues-table tbody tr:hover {
+    background-color: #F8F9FA;
+    cursor: pointer;
+}
+
+/* Color-coded badges for Priority */
+.priority-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.8em;
+    white-space: nowrap;
+}
+
+.priority-badge.IMMEDIATE {
+    background-color: #FFCDD2;
+    color: #C62828;
+}
+
+.priority-badge.High {
+    background-color: #FFECB3;
+    color: #FF8F00;
+}
+
+.priority-badge.Medium {
+    background-color: #BBDEFB;
+    color: #1565C0;
+}
+
+.priority-badge.Low {
+    background-color: #C8E6C9;
+    color: #2E7D32;
+}
+
+.priority-badge.CLEANING {
+    background-color: #E1BEE7;
+    color: #6A1B9A;
+}
+
+/* Color-coded badges for Status */
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.8em;
+    white-space: nowrap;
+}
+
+.status-badge.Open {
+    background-color: #BBDEFB;
+    color: #1565C0;
+}
+
+.status-badge.Resolved {
+    background-color: #C8E6C9;
+    color: #2E7D32;
+}
+
+.status-badge.InProgress {
+    background-color: #FFECB3;
+    color: #FF8F00;
+}
+
+.status-badge.AwaitingPart {
+    background-color: #CFD8DC;
+    color: #455A64;
+}
+
+/* Highlight rows based on priority */
+.issues-table tbody tr.priority-IMMEDIATE {
+    background-color: #FFEBEE;
+}
+
+.table-responsive {
+    width: 100%; /* Ensure it takes full available width */
+    margin: 0 auto;
+    overflow-x: auto; /* Add horizontal scrolling for wider tables */
+}
+/* --- END ENTIRE FILE REPLACEMENT --- */
+/* --- NEW CODE HERE --- */
+/* Styles for the resizer handle */
+.resizer {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 10px; /* Width of the draggable area */
+    height: 100%;
+    cursor: col-resize; /* Cursor to indicate resizability */
+    user-select: none; /* Prevent text selection during drag */
+    /* Optional: Add a subtle visual line for debugging/visibility */
+    /* background-color: rgba(0, 0, 0, 0.1); */
+}
+
+/* Ensure th elements are relatively positioned for resizer */
+.issues-table th {
+    position: relative; /* Crucial for positioning the resizer */
+    /* Existing styles for th... */
+}
+
+/* Style for when a resizer is actively being dragged */
+.resizer.is-resizing {
+    background-color: var(--primary-color); /* Highlight color when dragging */
+    opacity: 0.5;
+}
+/* --- END NEW CODE --- */
+/* Visual highlight for the selected column */
+th.col-selected {
+    outline: 2px solid var(--primary-color);
+    outline-offset: -2px;
+}
+
+td.col-selected {
+    background: rgba(0,0,0,0.04); /* subtle */
+}
+/* --- NEW CODE HERE --- */
+/* 1) Lock the grid */
+.issues-table {
+  width: 100%;
+  table-layout: fixed;         /* every column keeps its lane */
+  border-collapse: collapse;   /* clean single-line borders */
+}
+
+/* 2) Same box model for headers + cells */
+.issues-table th,
+.issues-table td {
+  padding: 10px 12px;                 /* SAME padding for th + td */
+  border: 1px solid var(--border-color);
+  box-sizing: border-box;             /* widths include padding + border */
+  vertical-align: middle;
+  text-align: left;                   /* default; your JS can override */
+  white-space: nowrap;                /* keep one line */
+  overflow: hidden;                   /* clip overflow */
+  text-overflow: ellipsis;            /* show ... when clipped */
+  line-height: 1.25;                  /* same line height for both */
+}
+
+/* 3) Header look (no layout change, just style) */
+.issues-table thead th {
+  background: var(--background-color-medium);
+  font-weight: 600;
+  color: var(--text-color-dark);
+}
+
+/* 4) Resizer sits on top; doesn't shift text */
+.issues-table th {
+  position: relative;
+}
+
+.issues-table th .resizer {
+  position: absolute;
+  top: 0;
+  right: 0;                /* on the edge */
+  width: 8px;              /* easy to grab */
+  height: 100%;
+  cursor: col-resize;
+  user-select: none;
+  touch-action: none;
+}
+
+/* Optional: hide resizer on last column if you don't want it */
+.issues-table thead th:last-child .resizer {
+  display: none;
+}
+
+/* Safety: ensure EVERYTHING in table uses border-box (stops 1px drifts) */
+.issues-table * {
+  box-sizing: border-box;
+}
+/* --- END NEW CODE --- */

@@ -69,3 +69,40 @@
     background-color: #f9e2e1;
 }
 /* --- END NEW CODE --- */
+/* --- NEW CODE HERE --- */
+/* Make the last cell a positioning anchor */
+td.menu-container {
+  position: relative;
+  overflow: visible; /* allow dropdown to overflow */
+}
+
+/* Dropdown menu: hidden by default */
+.issue-options-menu {
+  position: absolute;
+  right: 4px;           /* stick to the right edge of the cell */
+  top: 100%;            /* just below the button */
+  display: none;        /* default hidden */
+  min-width: 180px;
+  background: var(--card-background-color, #fff);
+  border: 1px solid var(--border-color, #d9e0e6);
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  padding: 6px 0;
+  z-index: 300;
+}
+
+/* Show when not .hidden */
+.issue-options-menu:not(.hidden) {
+  display: block;
+}
+
+/* Menu items */
+.issue-options-menu .menu-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.issue-options-menu .menu-item:hover {
+  background: var(--background-color-medium, #f2f5f8);
+}
+/* --- END NEW CODE --- */
