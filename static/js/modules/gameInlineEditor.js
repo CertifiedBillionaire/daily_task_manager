@@ -31,6 +31,16 @@ export function openGameInlineEditor({ rowEl, id, name, status, down_reason }) {
             <button class="gie-cancel"><i class="fas fa-times"></i> Cancel</button>
         </td>
     `;
+    // Autofocus the Name input and select its text
+    const nameInput = rowEl.querySelector('.gie-name');
+    if (nameInput) {
+        nameInput.focus();
+        // Put cursor at end (and select all if you want to overtype)
+        const val = nameInput.value;
+        nameInput.setSelectionRange(val.length, val.length);
+        // If you prefer select-all instead, use:
+        // nameInput.select();
+    }
 
     // Show/hide reason based on status select
     const statusSel = rowEl.querySelector('.gie-status');
@@ -75,6 +85,21 @@ export function openGameInlineEditor({ rowEl, id, name, status, down_reason }) {
     });
 
     // Cancel -> re-render full table (simple + safe)
+    rowEl.querySelector('.gie-cancel').addEventListener('click', async () => {
+        await renderGamesTable();
+    });
+
+    // Keyboard shortcuts: Enter = Save, Esc = Cancel
+    rowEl.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            rowEl.querySelector('.gie-save').click();
+        } else if (e.key === 'Escape') {
+            e.preventDefault();
+            rowEl.querySelector('.gie-cancel').click();
+        }
+    });
+
     rowEl.querySelector('.gie-cancel').addEventListener('click', async () => {
         await renderGamesTable();
     });
