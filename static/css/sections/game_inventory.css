@@ -350,3 +350,124 @@
   background: #f3f4f6; color: #374151; border-color: #e5e7eb;
 }
 /* --- END NEW CODE HERE --- */
+/* --- NEW CODE HERE --- */
+.title-info {
+  border: 0;
+  background: transparent;
+  padding: 4px 6px;   /* was 0 — gives you a target to hover */
+  line-height: 1;
+  cursor: help;
+  color: #6b7280;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+}
+
+.title-info:hover { color: #374151; }   /* gray-700 */
+/* --- END NEW CODE HERE --- */
+/* --- NEW CODE HERE --- */
+/* CSS-only tooltip for the (i) button */
+.title-info {
+  position: relative;
+  border: 0;
+  background: transparent;
+  padding: 4px 6px;
+  line-height: 1;
+  cursor: help;
+  color: #6b7280;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+}
+
+.title-info:hover { color: #374151; }
+
+/* bubble */
+.title-info::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  background: #111827;      /* gray-900 */
+  color: #fff;
+  font-size: 12px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+  opacity: 0;
+  transform: translateY(4px);
+  pointer-events: none;
+  transition: opacity .15s ease, transform .15s ease;
+  z-index: 20;
+}
+
+/* small arrow */
+.title-info::before {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 10px;
+  border-width: 6px;
+  border-style: solid;
+  border-color: transparent transparent #111827 transparent;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity .15s ease, transform .15s ease;
+  z-index: 21;
+}
+
+.title-info:hover::after,
+.title-info:hover::before {
+  opacity: 1;
+  transform: translateY(0);
+}
+/* --- END NEW CODE HERE --- */
+/* --- NEW CODE HERE --- */
+/* Title on the left, uptime badge on the right */
+.page-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;            /* stacks nicely on small screens */
+  margin-bottom: 10px;        /* a little breathing room below */
+}
+
+.page-title-left {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;                   /* space between title and (i) */
+}
+
+/* make the badge not feel cramped when it wraps under */
+@media (max-width: 640px) {
+  .page-header-bar .uptime-badge {
+    margin-top: 6px;
+  }
+}
+/* --- END NEW CODE HERE --- */
+/* --- NEW CODE HERE --- */
+/* Stack: title on top, big uptime under it */
+.page-header-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;            /* space between title and badge */
+  margin-bottom: 14px; /* a little room before the form */
+}
+
+.title-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;            /* space between title and (i) */
+}
+
+/* Bigger badge version */
+.uptime-badge.large {
+  font-size: 1rem;     /* bigger text */
+  padding: 8px 12px;   /* bigger pill */
+  display: inline-block;
+}
+/* --- END NEW CODE HERE --- */

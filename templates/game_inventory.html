@@ -4,11 +4,18 @@
 
 {% block content %}
     <div class="content-header">
-    <div class="page-title-with-badge">
+    <!-- --- NEW CODE HERE --- -->
+    <div class="page-header-stack">
+        <div class="title-row">
         <h2>Game Inventory Management</h2>
-        <span id="uptime-badge" class="uptime-badge neutral">Current Game Uptime: --%</span>
+        <button class="title-info" type="button" aria-label="About this page"
+                data-tooltip="Manage your arcade game assets and their operational status.">
+            <i class="fas fa-info-circle"></i>
+        </button>
+        </div>
+        <span id="uptime-badge" class="uptime-badge large neutral">Current Game Uptime: --%</span>
     </div>
-    <p>Manage your arcade game assets and their operational status.</p>
+    <!-- --- END NEW CODE HERE --- -->
     </div>
 
 
