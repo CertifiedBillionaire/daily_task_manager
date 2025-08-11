@@ -23,6 +23,8 @@ from werkzeug.utils import secure_filename # For securely handling uploaded file
 # Your Custom Modules
 import tpt_processor # Contains logic for TPT calculations
 from games_db import ensure_games_table
+from games_api import register_game_routes
+
 
 
 
@@ -56,6 +58,8 @@ def get_db():
             g.db.row_factory = sqlite3.Row
     return g.db
 # --- END NEW CODE ---
+# Register Game Inventory API routes
+register_game_routes(app, get_db)
 
 @app.teardown_appcontext
 def close_db(e=None):
