@@ -3,6 +3,7 @@
 // Handles the "Add Game" compact dropdown form on the Inventory page.
 
 import { renderGamesTable } from './gamesTableRenderer.js';
+import { showToast } from './toast.js';
 
 export function initAddNewGameForm() {
   console.log("📌 initAddNewGameForm()");
@@ -21,68 +22,6 @@ export function initAddNewGameForm() {
     console.error("❌ addNewGameForm: form elements not found");
     return;
   }
-
-  // --- NEW CODE HERE ---
-  // Minimal toast helper (no CSS file needed). Uses #toast-container from base.html.
-  function ensureToastContainer() {
-    let c = document.getElementById('toast-container');
-    if (!c) {
-      c = document.createElement('div');
-      c.id = 'toast-container';
-      document.body.appendChild(c);
-    }
-    // Make sure it’s positioned nicely (inline styles so it works without CSS)
-    Object.assign(c.style, {
-      position: 'fixed',
-      right: '16px',
-      bottom: '16px',
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '8px',
-      zIndex: '9999',
-      pointerEvents: 'none'
-    });
-    return c;
-  }
-
-  function showToast(message, type = 'success') {
-    const container = ensureToastContainer();
-    const toast = document.createElement('div');
-
-    // colors per type
-    const bg = (type === 'error') ? '#991b1b' : (type === 'info') ? '#1f2937' : '#065f46';
-    const shadow = '0 8px 24px rgba(0,0,0,.18)';
-
-    Object.assign(toast.style, {
-      background: bg,
-      color: '#fff',
-      padding: '10px 12px',
-      borderRadius: '10px',
-      fontSize: '14px',
-      fontWeight: '600',
-      boxShadow: shadow,
-      opacity: '0',
-      transform: 'translateY(6px)',
-      transition: 'opacity .15s ease, transform .15s ease',
-      pointerEvents: 'auto'
-    });
-    toast.textContent = message;
-    container.appendChild(toast);
-
-    // animate in
-    requestAnimationFrame(() => {
-      toast.style.opacity = '1';
-      toast.style.transform = 'translateY(0)';
-    });
-
-    // auto remove after 2.2s
-    setTimeout(() => {
-      toast.style.opacity = '0';
-      toast.style.transform = 'translateY(6px)';
-      setTimeout(() => container.removeChild(toast), 200);
-    }, 2200);
-  }
-  // --- END NEW CODE HERE ---
 
   // Helpers
   const safeJson = async (res) => { try { return await res.json(); } catch { return {}; } };
