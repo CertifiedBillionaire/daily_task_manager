@@ -273,3 +273,32 @@
   }
 }
 /* --- END NEW CODE HERE --- */
+/* --- NEW CODE HERE --- */
+/* Mobile: make the table feel lighter + less zoomed */
+.games-table {
+  min-width: 600px; /* was 700 — smaller so it fits better on phones */
+}
+
+@media (max-width: 640px) {
+  .games-table thead th,
+  .games-table tbody td {
+    padding: 10px 12px;   /* was 14px 16px */
+    font-size: 0.9rem;    /* was 0.95rem */
+  }
+
+  /* smaller action buttons on mobile */
+  .games-table .edit-game-btn,
+  .games-table .delete-game-btn {
+    padding: 4px 8px;     /* was 6px 10px */
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .games-table thead th,
+  .games-table tbody td {
+    padding: 8px 10px;    /* a touch tighter on very small phones */
+    font-size: 0.88rem;
+  }
+}
+/* --- END NEW CODE HERE --- */
