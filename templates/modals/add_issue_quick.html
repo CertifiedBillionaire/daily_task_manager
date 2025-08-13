@@ -1,0 +1,72 @@
+<!-- templates/modals/add_issue_quick.html -->
+<!-- Add Issue (Quick) Modal -->
+<div id="addIssueQuickModal" class="modal hidden">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Add Issue</h3>
+      <button type="button" class="close-btn" data-close>&times;</button>
+    </div>
+
+    <!-- Type -->
+    <div class="row">
+      <label>Type</label>
+      <div class="chip-row" id="issueTypeChips">
+        <button class="chip active" data-type="game">Game</button>
+        <button class="chip" data-type="facility">Facility</button>
+      </div>
+    </div>
+
+    <!-- Game (only when Type = Game) -->
+    <div class="row" id="gamePickerRow">
+      <label>Game</label>
+      <input id="gameSearch" type="text" placeholder="Start typing game name…" autocomplete="off">
+      <div id="gameSuggestions" class="suggestions"></div>
+    </div>
+
+    <!-- =========================================== -->
+    <!-- --- NEW CODE HERE: Facility equipment input -->
+    <!-- (shows only when Type = Facility) -->
+    <div class="row" id="facilityEquipRow" style="display:none;">
+      <label>Equipment / Location</label>
+      <input id="facilityEquipInput" type="text" placeholder="e.g., Bathroom sink, Lobby ceiling, Prize counter">
+    </div>
+    <!-- --- END NEW CODE -------------------------- -->
+    <!-- =========================================== -->
+
+    <!-- Area -->
+    <div class="row">
+      <label>Area</label>
+      <input list="areaList" id="areaInput" placeholder="Game Room">
+      <datalist id="areaList"></datalist>
+    </div>
+
+    <!-- Category -->
+    <div class="row">
+      <label>Category</label>
+      <div class="chip-row" id="categoryChips"></div>
+    </div>
+
+    <!-- Priority -->
+    <div class="row">
+      <label>Priority</label>
+      <div class="chip-row" id="priorityChips"></div>
+    </div>
+
+    <!-- Description -->
+    <div class="row">
+      <label>What’s wrong? *</label>
+      <input id="descInput" type="text" maxlength="140" placeholder="1 short line">
+    </div>
+
+    <!-- Notes (optional) -->
+    <div class="row">
+      <label>Notes</label>
+      <textarea id="notesInput" rows="2" placeholder="Optional"></textarea>
+    </div>
+
+    <div class="modal-footer">
+      <button id="saveIssueBtn" class="primary">Save</button>
+      <button id="saveAddNextBtn" class="secondary">Save + Add Next</button>
+    </div>
+  </div>
+</div>

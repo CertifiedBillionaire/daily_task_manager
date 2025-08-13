@@ -1,0 +1,54 @@
+<!-- templates/modals/inspect_game.html -->
+<!-- Inspect a Game Modal -->
+<div id="inspectGameModal" class="modal hidden">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Inspect a Game</h3>
+      <button type="button" class="close-btn" data-close>&times;</button>
+    </div>
+
+    <!-- Pick Game (locks) -->
+    <div class="row">
+      <label>Game</label>
+      <input id="ig_gameSearch" type="text" placeholder="Type game name…" autocomplete="off">
+      <div id="ig_gameSuggestions" class="suggestions"></div>
+      <div id="ig_currentGame" class="tiny-muted"></div>
+    </div>
+
+    <!-- Progress -->
+    <div class="row"><div id="ig_stepInfo" class="tiny-muted">Step 1 of 9</div></div>
+
+    <!-- Chip title + help -->
+    <div class="row">
+      <label id="ig_chipTitle">Safety</label>
+      <div id="ig_chipHelp" class="tiny-muted">Check sharp edges, loose glass, cords.</div>
+    </div>
+
+    <!-- Choice buttons -->
+    <div class="row">
+      <div class="chip-row" id="ig_choiceRow">
+        <button class="chip" data-choice="OK">OK</button>
+        <button class="chip" data-choice="ISSUE">Add Issue</button>
+        <button class="chip" data-choice="NA">N/A</button>
+      </div>
+    </div>
+
+    <!-- Mini issue form (only when ISSUE) -->
+    <div class="row" id="ig_issueForm" style="display:none;">
+      <input id="ig_desc" type="text" maxlength="140" placeholder="Short description">
+      <div class="chip-row" id="ig_priorityChips">
+        <button class="chip" data-val="Low">Low</button>
+        <button class="chip active" data-val="Medium">Medium</button>
+        <button class="chip" data-val="High">High</button>
+      </div>
+      <div class="row tiny-muted">Photo optional (Drive later)</div>
+    </div>
+
+    <!-- Controls -->
+    <div class="modal-footer">
+      <button id="ig_prev" class="secondary">&larr; Back</button>
+      <button id="ig_next" class="primary">Next &rarr;</button>
+      <button id="ig_finish" class="primary" style="display:none;">Save & Next Game</button>
+    </div>
+  </div>
+</div>

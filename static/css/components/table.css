@@ -1,270 +1,145 @@
-/* --- ENTIRE FILE REPLACEMENT --- */
-/* This file contains styling for the issues table. */
-.issues-table {
-    /* REMOVED: width: 100%; */ /* Let JS control total width */
-    /* REMOVED: min-width: 100%; */ /* Let JS control total width */
-    border-collapse: collapse;
-    margin-top: 20px;
-    font-size: 0.9em;
-    border: 1px solid #e0e0e0; /* Subtle border around the entire table */
-    table-layout: fixed; /* Crucial for fixed column widths */
+/* ======================================================================== */
+/* --- Consolidated Issues Page Styles (Game Inventory Theme) --- */
+/* ======================================================================== */
+
+/* --- 1. General Page & Header Layout --- */
+.section-card-header-with-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e5e7eb; /* Light border like inventory page */
+}
+.section-card-header-with-toolbar h2 {
+    margin: 0;
+    font-size: 1.5em;
+}
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
 }
 
-/* We removed the individual bottom borders to avoid redundant lines */
+/* --- 2. Main Table Layout (Game Inventory Style) --- */
+.issues-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    table-layout: fixed; /* Crucial for alignment and resizing */
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+/* --- 3. Table Header & Cells (Game Inventory Style) --- */
 .issues-table th,
 .issues-table td {
-    padding: 12px 15px;
-    border-bottom: 1px solid #f0f0f0; /* Very subtle line between rows */
+    padding: 12px 16px; /* A little more padding */
+    vertical-align: middle;
+    text-align: left;
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap; /* Keep text on a single line */
+    border-bottom: 1px solid #f1f5f9; /* Very subtle row separator */
 }
-
-/* NEW: This is for data cells (td) only, to break long words */
-.issues-table td {
-    word-break: break-all; /* Break words to fit within cell, even without spaces */
-    width: auto; /* NEW: Ensure td's defer to th's width */
-
-}
-
 .issues-table th {
-    background-color: #F8F9FA;
-    color: var(--text-color-dark);
+    position: relative; 
+    background-color: #ECEFF3; /* A nice dark gray */
     font-weight: 600;
+    color: #090909;            /* White text for contrast */
     text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.05em;
 }
 
-/* Hover effect for table rows */
+/* --- 4. Row Styling (Zebra-striping & Hover) --- */
+.issues-table tbody tr:nth-child(odd) {
+    background-color: #FEFFFF; /* This sets the color for rows 1, 3, 5, etc. */
+}
+
+.issues-table tbody tr:nth-child(even) {
+    background-color: #FAFAFA; /* This sets the color for rows 2, 4, 6, etc. */
+}
 .issues-table tbody tr:hover {
-    background-color: #F8F9FA;
+    background-color: #eef2ff; /* A nice hover color */
     cursor: pointer;
 }
-
-/* Color-coded badges for Priority */
-.priority-badge {
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-weight: 600;
-    font-size: 0.8em;
-    white-space: nowrap;
-}
-
-.priority-badge.IMMEDIATE {
-    background-color: #FFCDD2;
-    color: #C62828;
-}
-
-.priority-badge.High {
-    background-color: #FFECB3;
-    color: #FF8F00;
-}
-
-.priority-badge.Medium {
-    background-color: #BBDEFB;
-    color: #1565C0;
-}
-
-.priority-badge.Low {
-    background-color: #C8E6C9;
-    color: #2E7D32;
-}
-
-.priority-badge.CLEANING {
-    background-color: #E1BEE7;
-    color: #6A1B9A;
-}
-
-/* Color-coded badges for Status */
-.status-badge {
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-weight: 600;
-    font-size: 0.8em;
-    white-space: nowrap;
-}
-
-.status-badge.Open {
-    background-color: #BBDEFB;
-    color: #1565C0;
-}
-
-.status-badge.Resolved {
-    background-color: #C8E6C9;
-    color: #2E7D32;
-}
-
-.status-badge.InProgress {
-    background-color: #FFECB3;
-    color: #FF8F00;
-}
-
-.status-badge.AwaitingPart {
-    background-color: #CFD8DC;
-    color: #455A64;
-}
-
-/* Highlight rows based on priority */
 .issues-table tbody tr.priority-IMMEDIATE {
-    background-color: #FFEBEE;
+    background-color: #ffebee !important;
 }
 
-.table-responsive {
-    width: 100%; /* Ensure it takes full available width */
-    margin: 0 auto;
-    overflow-x: auto; /* Add horizontal scrolling for wider tables */
+/* --- 5. Status & Priority Badges (Pill-shaped) --- */
+.priority-badge,
+.status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 9999px; /* This makes it pill-shaped */
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: capitalize;
 }
-/* --- END ENTIRE FILE REPLACEMENT --- */
-/* --- NEW CODE HERE --- */
-/* Styles for the resizer handle */
-.resizer {
+/* Style issue statuses to look like inventory statuses (green=good, orange=progress, blue=open) */
+.status-badge.Resolved { background-color: #dcfce7; color: #166534; }
+.status-badge.In-Progress, .status-badge.Waiting-Parts { background-color: #ffedd5; color: #9a3412; }
+.status-badge.Open { background-color: #dbeafe; color: #1e40af; }
+
+.priority-badge.IMMEDIATE { background-color: #fee2e2; color: #991b1b; }
+.priority-badge.High { background-color: #ffedd5; color: #9a3412; }
+.priority-badge.Medium { background-color: #e0e7ff; color: #3730a3; }
+.priority-badge.Low { background-color: #f0fdf4; color: #166534; }
+
+/* --- 6. Column Resizer --- */
+.issues-table th .resizer {
     position: absolute;
-    right: 0;
     top: 0;
-    width: 10px; /* Width of the draggable area */
+    right: 0;
+    width: 8px;
     height: 100%;
-    cursor: col-resize; /* Cursor to indicate resizability */
-    user-select: none; /* Prevent text selection during drag */
-    /* Optional: Add a subtle visual line for debugging/visibility */
-    /* background-color: rgba(0, 0, 0, 0.1); */
+    cursor: col-resize;
+    user-select: none;
 }
-
-/* Ensure th elements are relatively positioned for resizer */
-.issues-table th {
-    position: relative; /* Crucial for positioning the resizer */
-    /* Existing styles for th... */
-}
-
-/* Style for when a resizer is actively being dragged */
-.resizer.is-resizing {
-    background-color: var(--primary-color); /* Highlight color when dragging */
+.issues-table th .resizer:hover,
+.issues-table th .resizer.is-resizing {
+    background-color: #4f46e5;
     opacity: 0.5;
 }
-/* --- END NEW CODE --- */
-/* Visual highlight for the selected column */
-th.col-selected {
-    outline: 2px solid var(--primary-color);
-    outline-offset: -2px;
-}
 
-td.col-selected {
-    background: rgba(0,0,0,0.04); /* subtle */
+/* --- 7. Row Options Menu (3-dot) --- */
+.menu-container {
+    position: relative;
+    overflow: visible;
+    text-align: center;
 }
-
-/* --- NEW CODE HERE --- */
-.inline-editor-row td {
-  background: var(--card-background-color, #fff);
-  border-top: 1px solid var(--border-color, #d9e0e6);
-  border-bottom: 1px solid var(--border-color, #d9e0e6);
-  padding: 12px;
+.issue-options-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
-
-.inline-editor {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+.issue-options-button:hover {
+    background-color: #e0e7ff;
 }
-
-.inline-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(180px, 1fr));
-  gap: 10px;
+.issue-options-menu {
+    position: absolute;
+    display: none;
+    right: 4px;
+    top: 100%;
+    min-width: 180px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    list-style: none;
+    padding: 6px 0;
+    margin: 0;
+    z-index: 1000;
 }
-
-.inline-grid .col-span-2 {
-  grid-column: span 2;
-}
-
-.inline-editor label > span {
-  display: block;
-  font-size: 0.85rem;
-  color: var(--text-color-light, #6b7785);
-  margin-bottom: 4px;
-}
-
-.inline-actions {
-  display: flex;
-  gap: 8px;
-  justify-content: flex-end;
-}
-/* --- END NEW CODE --- */
-
-/* --- NEW CODE HERE --- */
-/* inline editor that looks like a normal row */
-.inline-editor-row td {
-  background: var(--card-background-color, #fff);
-  border-top: 1px solid var(--border-color, #d9e0e6);
-  border-bottom: 1px solid var(--border-color, #d9e0e6);
-  padding: 6px 8px;
-  vertical-align: middle;
-}
-
-/* read-only cells (ID, dates) */
-.inline-editor-row .readonly-cell {
-  color: var(--text-color-light, #6b7785);
-  background: #f7f9fb;
-}
-
-/* inputs that feel like cells */
-.inline-editor-row .cell-input,
-.inline-editor-row .cell-select,
-.inline-editor-row .cell-textarea {
-  width: 100%;
-  box-sizing: border-box;
-  border: 1px solid var(--border-color, #d9e0e6);
-  border-radius: 6px;
-  padding: 6px 8px;
-  font: inherit;
-}
-
-.inline-editor-row .cell-textarea {
-  resize: vertical;
-  min-height: 40px;
-}
-
-/* action buttons in last column */
-.inline-editor-row .cell-actions {
-  display: flex;
-  gap: 8px;
-  justify-content: flex-end;
-}
-/* --- END NEW CODE --- */
-/* --- NEW CODE HERE --- */
-.row-edit-btn {
-  border: 1px solid var(--border-color, #d9e0e6);
-  background: var(--card-background-color, #fff);
-  border-radius: 6px;
-  padding: 4px 8px;
-  cursor: pointer;
-  font-size: 14px;
-}
-.row-edit-btn:hover {
-  background: var(--background-color-medium, #f2f5f8);
-}
-/* --- END NEW CODE --- */
-/* --- NEW CODE HERE --- */
-.danger-button {
-  border: none;
-  background: #e05353;
-  color: #fff;
-  border-radius: 6px;
-  padding: 6px 10px;
-  cursor: pointer;
-}
-.danger-button:hover { filter: brightness(0.95); }
-/* --- END NEW CODE --- */
-/* --- NEW CODE HERE --- */
-.status-badge {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 9999px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  line-height: 1.4;
-  border: 1px solid transparent;
-}
-
-
-/* --- END NEW CODE HERE --- */
-/* --- NEW CODE HERE --- */
-/* Basic grid so the table looks like a real table */
+.issue-options-menu:not(.hidden) { display: block; }
+.menu-item { padding: 10px 15px; cursor: pointer; }
+.menu-item:hover { background-color: #f4f6f8; }
 

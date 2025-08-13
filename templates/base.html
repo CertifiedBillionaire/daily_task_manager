@@ -51,7 +51,11 @@
                     <i class="fas fa-search search-icon"></i>
                 </div>
                 <button class="icon-button" id="notificationButton"><i class="fas fa-bell"></i></button>
-                <button class="icon-button" id="hamburger-menu"><i class="fas fa-bars"></i></button>        
+                <button class="icon-button" id="hamburger-menu"><i class="fas fa-bars"></i></button>
+                <button class="primary" data-open-add-issue>+ Add Issue</button>
+                <button class="secondary" data-open-inspect>Inspect a Game</button>
+
+        
             </div>
         </header>
 
@@ -66,6 +70,10 @@
         {% include 'modals/issue_summary_popup.html' %}
 
         {% include 'modals/opening_checklist_modal.html' %}
+        {% include "modals/add_issue_quick.html" %}
+        {% include "modals/inspect_game.html" %}
+
+
 
             
 
@@ -74,6 +82,36 @@
     
     <script type="module" src="{{ url_for('static', filename='js/app.js') }}"></script>
     <div id="toast-container"></div>
+    <script type="module">
+    import { initAddIssueQuick } from "/static/js/modules/addIssueQuick.js";
+    async function getGames(){ const r = await fetch('/api/games'); return await r.json(); }
+    initAddIssueQuick({
+        openButtonSelector: '[data-open-add-issue]',
+        gamesProvider: getGames,
+        onSaved: (issue)=>{
+        console.log('Saved issue:', issue);
+        if (window.refreshIssuesTableData) window.refreshIssuesTableData();
+        }
+    });
+    </script>
+
+    <script type="module">
+    import { initInspectGame } from "/static/js/modules/inspectGame.js";
+
+    async function getGames(){
+        const r = await fetch('/api/games');
+        return await r.json();
+    }
+
+    initInspectGame({
+        openSelector: '[data-open-inspect]',
+        gamesProvider: getGames,
+        onIssueSaved: (issue)=>{
+        console.log('Inspect saved issue:', issue);
+        if (window.refreshIssuesTableData) window.refreshIssuesTableData();
+        }
+    });
+    </script>
     {% block scripts %}{% endblock %}
 
 

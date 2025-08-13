@@ -108,7 +108,10 @@
             {# --- END MODIFIED CODE --- #}
         </div>
         <div class="table-responsive">
-            <table class="issues-table">
+            <table class="issues-table issues-table--v2">
+                <colgroup>
+
+                </colgroup>
                 <thead>
                     <tr>
                         <th>Issue ID <div class="resizer"></div></th>
@@ -132,8 +135,8 @@
         <p id="noIssuesMessage" style="text-align: center; padding: 20px; display: none; color: var(--text-color-light);">No active issues found.</p>
     </section>
 
-{% endblock %}
 
 <script type="module" src="{{ url_for('static', filename='js/modules/issuesTable.js') }}"></script>
 <script type="module" src="{{ url_for('static', filename='js/modules/issuesToolbar.js') }}"></script>
 
+{% endblock %}

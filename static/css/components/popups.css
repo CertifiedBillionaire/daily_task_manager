@@ -288,3 +288,80 @@
         overflow-y: auto;
     }
 }
+/* ==== Modal base ==== */
+.modal { 
+  position: fixed; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(15, 18, 22, 0.45);
+  z-index: 1000;
+}
+.modal.hidden { display: none; }
+
+.modal-content {
+  width: min(520px, 92vw);
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+  padding: 16px 18px;
+}
+
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 8px;
+}
+.modal-header h3 { margin: 0; font-weight: 700; }
+.close-btn { border: 0; background: transparent; font-size: 22px; cursor: pointer; }
+
+.row { margin: 10px 0; }
+.tiny-muted { font-size: 12px; color: #6b7280; }
+
+/* ==== Chips ==== */
+.chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  border: 1px solid #d1d5db;
+  background: #fff;
+  padding: 6px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 14px;
+}
+.chip.active {
+  background: #2563eb; /* blue */
+  color: white;
+  border-color: #2563eb;
+}
+
+/* ==== Inputs ==== */
+input[type="text"], textarea {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 14px;
+}
+textarea { resize: vertical; }
+
+/* ==== Suggestions dropdown (game search) ==== */
+.suggestions {
+  position: relative;
+  margin-top: 6px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  max-height: 220px;
+  overflow: auto;
+}
+.suggest { padding: 8px 10px; cursor: pointer; }
+.suggest:hover { background: #f3f4f6; }
+
+/* ==== Footer buttons ==== */
+.modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 14px; }
+button.primary, .modal-footer .primary {
+  background: #16a34a; color: white; border: 0; border-radius: 10px; padding: 8px 14px; font-weight: 600; cursor: pointer;
+}
+button.secondary, .modal-footer .secondary {
+  background: #e5e7eb; color: #111827; border: 0; border-radius: 10px; padding: 8px 14px; font-weight: 600; cursor: pointer;
+}
+button.primary:hover { filter: brightness(0.95); }
+button.secondary:hover { background: #d1d5db; }

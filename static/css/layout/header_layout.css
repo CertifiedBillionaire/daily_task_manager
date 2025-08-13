@@ -157,6 +157,14 @@
 .icon-button:active {
     transform: translateY(0);
 }
+.header-right .primary,
+.header-right .secondary {
+  margin-left: 8px;
+}
+.header-right .primary { background:#2563eb; color:#fff; border:0; padding:8px 12px; border-radius:10px; font-weight:600; }
+.header-right .secondary { background:#10b981; color:#fff; border:0; padding:8px 12px; border-radius:10px; font-weight:600; }
+.header-right .primary:hover, .header-right .secondary:hover { filter: brightness(0.95); }
+
 
 /* =================================================== */
 /* === MASTER MOBILE HEADER CONTROL (under 768px) === */

@@ -26,7 +26,7 @@ from werkzeug.utils import secure_filename
 import tpt_processor
 from games_db import ensure_games_table
 from games_api import register_game_routes
-from issues_api import register_issue_routes  # NEW: issues routes live here
+from issues_api import register_issue_routes  # issues routes live here
 
 
 # --- 2) App setup ----------------------------------------------------------
@@ -57,6 +57,50 @@ def close_db(e=None):
     db = g.pop("db", None)
     if db is not None:
         db.close()
+
+
+# --- 3a) ID sequences (for padded IDs like 001, 002, …) -------------------
+def ensure_id_sequences(db):
+    """
+    Creates id_sequences(entity TEXT PRIMARY KEY, counter INTEGER NOT NULL)
+    and seeds rows for 'issue' and 'game' (counter=0) if missing.
+    Works on Postgres and SQLite.
+    """
+    is_postgres = hasattr(db, "dsn")
+    cur = db.cursor()
+    try:
+        cur.execute(
+            """
+            CREATE TABLE IF NOT EXISTS id_sequences (
+                entity  TEXT PRIMARY KEY,
+                counter INTEGER NOT NULL
+            );
+            """
+        )
+        db.commit()
+
+        if is_postgres:
+            # Postgres upsert
+            cur.execute(
+                "INSERT INTO id_sequences (entity, counter) VALUES ('issue', 0) "
+                "ON CONFLICT (entity) DO NOTHING;"
+            )
+            cur.execute(
+                "INSERT INTO id_sequences (entity, counter) VALUES ('game', 0) "
+                "ON CONFLICT (entity) DO NOTHING;"
+            )
+        else:
+            # SQLite upsert
+            cur.execute(
+                "INSERT OR IGNORE INTO id_sequences (entity, counter) VALUES ('issue', 0);"
+            )
+            cur.execute(
+                "INSERT OR IGNORE INTO id_sequences (entity, counter) VALUES ('game', 0);"
+            )
+
+        db.commit()
+    finally:
+        cur.close()
 
 
 def init_db():
@@ -92,13 +136,14 @@ def init_db():
         )
         db.commit()
 
+        # make sure id_sequences exists + seeded (for padded IDs)
+        ensure_id_sequences(db)
+
         # light Postgres migrations (no-ops on SQLite)
         if is_postgres:
             try:
                 cur.execute(
-                    sql.SQL(
-                        "ALTER TABLE issues ADD COLUMN IF NOT EXISTS area TEXT;"
-                    )
+                    sql.SQL("ALTER TABLE issues ADD COLUMN IF NOT EXISTS area TEXT;")
                 )
                 cur.execute(
                     sql.SQL(
@@ -395,7 +440,7 @@ def handle_tpt_settings():
 
 # --- 7) API module registration (games + issues) ---------------------------
 register_game_routes(app, get_db)
-register_issue_routes(app, get_db)  # NEW
+register_issue_routes(app, get_db)
 
 
 # --- 8) Entrypoint ---------------------------------------------------------

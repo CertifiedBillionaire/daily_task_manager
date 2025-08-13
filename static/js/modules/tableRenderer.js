@@ -34,6 +34,19 @@ function formatDate(dateString) {
   }
 }
 
+// --- NEW CODE HERE: safe getter for equipment name/location ---
+function getEquipmentDisplay(issue) {
+  return (
+    issue.equipment_name ||
+    issue.equipment ||
+    issue.game_name ||
+    issue.equipment_display ||
+    issue.equipmentLocation ||
+    issue.equipment_location ||
+    ''
+  );
+}
+
 /**
  * Render the issues table.
  * @param {Array} issues - list of issue objects
@@ -42,6 +55,16 @@ export function renderIssuesTable(issues) {
   const tbody = document.getElementById('issuesTableBody');
   const noIssuesMessage = document.getElementById('noIssuesMessage');
   const tableHeaders = document.querySelectorAll('.issues-table th');
+  const headerLabels = Array.from(tableHeaders).map(th => th.textContent.trim());
+  console.log('[IssuesRenderer] header labels =', headerLabels);
+
+  if (Array.isArray(issues)) {
+    console.log('[IssuesRenderer] count =', issues.length);
+    if (issues.length > 0) {
+      console.log('[IssuesRenderer] sample #0 =', issues[0]);
+      console.log('[IssuesRenderer] keys #0 =', Object.keys(issues[0] || {}));
+    }
+  }
 
   if (!tbody || !noIssuesMessage || tableHeaders.length === 0) {
     console.error("Table Renderer: Required HTML elements not found for rendering.");
@@ -54,6 +77,9 @@ export function renderIssuesTable(issues) {
 
   // Render actual issues
   issues.forEach((issue, index) => {
+      if (index < 3) {
+      console.log(`[IssuesRenderer] row ${index}`, issue);
+    }
     const row = document.createElement('tr');
 
     // highlight immediate priority row
@@ -77,7 +103,7 @@ export function renderIssuesTable(issues) {
       issue.date_logged,
       issue.last_updated,
       issue.area,
-      issue.equipment_location,
+      getEquipmentDisplay(issue),
       issue.description,
       issue.notes,
       issue.status,
@@ -88,6 +114,10 @@ export function renderIssuesTable(issues) {
 
     cells.forEach((val, colIndex) => {
       const td = document.createElement('td');
+      if (colIndex === 5) {
+        td.style.background = '#fff7d6';          // light highlight so we see the column
+        td.setAttribute('data-equip-debug', String(val ?? '')); // let us inspect the exact value
+      }
 
       // Default: text content
       td.textContent = val ?? '';
@@ -151,4 +181,7 @@ export function renderIssuesTable(issues) {
   if (issues.length === 0 && DEFAULT_ROWS_TO_RENDER === 0) {
     noIssuesMessage.style.display = 'block';
   }
+
+  window.__lastIssues = issues;
+
 }
