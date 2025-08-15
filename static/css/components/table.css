@@ -22,7 +22,7 @@
 
 /* --- 2. Main Table Layout (Game Inventory Style) --- */
 .issues-table {
-    width: 100%;
+    width: auto;
     border-collapse: collapse;
     border-spacing: 0;
     table-layout: fixed; /* Crucial for alignment and resizing */

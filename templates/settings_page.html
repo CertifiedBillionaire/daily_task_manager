@@ -1,8 +1,8 @@
-{% extends 'base.html' %} {# This line tells Flask/Jinja2 to use your base.html as the layout foundation #}
+{% extends 'base.html' %}
 
-{% block title %}Settings - Arcade Manager{% endblock %} {# Sets the title for this specific page #}
+{% block title %}Settings - Arcade Manager{% endblock %}
 
-{% block content %} {# This block will contain the unique content for the Settings page #}
+{% block content %}
     <div class="content-header">
         <div class="content-header-left">
             <h2>App Settings</h2>
@@ -10,57 +10,67 @@
         </div>
     </div>
 
-    {# --- NEW CODE HERE --- #}
-    {# Main "Reset Options" collapsible section #}
     <section class="section-card collapsible-section">
         <div class="collapsible-header" id="resetOptionsToggle">
             <h3>Reset Options</h3>
             <i class="fas fa-chevron-down toggle-icon"></i>
         </div>
         <div class="collapsible-content">
-            {# Sub "Main Dashboard" collapsible section #}
             <div class="collapsible-section nested-section">
                 <div class="collapsible-header" id="mainDashboardResetToggle">
                     <h4>Main Dashboard</h4>
                     <i class="fas fa-chevron-down toggle-icon"></i>
                 </div>
                 <div class="collapsible-content">
-                    {# Button for Reset Opening Checklist Status #}
                     <button id="resetOpeningChecklistBtn" class="reset-button">
                         <i class="fas fa-undo"></i> Reset Opening Checklist Status
                     </button>
                     <p class="reset-description">This will un-gray the "Start Opening Checklist" card on the Dashboard.</p>
+                    <button id="resetIssueHubTableBtn" class="reset-button reset-red-button">
+                            <i class="fas fa-trash"></i> Reset Issue Hub Table
+                        </button>
+                        <p class="reset-description">This will permanently **delete all issues** from the system.</p>
                 </div>
             </div>
-            {# Other reset categories can go here later, e.g.:
-            <div class="collapsible-section nested-section">
-                <div class="collapsible-header" id="inventoryResetToggle">
-                    <h4>Inventory</h4>
-                    <i class="fas fa-chevron-down toggle-icon"></i>
-                </div>
-                <div class="collapsible-content">
-                    <button class="reset-button"><i class="fas fa-trash"></i> Clear All Inventory</button>
-                </div>
-            </div>
-            #}
         </div>
     </section>
-    {# --- END NEW CODE --- #}
 
     <section class="section-card" style="margin-top: 2rem;">
         <h3>General Settings</h3>
         <p>This section will contain other application-wide settings.</p>
-        {# Future settings like notification preferences, etc., will go here #}
     </section>
-
-    {# --- NEW CODE HERE --- #}
-    {# Custom styles for the collapsible sections and reset button #}
+    <hr>
+    <section class="section-card system-status-card" style="margin-top: 2rem;">
+        <h3>System Status</h3>
+        <p>Real-time status of critical application services.</p>
+        <div class="status-list">
+            <div class="status-item">
+                <span id="database-dot" class="status-dot unknown"></span>
+                <span class="status-label">Database:</span>
+                <span id="database-message" class="status-message">Checking...</span>
+            </div>
+            <div class="status-item">
+                <span id="storage-dot" class="status-dot unknown"></span>
+                <span class="status-label">Storage:</span>
+                <span id="storage-message" class="status-message">Checking...</span>
+            </div>
+            <div class="status-item">
+                <span id="issue-api-dot" class="status-dot unknown"></span>
+                <span class="status-label">Issue API:</span>
+                <span id="issue-api-message" class="status-message">Checking...</span>
+            </div>
+        </div>
+        <div class="button-row">
+            <button id="refreshStatusBtn" class="refresh-button">Refresh Status</button>
+        </div>
+    </section>
+    
     <style>
         .collapsible-section {
             margin-bottom: 1rem;
             border: 1px solid #e2e8f0;
             border-radius: 0.75rem;
-            overflow: hidden; /* Ensures content doesn't spill out when collapsed */
+            overflow: hidden;
         }
 
         .collapsible-header {
@@ -89,25 +99,25 @@
         }
 
         .collapsible-header.active .toggle-icon {
-            transform: rotate(180deg); /* Rotates the arrow when active */
+            transform: rotate(180deg);
         }
 
         .collapsible-content {
-            max-height: 0; /* Initially hidden */
+            max-height: 0;
             overflow: hidden;
             transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out;
-            padding: 0 1.5rem; /* No padding when collapsed */
+            padding: 0 1.5rem;
         }
 
         .collapsible-content.active {
-            max-height: 500px; /* Arbitrary large value to allow content to expand */
-            padding: 1.5rem; /* Apply padding when active */
+            max-height: 500px;
+            padding: 1.5rem;
         }
 
         .nested-section .collapsible-header {
-            background-color: #ffffff; /* Lighter background for nested header */
-            border-bottom: none; /* No border for nested header */
-            padding: 0.75rem 1rem; /* Smaller padding for nested header */
+            background-color: #ffffff;
+            border-bottom: none;
+            padding: 0.75rem 1rem;
         }
 
         .nested-section .collapsible-header h4 {
@@ -115,7 +125,7 @@
         }
 
         .nested-section .collapsible-content {
-            padding: 0 1rem; /* Smaller padding for nested content */
+            padding: 0 1rem;
         }
 
         .nested-section .collapsible-content.active {
@@ -123,7 +133,7 @@
         }
 
         .reset-button {
-            background-color: #dc3545; /* Red for reset actions */
+            background-color: #dc3545;
             color: white;
             padding: 0.75rem 1.25rem;
             border: none;
@@ -135,7 +145,7 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            margin-top: 1rem; /* Space from header */
+            margin-top: 1rem;
         }
 
         .reset-button:hover {
@@ -152,34 +162,140 @@
             color: #6c757d;
             margin-top: 0.5rem;
         }
+        
+        /* New styles for the System Status card */
+        .system-status-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .status-list {
+            margin-top: 15px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .status-dot.ok {
+            background-color: #4CAF50;
+        }
+
+        .status-dot.error {
+            background-color: #F44336;
+        }
+
+        .status-dot.unknown {
+            background-color: #9E9E9E;
+        }
+
+        .status-label {
+            font-weight: 600;
+            color: #1f2937;
+            margin-right: 5px;
+        }
+
+        .status-message {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .refresh-button {
+            background-color: #1a73e8;
+            color: white;
+            padding: 0.75rem 1.25rem;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background-color 0.2s ease-in-out;
+            margin-top: 1rem;
+            float: right;
+        }
+        
+        .refresh-button:hover {
+            background-color: #1764c9;
+        }
     </style>
 
-    {# JavaScript for handling collapsible sections #}
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Logic for collapsible sections
             function setupCollapsible(headerId, contentClass) {
                 const header = document.getElementById(headerId);
                 if (header) {
-                    // Find the content div immediately following the header
                     const content = header.nextElementSibling; 
                     if (content && content.classList.contains(contentClass)) {
                         header.addEventListener('click', () => {
                             header.classList.toggle('active');
                             content.classList.toggle('active');
                         });
-                    } else {
-                        console.warn(`Collapsible setup: Content element with class '${contentClass}' not found after header '${headerId}'.`);
                     }
-                } else {
-                    console.warn(`Collapsible setup: Header element with ID '${headerId}' not found.`);
+                }
+            }
+            setupCollapsible('resetOptionsToggle', 'collapsible-content');
+            setupCollapsible('mainDashboardResetToggle', 'collapsible-content');
+
+            // Logic for system status
+            const databaseDot = document.getElementById('database-dot');
+            const databaseMessage = document.getElementById('database-message');
+            const storageDot = document.getElementById('storage-dot');
+            const storageMessage = document.getElementById('storage-message');
+            const issueApiDot = document.getElementById('issue-api-dot');
+            const issueApiMessage = document.getElementById('issue-api-message');
+            const refreshStatusBtn = document.getElementById('refreshStatusBtn');
+
+            function updateStatusUI(dotElement, messageElement, status, message) {
+                dotElement.classList.remove('ok', 'error', 'unknown');
+                dotElement.classList.add(status);
+                messageElement.textContent = message;
+            }
+
+            async function fetchSystemStatus() {
+                updateStatusUI(databaseDot, databaseMessage, 'unknown', 'Checking...');
+                updateStatusUI(storageDot, storageMessage, 'unknown', 'Checking...');
+                updateStatusUI(issueApiDot, issueApiMessage, 'unknown', 'Checking...');
+
+                try {
+                    const response = await fetch('/api/health');
+                    const data = await response.json();
+
+                    if (data.services.database) {
+                        updateStatusUI(databaseDot, databaseMessage, data.services.database.status, data.services.database.message);
+                    }
+                    if (data.services.storage) {
+                        updateStatusUI(storageDot, storageMessage, data.services.storage.status, data.services.storage.message);
+                    }
+                    if (data.services.issue_api) {
+                        updateStatusUI(issueApiDot, issueApiMessage, data.services.issue_api.status, data.services.issue_api.message);
+                    }
+                } catch (error) {
+                    console.error('Error fetching system status:', error);
+                    updateStatusUI(databaseDot, databaseMessage, 'error', 'Failed to connect to health API.');
+                    updateStatusUI(storageDot, storageMessage, 'error', 'Failed to connect to health API.');
+                    updateStatusUI(issueApiDot, issueApiMessage, 'error', 'Failed to connect to health API.');
                 }
             }
 
-            // Setup main "Reset Options" collapsible
-            setupCollapsible('resetOptionsToggle', 'collapsible-content');
-            // Setup nested "Main Dashboard" collapsible
-            setupCollapsible('mainDashboardResetToggle', 'collapsible-content');
+            refreshStatusBtn.addEventListener('click', fetchSystemStatus);
+            fetchSystemStatus();
         });
     </script>
-    {# --- END NEW CODE --- #}
+    <script type="module" src="{{ url_for('static', filename='js/modules/settings_status.js') }}"></script>
+
 {% endblock content %}

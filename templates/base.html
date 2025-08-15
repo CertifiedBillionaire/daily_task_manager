@@ -27,6 +27,10 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/sections/game_inventory.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base/mobile.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/issue_hub.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/toast.css') }}">
+
+
 
 
 
@@ -43,19 +47,23 @@
                     </div>
                 </a>
                 <div class="info-widgets">
+                    </div>
+                <div class="header-actions">
+                    <button class="primary" data-open-add-issue>+ Add Issue</button>
+                    <button class="secondary" data-open-inspect>Inspect a Game</button>
                 </div>
             </div>
-            <div class="header-right">
+            
+            <div class="header-center">
                 <div class="search-bar">
                     <input type="text" id="mainSearchBar" placeholder="Search games or issues..." class="search-input">
                     <i class="fas fa-search search-icon"></i>
                 </div>
-                <button class="icon-button" id="notificationButton"><i class="fas fa-bell"></i></button>
-                <button class="icon-button" id="hamburger-menu"><i class="fas fa-bars"></i></button>
-                <button class="primary" data-open-add-issue>+ Add Issue</button>
-                <button class="secondary" data-open-inspect>Inspect a Game</button>
+            </div>
 
-        
+            <div class="header-right">
+                <button class="icon-button" id="notificationButton"><i class="fas fa-bell"></i></button>
+                <button class="icon-button"id="hamburger-menu"><i class="fas fa-bars"></i></button>
             </div>
         </header>
 
@@ -112,6 +120,9 @@
         }
     });
     </script>
+    
+    <script src="{{ url_for('static', filename='js/modules/issue_hub.js') }}"></script>
+
     {% block scripts %}{% endblock %}
 
 

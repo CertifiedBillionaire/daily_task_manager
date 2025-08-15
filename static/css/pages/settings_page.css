@@ -1,0 +1,52 @@
+/* Add these styles to your CSS file */
+
+.system-status-card {
+  margin-top: 30px;
+}
+
+.status-list {
+  margin-top: 15px;
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.status-dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 8px;
+  border: 1px solid rgba(0,0,0,0.1); /* Subtle border for the dot */
+}
+
+.status-dot.ok {
+  background-color: #4CAF50; /* Green */
+}
+
+.status-dot.error {
+  background-color: #F44336; /* Red */
+}
+
+.status-dot.unknown {
+  background-color: #9E9E9E; /* Gray for initial/checking state */
+}
+
+.status-label {
+  font-weight: 600;
+  color: var(--ink);
+  margin-right: 5px;
+}
+
+.status-message {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.button-row {
+  margin-top: 20px;
+  text-align: right; /* Align refresh button to the right */
+}

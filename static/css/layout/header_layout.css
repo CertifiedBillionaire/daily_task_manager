@@ -1,15 +1,14 @@
 /*
  * This file contains the styling for the main header of the application.
- * This is now a DESKTOP-ONLY layout.
+ * It uses a three-column flexbox layout for desktop.
  */
 .main-header {
     display: flex;
-    flex-wrap: nowrap;
-    justify-content: space-between;
+    justify-content: space-between; /* Pushes left, center, and right groups apart */
     align-items: center;
-    padding: 25px 35px; /* Default to desktop padding */
+    padding: 25px 35px;
     height: auto;
-    gap: 30px; /* Default to desktop gap */
+    gap: 30px;
     background-color: var(--card-background-color);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
     border-bottom: 1px solid var(--border-color-light);
@@ -18,16 +17,16 @@
     z-index: 1000;
 }
 
-.header-left, .header-right {
+/* === LEFT GROUP: Logo + Action Buttons === */
+.header-left {
     display: flex;
     align-items: center;
-    gap: 30px;
-    flex-wrap: nowrap;
+    gap: 30px; /* Space between logo and action buttons */
 }
-.header-right {
-    justify-content: flex-end;
-    flex-grow: 1;
-    gap: 25px; /* Default to desktop gap */
+
+.header-actions {
+    display: flex;
+    gap: 12px; /* Space between the two action buttons */
 }
 
 .logo-area {
@@ -43,7 +42,7 @@
 }
 
 .logo-image {
-    width: 180px; /* Default to desktop size */
+    width: 180px;
     height: auto;
     transition: transform 0.2s ease;
 }
@@ -52,67 +51,25 @@
     transform: scale(1.05);
 }
 
-.app-title {
-    font-size: 2em; /* Default to desktop size */
-    font-weight: 700;
-    color: var(--text-color-dark);
-    margin: 0;
-    letter-spacing: -0.5px;
-    white-space: nowrap;
-}
-
-.info-widgets {
+/* === CENTER GROUP: Search Bar === */
+.header-center {
+    flex-grow: 1; /* This is key: it tells the center to take all available space */
     display: flex;
-    gap: 30px; /* Default to desktop gap */
-    flex-wrap: nowrap;
-}
-
-.urgent-issue {
-    color: #F44336;
-    font-weight: 600;
-    animation: pulseRed 1.5s infinite alternate;
-    background-color: rgba(244, 67, 54, 0.15);
-    padding: 10px 15px; /* Default to desktop padding */
-    border-radius: var(--border-radius-small);
-    border: 1px solid rgba(244, 67, 54, 0.5);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: all 0.3s ease;
-}
-
-.urgent-issue.hide-badge {
-    display: none !important;
-}
-
-.urgent-issue i {
-    font-size: 1.2em; /* Default to desktop size */
-    color: #F44336;
-}
-
-.urgent-issue span {
-    font-size: 1.05em; /* Default to desktop size */
-}
-
-@keyframes pulseRed {
-    from { color: #F44336; transform: scale(1); }
-    to { color: #D32F2F; transform: scale(1.02); }
+    justify-content: center; /* This centers the search bar within the group */
 }
 
 .search-bar {
     position: relative;
-    width: 320px; /* Default to desktop size */
-    max-width: unset;
-    min-width: unset;
-    flex-grow: 1;
+    width: 100%;
+    max-width: 450px; /* Optional: prevents search bar from becoming too wide */
 }
 
 .search-input {
     width: 100%;
-    padding: 12px 18px 12px 45px; /* Default to desktop padding */
+    padding: 12px 18px 12px 45px;
     border: 1px solid var(--border-color);
     border-radius: 30px;
-    font-size: 1em; /* Default to desktop size */
+    font-size: 1em;
     background-color: var(--input-background-color);
     transition: all 0.3s ease;
     outline: none;
@@ -127,22 +84,29 @@
 
 .search-icon {
     position: absolute;
-    left: 18px; /* Default to desktop size */
+    left: 18px;
     top: 50%;
     transform: translateY(-50%);
     color: #AAAAAA;
-    font-size: 1.2em; /* Default to desktop size */
+    font-size: 1.2em;
+}
+
+/* === RIGHT GROUP: Utility Icons === */
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Space between bell and menu icons */
 }
 
 .icon-button {
     background: none;
     border: none;
-    padding: 12px; /* Default to desktop padding */
+    padding: 12px;
     border-radius: 50%;
     cursor: pointer;
     transition: background-color 0.25s ease, color 0.25s ease, transform 0.1s ease;
     color: #666666;
-    font-size: 1.3em; /* Default to desktop size */
+    font-size: 1.3em;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -157,72 +121,55 @@
 .icon-button:active {
     transform: translateY(0);
 }
-.header-right .primary,
-.header-right .secondary {
+
+/* === ACTION BUTTON STYLES (Updated) === */
+/* NOTE: We removed ".header-right" from these selectors so they apply correctly */
+.primary,
+.secondary {
   margin-left: 8px;
 }
-.header-right .primary { background:#2563eb; color:#fff; border:0; padding:8px 12px; border-radius:10px; font-weight:600; }
-.header-right .secondary { background:#10b981; color:#fff; border:0; padding:8px 12px; border-radius:10px; font-weight:600; }
-.header-right .primary:hover, .header-right .secondary:hover { filter: brightness(0.95); }
+.primary { background:#2563eb; color:#fff; border:0; padding:8px 12px; border-radius:10px; font-weight:600; }
+.secondary { background:#10b981; color:#fff; border:0; padding:8px 12px; border-radius:10px; font-weight:600; }
+.primary:hover, .secondary:hover { filter: brightness(0.95); }
 
 
 /* =================================================== */
 /* === MASTER MOBILE HEADER CONTROL (under 768px) === */
 /* =================================================== */
 @media (max-width: 768px) {
+    /* You may need to adjust the mobile layout separately if needed, */
+    /* as these changes primarily affect the desktop view. */
 
-    /* 1. THE ENTIRE HEADER BAR */
     .main-header {
-        display: flex;
-        align-items: center;
-
-        /* -- Try changing these -- */
-        padding: 15px 15px;  /* Space at top/bottom and left/right of the whole bar */
-        gap: 2px;          /* Space between the logo and the right-side content */
+        padding: 15px 15px;
+        gap: 10px;
     }
 
-    /* 2. THE LOGO */
-    .header-left {
-        flex-shrink: 0; /* Keeps the logo from being squished. Do not change. */
+    .header-actions {
+        display: none; /* Example: Hide action buttons on mobile to save space */
     }
+
+    .header-center {
+        flex-grow: 1;
+    }
+
+    .header-right {
+        gap: 5px;
+    }
+
     .logo-image {
-        /* -- Try changing this -- */
-        height: 42px; /* How tall the logo is */
+        height: 42px;
         width:auto
     }
 
-    /* 3. THE CONTAINER FOR SEARCH + ICONS */
-    .header-right {
-        flex-grow: 1;        /* Tells this container to fill all remaining space */
-        display: flex;
-        align-items: center;
-        min-width: 0;        /* CRITICAL LINE: Prevents content from getting cut off */
-
-        /* -- Try changing this -- */
-        gap: 25px;            /* Space BETWEEN the search bar and the icons */
-    }
-
-    /* 4. THE SEARCH BAR */
-    .search-bar {
-        flex-grow: 1;        /* Tells the search bar to fill the space in its container */
-        min-width: 0;        /* CRITICAL LINE: Allows the search bar to shrink */
-    }
     .search-input {
-        width: 100%;         /* Makes the text box fill the .search-bar container */
-
-        /* -- Try changing these for detailed control -- */
-        height: 38px;           /* The exact height of the search bar */
-        font-size: 12px;        /* How big the "Search games..." text is */
-        padding: 8px 15px;      /* Space inside the search bar */
-        border-radius: 50px;    /* How rounded the search bar is */
-        border: 1px solid #ddd;
-        padding-left: 40px;
+        height: 38px;
+        font-size: 12px;
+        padding: 8px 15px 8px 40px;
     }
 
-    /* 5. THE ICONS ON THE RIGHT (Bell, Profile) */
     .icon-button {
-        /* -- Try changing these -- */
-        font-size: 25px; /* How big the bell/user icons are */
-        padding: 10px;    /* The clickable area around the icons */
+        font-size: 22px;
+        padding: 8px;
     }
 }

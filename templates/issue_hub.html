@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page issue-hub">
+
+  <h1 style="margin:0 0 8px;">Issue Hub</h1>
+  <p style="margin:0 0 16px; opacity:.8;">Log problems fast. Two lanes: <b>Gameroom</b> and <b>Facility</b>.</p>
+
+  <div class="tabs">
+    <button id="tab-gameroom" class="tab active">Gameroom</button>
+    <button id="tab-facility" class="tab">Facility</button>
+  </div>
+
+  <div class="controls-row">
+    <label for="statusFilter">Status:</label>
+    <select id="statusFilter">
+      <option value="all" selected>All</option>
+      <option value="open">Open</option>
+      <option value="in_progress">In Progress</option>
+      <option value="resolved">Resolved</option>
+      <option value="archived">Archived</option>
+    </select>
+    <button id="refreshBtn">Refresh</button>
+  </div>
+
+  <div class="card new-issue-card">
+    <h3>New Issue</h3>
+    <form id="newIssueForm">
+      <input type="hidden" id="categoryInput" name="category" value="gameroom" />
+      <div class="form-grid">
+        <div>
+          <label>Title *</label>
+          <input id="titleInput" required placeholder="Short name (ex: Skee-Ball #3 jam)">
+        </div>
+        <div>
+          <label>Location</label>
+          <input id="locationInput" placeholder="Where is it?">
+        </div>
+        <div>
+          <label>Priority</label>
+          <select id="priorityInput">
+            <option value="low">low</option>
+            <option value="medium" selected>medium</option>
+            <option value="high">high</option>
+          </select>
+        </div>
+        <div>
+          <label>Assignee</label>
+          <input id="assigneeInput" placeholder="Who’s on it?">
+        </div>
+        <div>
+          <label>Reporter</label>
+          <input id="reporterInput" placeholder="Who logged it?">
+        </div>
+        <div class="full-width">
+          <label>Details</label>
+          <textarea id="detailsInput" rows="3" placeholder="Extra info…"></textarea>
+        </div>
+      </div>
+      <div class="button-row">
+        <button type="submit">Add Issue</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="card issues-card">
+    <h3>Issues</h3>
+    <div class="table-scroll-wrapper">
+      <div class="issues-grid-container">
+        <div class="issues-grid-header">
+          <div class="header-item">Issue ID</div>
+          <div class="header-item sortable-header" data-sort="priority">Priority</div>
+          <div class="header-item sortable-header" data-sort="created_at">Date Added</div>
+          <div class="header-item sortable-header" data-sort="updated_at">Last Update</div>
+          <div class="header-item sortable-header" data-sort="category">Area</div>
+          <div class="header-item sortable-header" data-sort="location">Equipment Name</div>
+          <div class="header-item sortable-header" data-sort="title">Problem Description</div>
+          <div class="header-item">Notes</div>
+          <div class="header-item sortable-header" data-sort="status">Status</div>
+          <div class="header-item">Target Date</div>
+          <div class="header-item sortable-header" data-sort="assignee">Assigned Employee</div>
+        </div>
+        <div id="issuesBody" class="issues-grid-body">
+          <div class="grid-row">
+            <div class="grid-cell" style="grid-column: 1 / -1; padding:8px; opacity:.7; text-align: center;">No items yet.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+
+  
+</div>
+{% endblock %}

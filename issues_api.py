@@ -2,22 +2,17 @@
 # ARCADE MANAGER - ISSUES API
 # REST endpoints for Issues (list/create/update/delete, helpers).
 #
-# What this file does:
+# Routes:
 # - GET  /api/issues
-# - POST /api/issues        (creates padded ID via id_sequences)
+# - POST /api/issues              (creates padded ID via id_sequences)
 # - PUT  /api/issues/<id>
 # - DELETE /api/issues/<id>
+# - POST /api/issues/reset        (clears issuehub_issues + issues)
 # - GET  /api/urgent_issues_count
 # - GET  /api/equipment_locations
-#
-# Connected files:
-# - app.py              (register_issue_routes)
-# - static/js/*         (dashboard + issues UI)
-# - DB: issues, id_sequences tables
 # =========================================================================
 
 from flask import jsonify, request
-from psycopg2 import sql
 
 def register_issue_routes(app, get_db):
 
@@ -121,7 +116,7 @@ def register_issue_routes(app, get_db):
             finally:
                 cur.close()
 
-        # POST
+        # POST (create)
         try:
             data = request.get_json(force=True) or {}
             description = data.get('description')
@@ -271,3 +266,38 @@ def register_issue_routes(app, get_db):
         except Exception as e:
             print(f"ERROR: equipment_locations failed: {e}")
             return jsonify({"items": [], "error": "failed"}), 500
+
+    # --- POST /api/issues/reset -------------------------------------------
+    @app.route('/api/issues/reset', methods=['POST'])
+    def reset_issues():
+        """
+        Clears BOTH new Issue Hub table and legacy issues table.
+        Frontend Settings button calls this route.
+        """
+        db = get_db()
+        cur = db.cursor()
+        try:
+            # Try to clear Issue Hub table
+            try:
+                cur.execute("DELETE FROM issuehub_issues;")
+            except Exception:
+                db.rollback()
+                cur = db.cursor()  # reset cursor if table missing
+
+            # Try to clear legacy Issues table
+            try:
+                cur.execute("DELETE FROM issues;")
+            except Exception:
+                db.rollback()
+                cur = db.cursor()
+
+            db.commit()
+            return jsonify({"success": True, "message": "All issues cleared."}), 200
+        except Exception as e:
+            db.rollback()
+            return jsonify({"success": False, "message": str(e)}), 500
+        finally:
+            try:
+                cur.close()
+            except Exception:
+                pass
