@@ -247,6 +247,86 @@ def issuehub_list():
     finally:
         cur.close()
 
+@issue_hub_bp.route("/api/issuehub/by_game", methods=["GET"])
+def issuehub_by_game():
+    """
+    GET /api/issuehub/by_game?location=<game name>&status=all|open|in_progress|resolved|archived|trash
+    - Only shows category='gameroom'
+    - status default = all (open + in_progress)
+    - trash shows only deleted items
+    """
+    db = _get_db()
+
+    # tiny safety: auto-archive old resolved first
+    try:
+        auto_archive_resolved(db, 14)
+    except Exception:
+        pass
+
+    cur = db.cursor()
+    try:
+        location = (request.args.get("location") or "").strip()
+        status = (request.args.get("status") or "all").strip().lower()
+        if not location:
+            return jsonify({"items": []})  # no game picked yet
+
+        base = (
+            "SELECT id, category, title, details, location, priority, status, resolution, "
+            "reporter, assignee, target_date, created_at, updated_at, resolved_at, deleted_at "
+            "FROM issuehub_issues"
+        )
+        where = []
+        params = []
+
+        # only gameroom items
+        where.append("category = %s" if _is_pg(db) else "category = ?")
+        params.append("gameroom")
+
+        # match exact location (you type it from the games list)
+        where.append("LOWER(TRIM(COALESCE(location,''))) = " + ("%s" if _is_pg(db) else "?"))
+        params.append(location.lower().strip())
+
+        # trash vs normal
+        if status == "trash":
+            where.append("deleted_at IS NOT NULL")
+        else:
+            where.append("deleted_at IS NULL")
+            if status == "all":
+                where.append("status IN ('open','in_progress')")
+            else:
+                where.append("status = " + ("%s" if _is_pg(db) else "?"))
+                params.append(status)
+
+        if where:
+            base += " WHERE " + " AND ".join(where)
+        base += " ORDER BY created_at DESC"
+
+        cur.execute(base, tuple(params))
+        rows = cur.fetchall()
+
+        items = []
+        for r in rows:
+            items.append({
+                "id": r[0],
+                "category": r[1],
+                "title": r[2],
+                "details": r[3],
+                "notes": r[3],  # alias for frontend
+                "location": r[4],
+                "priority": r[5],
+                "status": r[6],
+                "resolution": r[7],
+                "reporter": r[8],
+                "assignee": r[9],
+                "target_date": (str(r[10]) if r[10] else None),
+                "created_at": str(r[11]),
+                "updated_at": str(r[12]),
+                "resolved_at": (str(r[13]) if r[13] else None),
+                "deleted_at": (str(r[14]) if r[14] else None),
+            })
+        return jsonify({"items": items})
+    finally:
+        cur.close()
 
 
 
@@ -262,33 +342,96 @@ def issuehub_create():
       "priority": "low|medium|high" (default medium),
       "reporter": "text?",
       "assignee": "text?",
-      "target_date": "YYYY-MM-DD" or ISO datetime (optional)
+      "status": "open" | "in_progress" (optional; defaults to open),
+      "target_date": "YYYY-MM-DD" or ISO datetime (optional),
+      "allow_duplicate": true|false  <-- if true, skip dupe check
     }
     """
+    import re, unicodedata, difflib
+    from datetime import datetime
+
+    def _key(s: str) -> str:
+        if not s:
+            return ""
+        s = unicodedata.normalize("NFKD", s)
+        s = s.encode("ascii", "ignore").decode("ascii")
+        s = s.lower().strip()
+        s = re.sub(r'\b(?:no\.?|num(?:ber)?)\s*([0-9]+)\b', r'\1', s)
+        s = re.sub(r'#\s*([0-9]+)\b', r'\1', s)
+        s = re.sub(r'[^a-z0-9]+', ' ', s)
+        s = re.sub(r'\s+', '', s)
+        return s
+
+    def _similar(a: str, b: str) -> bool:
+        if not a or not b:
+            return False
+        if a == b:
+            return True
+        if (len(a) >= 4 and len(b) >= 4) and (a in b or b in a):
+            return True
+        import difflib as _dl
+        return _dl.SequenceMatcher(None, a, b).ratio() >= 0.92
+
     db = _get_db()
     data = request.get_json(silent=True) or {}
 
-    # minimal validation
+    # ---- validate + normalize ----
     category = (data.get("category") or "").strip().lower()
-    title = (data.get("title") or "").strip()
+    title    = (data.get("title") or "").strip()
     if category not in ("gameroom", "facility"):
         return jsonify({"error": "category must be 'gameroom' or 'facility'"}), 400
     if not title:
         return jsonify({"error": "title is required"}), 400
 
-    # normalize fields
     raw_details = data.get("notes", data.get("details", ""))
-    details = (raw_details or "").strip() or None
+    details  = (raw_details or "").strip() or None
     location = (data.get("location") or "").strip() or None
+
     priority = (data.get("priority") or "medium").strip().lower()
     if priority not in ("low", "medium", "high"):
         priority = "medium"
+
     reporter = (data.get("reporter") or "").strip() or None
     assignee = (data.get("assignee") or "").strip() or None
 
-    raw_td = (data.get("target_date") or "").strip()
-    target_date = raw_td or None  # let DB parse timestamps; blank -> None
+    status = (data.get("status") or "open").strip().lower()
+    if status not in ("open", "in_progress"):
+        status = "open"
 
+    raw_td = (data.get("target_date") or "").strip()
+    target_date = raw_td or None  # DB parses; blank -> NULL
+
+    allow_duplicate = bool(data.get("allow_duplicate", False))
+
+    # ---- improved duplicate stopper (unless overridden) ----
+    if not allow_duplicate:
+        t_key = _key(title)
+        l_key = _key(location or "")
+
+        ph = "%s" if _is_pg(db) else "?"
+        cur = db.cursor()
+        try:
+            cur.execute(
+                f"""
+                SELECT id, title, COALESCE(location,'')
+                FROM issuehub_issues
+                WHERE deleted_at IS NULL
+                  AND status IN ('open','in_progress')
+                  AND category = {ph}
+                """,
+                (category,)
+            )
+            for existing_id, ex_title, ex_loc in cur.fetchall():
+                if _key(ex_loc) == l_key and _similar(_key(ex_title), t_key):
+                    return jsonify({
+                        "error": "duplicate_issue",
+                        "message": "A very similar issue for this equipment is already open.",
+                        "existing_id": existing_id
+                    }), 409
+        finally:
+            cur.close()
+
+    # ---- insert ----
     now = datetime.utcnow()
     new_id = next_id(db)
 
@@ -301,10 +444,10 @@ def issuehub_create():
                 (id, category, title, details, location, priority, status, resolution,
                  reporter, assignee, target_date, created_at, updated_at, resolved_at, deleted_at)
                 VALUES
-                (%s,%s,%s,%s,%s,%s,'open',NULL,%s,%s,%s,%s,%s,NULL,NULL)
+                (%s,%s,%s,%s,%s,%s,%s,NULL,%s,%s,%s,%s,%s,NULL,NULL)
                 """,
                 (new_id, category, title, details, location, priority,
-                 reporter, assignee, target_date, now, now),
+                 status, reporter, assignee, target_date, now, now),
             )
         else:
             cur.execute(
@@ -313,10 +456,10 @@ def issuehub_create():
                 (id, category, title, details, location, priority, status, resolution,
                  reporter, assignee, target_date, created_at, updated_at, resolved_at, deleted_at)
                 VALUES
-                (?,?,?,?,?,?,'open',NULL,?,?,?, ?, ?, NULL, NULL)
+                (?,?,?,?,?,?,?,NULL,?,?,?, ?, ?, NULL, NULL)
                 """,
                 (new_id, category, title, details, location, priority,
-                 reporter, assignee, target_date, now, now),
+                 status, reporter, assignee, target_date, now, now),
             )
         db.commit()
         return jsonify({
@@ -326,7 +469,7 @@ def issuehub_create():
             "details": details,
             "location": location,
             "priority": priority,
-            "status": "open",
+            "status": status,
             "resolution": None,
             "reporter": reporter,
             "assignee": assignee,
@@ -341,6 +484,9 @@ def issuehub_create():
         return jsonify({"error": f"failed to create: {e}"}), 500
     finally:
         cur.close()
+
+
+
 
 
 @issue_hub_bp.route("/api/issuehub/update_status", methods=["POST"])

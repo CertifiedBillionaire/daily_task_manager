@@ -1,178 +1,156 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="page issue-hub">
+<div class="issue-hub">
+  <div class="page">
 
-  <h1 style="margin:0 0 8px;">Issue Hub</h1>
-  <p style="margin:0 0 16px; opacity:.8;">Log problems fast. Two lanes: <b>Gameroom</b> and <b>Facility</b>.</p>
+    <h1 style="margin:0 0 8px;">Issue Hub</h1>
+    <p style="margin:0 0 16px; opacity:.8;">Log problems fast. Two lanes: <b>Gameroom</b> and <b>Facility</b>.</p>
 
-  <div class="tabs">
-    <button id="tab-gameroom" class="tab active">Gameroom</button>
-    <button id="tab-facility" class="tab">Facility</button>
-    <button id="tab-games" class="tab">Games</button>
-  </div>
-
-  <div class="controls-row">
-    <label for="statusFilter">Status:</label>
-    <select id="statusFilter">
-      <option value="all" selected>All</option>
-      <option value="open">Open</option>
-      <option value="in_progress">In Progress</option>
-      <option value="resolved">Resolved</option>
-      <option value="archived">Archived</option>
-      <option value="trash">Trash</option>
-    </select>
-    <button id="refreshBtn">Refresh</button>
-  </div>
-
-  <div class="card collapsible-section">
-    <div class="collapsible-header" id="newIssueToggle">
-      <h3>New Issue</h3>
-      <i class="fas fa-chevron-down toggle-icon"></i>
+    <!-- Tabs -->
+    <div class="tabs">
+      <button id="tab-gameroom" class="tab active">Gameroom</button>
+      <button id="tab-facility" class="tab">Facility</button>
+      <button id="tab-games" class="tab">Games</button>
     </div>
-    <div class="collapsible-content">
-      <form id="newIssueForm">
-        <input type="hidden" id="categoryInput" name="category" value="gameroom" />
-        <div class="form-grid">
-          <div>
-            <label>Problem Description *</label>
-            <input id="problemDescriptionInput" required placeholder="Short name (ex: Skee-Ball #3 jam)">
-          </div>
+
+    <!-- Status + Refresh -->
+    <div class="controls-row">
+      <label for="statusFilter">Status:</label>
+      <select id="statusFilter">
+        <option value="all" selected>All</option>
+        <option value="open">Open</option>
+        <option value="in_progress">In Progress</option>
+        <option value="resolved">Resolved</option>
+        <option value="archived">Archived</option>
+        <option value="trash">Trash</option>
+      </select>
+      <button id="refreshBtn">Refresh</button>
+    </div>
+
+    <!-- Games filter (only used on the Games tab; JS shows/hides) -->
+    <div id="gamesFilter" style="display:none; gap:8px; align-items:center; margin:8px 0 16px;">
+      <label for="gamesFilterInput">Game:</label>
+      <input
+        id="gamesFilterInput"
+        placeholder="Start typing a game…"
+        list="games-list"
+        autocomplete="off"
+        style="min-width:240px;">
+      <button id="gamesFilterGo" type="button">View</button>
+    </div>
+
+    <!-- New Issue -->
+    <div class="card collapsible-section">
+      <div class="collapsible-header" id="newIssueToggle">
+        <h3>New Issue</h3>
+        <i class="fas fa-chevron-down toggle-icon"></i>
+      </div>
+      <div class="collapsible-content">
+        <form id="newIssueForm" novalidate>
+          <input type="hidden" id="categoryInput" name="category" value="gameroom" />
+          <div class="form-grid">
             <div>
-              <label>Equipment Name</label>
+              <label for="problemDescriptionInput">Problem Description *</label>
+              <input id="problemDescriptionInput" type="text" required placeholder="Short name (ex: Skee-Ball #3 jam)">
+            </div>
+
+            <div>
+              <label for="equipmentNameInput">Equipment Name</label>
               <input
                 id="equipmentNameInput"
+                type="text"
                 placeholder="Select or type a game name"
                 list="games-list"
                 autocomplete="off">
-
-              <datalist id="games-list"></datalist>
             </div>
-          <div>
-            <label>Priority</label>
-            <select id="priorityInput">
-              <option value="low">low</option>
-              <option value="medium" selected>medium</option>
-              <option value="high">high</option>
-            </select>
-          </div>
-          <div>
-            <label>Status</label>
-            <select id="newStatusInput">
-              <option value="open" selected>Open</option>
-              <option value="in_progress">In Progress</option>
-            </select>
-          </div>
+
             <div>
-              <label>Assigned Employee</label>
+              <label for="priorityInput">Priority</label>
+              <select id="priorityInput">
+                <option value="low">low</option>
+                <option value="medium" selected>medium</option>
+                <option value="high">high</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="newStatusInput">Status</label>
+              <select id="newStatusInput">
+                <option value="open" selected>Open</option>
+                <option value="in_progress">In Progress</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="assignedEmployeeInput">Assigned Employee</label>
               <select id="assignedEmployeeInput">
                 <option value="">— Unassigned —</option>
               </select>
             </div>
-          <div>
-            <label>Target Date</label>
-            <input id="targetDateInput" type="date">
-          </div>
-          <div class="full-width">
-            <label>Notes</label>
-            <textarea id="notesInput" rows="3" placeholder="Extra info…"></textarea>
-          </div>
-        </div>
-        <div class="button-row">
-          <button type="submit">Add Issue</button>
-        </div>
-      </form>
-    </div>
-  </div>
 
-  <div class="card issues-card">
-    <h3>Issues</h3>
-    <div class="table-scroll-wrapper">
-      <div class="issues-grid-container">
-        <div class="issues-grid-header">
-          <div class="header-item">Issue ID</div>
-          <div class="header-item sortable-header" data-sort="priority">Priority</div>
-          <div class="header-item sortable-header" data-sort="created_at">Date Added</div>
-          <div class="header-item sortable-header" data-sort="updated_at">Last Update</div>
-          <div class="header-item sortable-header" data-sort="category">Area</div>
-          <div class="header-item sortable-header" data-sort="location">Equipment Name</div>
-          <div class="header-item sortable-header" data-sort="title">Problem Description</div>
-          <div class="header-item">Notes</div>
-          <div class="header-item sortable-header" data-sort="status">Status</div>
-          <div class="header-item">Target Date</div>
-          <div class="header-item sortable-header" data-sort="assignee">Assigned Employee</div>
-          <div class="header-item">Actions</div>
-        </div>
-        <div id="issuesBody" class="issues-grid-body">
-          <div class="grid-row">
-            <div class="grid-cell" style="grid-column: 1 / -1; padding:8px; opacity:.7; text-align: center;">No items yet.</div>
+            <div>
+              <label for="targetDateInput">Target Date</label>
+              <input id="targetDateInput" type="date" placeholder="mm/dd/yyyy">
+            </div>
+
+            <div class="full-width">
+              <label for="notesInput">Notes</label>
+              <textarea id="notesInput" rows="3" placeholder="Extra info…"></textarea>
+            </div>
+          </div>
+
+          <div class="button-row" style="display:flex; justify-content:flex-end; gap:10px;">
+            <button type="submit">Add Issue</button>
+          </div>
+
+          <!-- Shared datalist for game names (used by Equipment + Games filter) -->
+          <datalist id="games-list"></datalist>
+        </form>
+      </div>
+    </div>
+
+    <!-- Issues Table -->
+    <div class="card issues-card">
+      <h3>Issues</h3>
+      <div class="table-scroll-wrapper">
+        <div class="issues-grid-container">
+          <div class="issues-grid-header">
+            <div class="header-item">Issue ID</div>
+            <div class="header-item sortable-header" data-sort="priority">Priority</div>
+            <div class="header-item sortable-header" data-sort="created_at">Date Added</div>
+            <div class="header-item sortable-header" data-sort="updated_at">Last Update</div>
+            <div class="header-item sortable-header" data-sort="category">Area</div>
+            <div class="header-item sortable-header" data-sort="location">Equipment Name</div>
+            <div class="header-item sortable-header" data-sort="title">Problem Description</div>
+            <div class="header-item">Notes</div>
+            <div class="header-item sortable-header" data-sort="status">Status</div>
+            <div class="header-item">Target Date</div>
+            <div class="header-item sortable-header" data-sort="assignee">Assigned Employee</div>
+            <div class="header-item">Actions</div>
+          </div>
+          <div id="issuesBody" class="issues-grid-body">
+            <div class="grid-row">
+              <div class="grid-cell" style="grid-column: 1 / -1; padding:8px; opacity:.7; text-align:center;">No items yet.</div>
+            </div>
           </div>
         </div>
       </div>
+    </div>
+
+  </div><!-- /.page -->
+</div><!-- /.issue-hub -->
+
+<!-- Full Note Popup (used by JS module) -->
+<div id="noteModal" class="note-modal" aria-hidden="true">
+  <div class="note-modal__backdrop" data-close="1"></div>
+  <div class="note-modal__dialog" role="dialog" aria-modal="true" aria-label="Full note">
+    <div class="note-modal__body" id="noteModalBody"></div>
+    <div class="note-modal__actions">
+      <button id="noteModalClose" type="button">Close</button>
     </div>
   </div>
 </div>
 
-  <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('newIssueForm');
-    if (!form) return;
+<script type="module" src="{{ url_for('static', filename='js/modules/rollover_nudge.js') }}"></script>
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      // build payload using your actual input IDs
-      const body = {
-        title:        (document.getElementById('problemDescriptionInput')?.value || '').trim(),
-        priority:      document.getElementById('priorityInput')?.value || 'medium',
-        status:        document.getElementById('newStatusInput')?.value || 'open',
-        category:      document.getElementById('categoryInput')?.value || 'gameroom',
-        location:     (document.getElementById('equipmentNameInput')?.value || '').trim(),
-        notes:        (document.getElementById('notesInput')?.value || '').trim(),
-        target_date:   document.getElementById('targetDateInput')?.value || null,
-        assignee:     (document.getElementById('assignedEmployeeInput')?.value || '').trim(),
-      };
-
-      try {
-        const res = await fetch('/api/issues', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body),
-        });
-
-        if (!res.ok) {
-          let msg = 'Add failed';
-          try { const err = await res.json(); if (err?.error) msg = err.error; } catch {}
-          alert(msg);
-          return;
-        }
-
-        // clear the form
-        form.reset();
-
-        // try to refresh the table (works whether function is global or module)
-        if (window.refreshIssuesTableData) {
-          window.refreshIssuesTableData();
-        } else {
-          try {
-            const mod = await import('/static/js/modules/issuesTable.js');
-            if (mod?.refreshIssuesTableData) mod.refreshIssuesTableData();
-          } catch (_) {}
-        }
-      } catch (err) {
-        console.error(err);
-        alert('Network error while adding issue.');
-      }
-    });
-  });
-  </script>
-  <!-- Full Note Popup -->
-  <div id="noteModal" class="note-modal" aria-hidden="true">
-    <div class="note-modal__backdrop" data-close="1"></div>
-    <div class="note-modal__dialog" role="dialog" aria-modal="true" aria-label="Full note">
-      <div class="note-modal__body" id="noteModalBody"></div>
-      <div class="note-modal__actions">
-        <button id="noteModalClose" type="button">Close</button>
-      </div>
-    </div>
-  </div>
 {% endblock %}

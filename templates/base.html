@@ -1,132 +1,128 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Arcade Manager{% endblock %}</title>    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/pe-icon-7-weather.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/pe-icon-7-helper.css') }}">
-    
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/base/global.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/base/scrollbars.css') }}">
-    
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/layout/main_layout.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/layout/header_layout.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/layout/sidebar_layout.css') }}">
-    
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/cards.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/popups.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/forms.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/table.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/issues_table_menu.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/issues_toolbar.css') }}">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}Arcade Manager{% endblock %}</title>
 
-    
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/sections/dashboard_content.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/sections/game_inventory.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/base/mobile.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/issue_hub.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/toast.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pe-icon-7-weather.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pe-icon-7-helper.css') }}">
 
+  <!-- Base -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base/global.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base/scrollbars.css') }}">
 
+  <!-- Layout -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/layout/main_layout.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/layout/header_layout.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/layout/sidebar_layout.css') }}">
 
+  <!-- Components -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components/cards.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components/popups.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components/forms.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components/table.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components/issues_table_menu.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components/issues_toolbar.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components/toast.css') }}">
+  
 
+  <!-- Sections / Pages -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/sections/dashboard_content.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/sections/game_inventory.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/issue_hub.css') }}">
 
-
-
-
+  <!-- Mobile overrides last -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base/mobile.css') }}">
 </head>
+
 <body>
-    <div class="app-container">
-        <header class="main-header">
-            <div class="header-left">
-                <a href="/" class="logo-link">
-                    <div class="logo-area">
-                        <img src="{{ url_for('static', filename='images/STRUXEN.png') }}" alt="Chuck E. Cheese Logo" class="logo-image">
-                    </div>
-                </a>
-                <div class="info-widgets">
-                    </div>
-                <div class="header-actions">
-                    <button class="primary" data-open-add-issue>+ Add Issue</button>
-                    <button class="secondary" data-open-inspect>Inspect a Game</button>
-                </div>
-            </div>
-            
-            <div class="header-center">
-                <div class="search-bar">
-                    <input type="text" id="mainSearchBar" placeholder="Search games or issues..." class="search-input">
-                    <i class="fas fa-search search-icon"></i>
-                </div>
-            </div>
-
-            <div class="header-right">
-                <button class="icon-button" id="notificationButton"><i class="fas fa-bell"></i></button>
-                <button class="icon-button"id="hamburger-menu"><i class="fas fa-bars"></i></button>
-            </div>
-        </header>
-
-        <div class="main-layout-area">
-            <main class="main-content">
-                {% block content %}{% endblock %}
-            </main>
+  <div class="app-container">
+    <header class="main-header">
+      <div class="header-left">
+        <a href="/" class="logo-link">
+          <div class="logo-area">
+            <img src="{{ url_for('static', filename='images/STRUXEN.png') }}" alt="Chuck E. Cheese Logo" class="logo-image">
+          </div>
+        </a>
+        <div class="info-widgets"></div>
+        <div class="header-actions">
+          <button class="primary" data-open-add-issue>+ Add Issue</button>
+          <button class="secondary" data-open-inspect>Inspect a Game</button>
         </div>
-        {% include 'sidebar.html' %}
-        {% include 'modals/custom_popup.html' %}
+      </div>
 
-        {% include 'modals/issue_summary_popup.html' %}
+      <div class="header-center">
+        <div class="search-bar">
+          <input type="text" id="mainSearchBar" placeholder="Search games or issues..." class="search-input">
+          <i class="fas fa-search search-icon"></i>
+        </div>
+      </div>
 
-        {% include 'modals/opening_checklist_modal.html' %}
-        {% include "modals/add_issue_quick.html" %}
-        {% include "modals/inspect_game.html" %}
+      <div class="header-right">
+        <button class="icon-button" id="notificationButton"><i class="fas fa-bell"></i></button>
+        <button class="icon-button" id="hamburger-menu"><i class="fas fa-bars"></i></button>
+      </div>
+    </header>
 
+    <!-- IMPORTANT: Sidebar must be inside .main-layout-area for flex layout -->
+    <div class="main-layout-area">
+      {% include 'sidebar.html' %}
+      <main class="main-content">
+        {% block content %}{% endblock %}
+      </main>
+    </div>
 
+    <!-- Modals (can live inside app-container so z-index stacking is simpler) -->
+    {% include 'modals/custom_popup.html' %}
+    {% include 'modals/issue_summary_popup.html' %}
+    {% include 'modals/opening_checklist_modal.html' %}
+    {% include "modals/add_issue_quick.html" %}
+    {% include "modals/inspect_game.html" %}
+  </div>
 
-            
+  <!-- Scripts -->
+  <script type="module" src="{{ url_for('static', filename='js/app.js') }}"></script>
 
-    
-</div>
-    
-    <script type="module" src="{{ url_for('static', filename='js/app.js') }}"></script>
-    <div id="toast-container"></div>
-    <script type="module">
+  <div id="toast-container"></div>
+
+  <script type="module">
     import { initAddIssueQuick } from "/static/js/modules/addIssueQuick.js";
     async function getGames(){ const r = await fetch('/api/games'); return await r.json(); }
     initAddIssueQuick({
-        openButtonSelector: '[data-open-add-issue]',
-        gamesProvider: getGames,
-        onSaved: (issue)=>{
+      openButtonSelector: '[data-open-add-issue]',
+      gamesProvider: getGames,
+      onSaved: (issue)=>{
         console.log('Saved issue:', issue);
         if (window.refreshIssuesTableData) window.refreshIssuesTableData();
-        }
+      }
     });
-    </script>
+  </script>
 
-    <script type="module">
+  <script type="module">
     import { initInspectGame } from "/static/js/modules/inspectGame.js";
-
     async function getGames(){
-        const r = await fetch('/api/games');
-        return await r.json();
+      const r = await fetch('/api/games');
+      return await r.json();
     }
-
     initInspectGame({
-        openSelector: '[data-open-inspect]',
-        gamesProvider: getGames,
-        onIssueSaved: (issue)=>{
+      openSelector: '[data-open-inspect]',
+      gamesProvider: getGames,
+      onIssueSaved: (issue)=>{
         console.log('Inspect saved issue:', issue);
         if (window.refreshIssuesTableData) window.refreshIssuesTableData();
-        }
+      }
     });
-    </script>
-    
-    <script src="{{ url_for('static', filename='js/modules/issue_hub.js') }}"></script>
+  </script>
+  <script type="module" src="{{ url_for('static', filename='js/modules/notifications.js') }}"></script>
 
-    {% block scripts %}{% endblock %}
+  <!-- If issue_hub.js uses ES modules, change to type="module" -->
+  <script src="{{ url_for('static', filename='js/modules/issue_hub.js') }}"></script>
+  <script type="module" src="{{ url_for('static', filename='js/pages/issueHubForm.js') }}"></script>
 
-
+  {% block scripts %}{% endblock %}
 </body>
 </html>

@@ -30,6 +30,7 @@ from games_api import register_game_routes
 from issues_api import register_issue_routes
 # --- REFINED IMPORT NAME ---
 from issue_hub_bp import register_issue_hub_blueprint
+from flask import render_template
 
 # --- 2) App setup ----------------------------------------------------------
 app = Flask(__name__)
@@ -454,7 +455,9 @@ def handle_tpt_settings():
         return jsonify({"error": f"Failed to save settings: {e}"}), 500
     finally:
         cur.close()
-
+@app.route("/issuehub")
+def issuehub():
+    return render_template("issue_hub.html")
 # --- 7) Module Registration ------------------------------------------------
 # Register page blueprints
 register_issue_hub_blueprint(app, get_db, ensure_id_sequences) # Pass the functions here
