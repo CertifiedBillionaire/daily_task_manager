@@ -41,12 +41,14 @@ Clean directory listing for: /Users/dattboyrobert21/daily_task_manager
                 📄 table.css
                 📄 table.css.backup
                 📄 table_toolbar.css
+                📄 toast.css
             📂 layout/
                 📄 header_layout.css
                 📄 main_layout.css
                 📄 sidebar_layout.css
             📂 pages/
                 📄 issue_hub.css
+                📄 settings_page.css
             📂 sections/
                 📄 dashboard_content.css
                 📄 dashboard_sections.css
@@ -57,6 +59,7 @@ Clean directory listing for: /Users/dattboyrobert21/daily_task_manager
             📄 Pe-icon-7-weather.ttf
             📄 Pe-icon-7-weather.woff
         📂 images/
+            📄 STRUXEN.png
             📄 chuck_e_cheese_logo.png
             📄 gradient_background.jpg
             📄 gradient_side_background.jpg
@@ -97,6 +100,7 @@ Clean directory listing for: /Users/dattboyrobert21/daily_task_manager
                 📄 pmCard.js
                 📄 safetySecurityChecklist.js
                 📄 settings.js
+                📄 settings_status.js
                 📄 sidebar.js
                 📄 tableColumnManager.js
                 📄 tableRenderer.js

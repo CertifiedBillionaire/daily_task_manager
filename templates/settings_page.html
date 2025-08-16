@@ -39,6 +39,19 @@
         <h3>General Settings</h3>
         <p>This section will contain other application-wide settings.</p>
     </section>
+        <section class="section-card" id="employeesCard" style="margin-top: 2rem;">
+        <h3>Employees</h3>
+        <p>Add or remove people for the “Assigned Employee” dropdown.</p>
+
+        <div class="row" style="display:flex; gap:8px; align-items:center; margin-top:10px;">
+            <input id="empNameInput" placeholder="Add name…" style="flex:1; padding:8px;">
+            <button id="empAddBtn" type="button">Add</button>
+        </div>
+
+        <div id="empMsg" class="muted" style="margin-top:6px; opacity:.8;"></div>
+
+        <ul id="empList" class="emp-list" style="list-style:none; padding:0; margin-top:10px;"></ul>
+        </section>
     <hr>
     <section class="section-card system-status-card" style="margin-top: 2rem;">
         <h3>System Status</h3>
@@ -295,6 +308,129 @@
             refreshStatusBtn.addEventListener('click', fetchSystemStatus);
             fetchSystemStatus();
         });
+        // ===== Employees Manager =====
+        const empNameInput = document.getElementById('empNameInput');
+        const empAddBtn    = document.getElementById('empAddBtn');
+        const empList      = document.getElementById('empList');
+        const empMsg       = document.getElementById('empMsg');
+
+        function setEmpMsg(text, isError=false){
+            if (!empMsg) return;
+            empMsg.textContent = text || '';
+            empMsg.style.color = isError ? '#d32f2f' : '#6c757d';
+        }
+
+        function escapeHtml(s){
+            return String(s||'')
+            .replaceAll('&','&amp;')
+            .replaceAll('<','&lt;')
+            .replaceAll('>','&gt;')
+            .replaceAll('"','&quot;')
+            .replaceAll("'",'&#39;');
+        }
+
+        async function loadEmployees(){
+            if (!empList) return;
+            try{
+            const res = await fetch('/api/employees');
+            const data = await res.json();
+            const items = Array.isArray(data.items) ? data.items : [];
+            empList.innerHTML = '';
+            if (!items.length){
+                setEmpMsg('No employees yet. Add some!');
+                return;
+            }
+            setEmpMsg('');
+            for (const e of items){
+                const li = document.createElement('li');
+                li.style.display = 'flex';
+                li.style.justifyContent = 'space-between';
+                li.style.alignItems = 'center';
+                li.style.padding = '8px 0';
+                li.dataset.id = e.id;
+
+                const nameSpan = document.createElement('span');
+                nameSpan.textContent = e.name;
+                nameSpan.style.fontWeight = '500';
+
+                const delBtn = document.createElement('button');
+                delBtn.textContent = 'Remove';
+                delBtn.className = 'emp-remove';
+                delBtn.style.border = '0';
+                delBtn.style.borderRadius = '6px';
+                delBtn.style.background = '#ef4444';
+                delBtn.style.color = '#fff';
+                delBtn.style.padding = '6px 10px';
+                delBtn.style.cursor = 'pointer';
+
+                li.appendChild(nameSpan);
+                li.appendChild(delBtn);
+                empList.appendChild(li);
+            }
+            }catch(err){
+            console.error(err);
+            setEmpMsg('Could not load employees.', true);
+            }
+        }
+
+        empAddBtn?.addEventListener('click', async () => {
+            const name = (empNameInput?.value || '').trim();
+            if (!name){
+            setEmpMsg('Type a name first.', true);
+            return;
+            }
+            try{
+            const res = await fetch('/api/employees', {
+                method:'POST',
+                headers:{'Content-Type':'application/json'},
+                body: JSON.stringify({name})
+            });
+            const data = await res.json();
+            if (!res.ok){
+                const msg = data?.error?.includes('UNIQUE') ? 'Name already exists.' : (data?.error || 'Add failed.');
+                setEmpMsg(msg, true);
+                return;
+            }
+            empNameInput.value = '';
+            setEmpMsg(`Added ${name}.`);
+            localStorage.setItem('employees.updated', Date.now().toString());
+            try { const bc = new BroadcastChannel('employees'); bc.postMessage('updated'); bc.close(); } catch {}
+
+            loadEmployees();
+            }catch(err){
+            console.error(err);
+            setEmpMsg('Network error adding employee.', true);
+            }
+        });
+
+        empList?.addEventListener('click', async (e) => {
+            const btn = e.target.closest('.emp-remove');
+            if (!btn) return;
+            const li = btn.closest('li');
+            const id = li?.dataset.id;
+            if (!id) return;
+            try{
+            const res = await fetch(`/api/employees/${id}`, { method:'DELETE' });
+            const data = await res.json().catch(()=>({}));
+            if (!res.ok){
+                setEmpMsg(data?.error || 'Delete failed.', true);
+                return;
+            }
+            setEmpMsg('Removed.');
+            localStorage.setItem('employees.updated', Date.now().toString());
+            try { const bc = new BroadcastChannel('employees'); bc.postMessage('updated'); bc.close(); } catch {}
+
+            loadEmployees();
+            }catch(err){
+            console.error(err);
+            setEmpMsg('Network error removing employee.', true);
+            }
+        });
+
+        // kick it off on page load (only if the Employees card exists)
+        if (document.getElementById('employeesCard')){
+            loadEmployees();
+        }
     </script>
     <script type="module" src="{{ url_for('static', filename='js/modules/settings_status.js') }}"></script>
 

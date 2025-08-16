@@ -1,4 +1,3 @@
-
     /*
       =================================
       BASE THEME & VARIABLES
@@ -101,13 +100,11 @@
     }
 
 
-    /*
+   /*
       =================================
-      THEMED ISSUES TABLE
+      THEMED ISSUES TABLE (FIXED COLUMNS)
       =================================
     */
-
-    /* New wrapper for horizontal scrolling */
     .table-scroll-wrapper {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
@@ -120,8 +117,9 @@
       border-radius: 12px;
       overflow: hidden;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      display: inline-block; /* Crucial for scrolling */
-      min-width: 100%; /* Ensures it fills the container and allows scrolling */
+      display: inline-block;
+      /* Set the min-width to the total of all column widths */
+      min-width: 1970px; /* Sum of all column widths below */
     }
 
     .issues-grid-header {
@@ -136,29 +134,34 @@
       font-size: 0.85rem;
 
       display: grid;
+      /* These columns control the headers */
       grid-template-columns:
-        120px   /* Issue ID */
-        110px   /* Priority */
-        140px   /* Date Added */
-        140px   /* Last Update */
-        120px   /* Area */
-        160px   /* Equipment Name */
-        1.6fr   /* Problem Description */
-        1.2fr   /* Notes */
-        120px   /* Status */
-        140px   /* Target Date */
-        160px;  /* Assigned Employee */
+        120px     /* Issue ID */
+        100px     /* Priority */
+        150px     /* Date Added */
+        150px     /* Last Update */
+        120px     /* Area */
+        250px     /* Equipment Name */
+        400px     /* Problem Description */
+        250px     /* Notes */
+        100px     /* Status */
+        150px     /* Target Date */
+        150px     /* Assigned Employee */
+        200px;    /* Actions */
       gap: 0;
-      align-items: center;
+      align-items: end;
     }
+
     .header-item, .grid-cell {
-      padding: 12px 10px;
+      padding: 8px 10px;
       border-right: 1px solid var(--border-color);
       border-bottom: 1px solid var(--border-color);
       white-space: normal;
       overflow: visible;
       text-overflow: clip;
-      min-height: 60px;
+      min-height: 40px;
+      height: 100%;
+      align-self: stretch;
     }
 
     .header-item:last-child, .grid-cell:last-child {
@@ -166,21 +169,23 @@
     }
 
     .grid-row {
-      align-items: center;
+      align-items: end;
       background: var(--bg-secondary);
       display: grid;
+      /* This must exactly match the header's columns */
       grid-template-columns:
         120px
-        110px
-        140px
-        140px
+        100px
+        150px
+        150px
         120px
-        160px
-        1.6fr
-        1.2fr
-        120px
-        140px
-        160px;
+        250px
+        400px
+        250px
+        100px
+        150px
+        150px
+        200px;
       gap: 0;
     }
 
@@ -288,4 +293,253 @@
   opacity: 0.9;
   pointer-events: none;
   box-shadow: 0 2px 6px rgba(0,0,0,.15);
+}
+.collapsible-section {
+    margin-bottom: 1rem;
+    border: 1px solid var(--line);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    background: var(--card); /* Ensures the whole section is white */
+}
+
+.collapsible-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background-color: transparent; /* Use transparent to inherit from parent */
+    cursor: pointer;
+    border-bottom: 1px solid var(--line);
+    transition: background-color 0.2s ease-in-out;
+}
+
+.collapsible-header:hover {
+    background-color: #f0f4f8; /* Adds a subtle hover effect */
+}
+
+.collapsible-header h3, .collapsible-header h4 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: var(--ink);
+}
+
+.collapsible-header .toggle-icon {
+    transition: transform 0.3s ease-in-out;
+}
+
+.collapsible-header.active .toggle-icon {
+    transform: rotate(180deg);
+}
+
+.collapsible-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out;
+    padding: 0 1.5rem;
+}
+
+.collapsible-content.active {
+    max-height: 500px; /* Arbitrary large value to allow content to expand */
+    padding: 1.5rem;
+}
+
+.collapsible-content h3 {
+    margin-top: 0;
+}
+/* Keep a fixed spot for the View button on the right */
+.cell-notes{
+  position: relative;
+  padding-right: 72px;   /* space for the button */
+  min-height: 2.4em;     /* keeps row tidy even with short notes */
+}
+
+/* Clamp just the text span (cleaner) */
+.cell-notes .note-preview{
+  white-space: normal;
+  overflow: hidden;
+  word-break: break-word;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;     /* show max 2 lines */
+  -webkit-box-orient: vertical;
+  line-clamp: 2;
+}
+
+/* Pin the button; words can’t push it anymore */
+.note-view-btn{
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  margin: 0;
+  font-size: 12px;
+  padding: 2px 10px;
+  border: 0;
+  border-radius: 6px;
+  background: #eee;
+  cursor: pointer;
+}
+.note-view-btn:active{ transform: translateY(-50%) scale(0.98); }
+/* === Full Note Popup === */
+.note-modal{ position:fixed; inset:0; display:none; z-index:1000; }
+.note-modal[aria-hidden="false"]{ display:block; }
+
+.note-modal__backdrop{ position:absolute; inset:0; background:rgba(0,0,0,.4); }
+
+.note-modal__dialog{
+  position:absolute; left:50%; top:50%;
+  transform: translate(-50%, -50%);
+  background:#fff;
+  max-width:520px; width:calc(100% - 32px);
+  border-radius:12px;
+  box-shadow:0 10px 30px rgba(0,0,0,.2);
+  padding:16px;
+}
+
+.note-modal__body{
+  max-height:50vh;
+  overflow:auto;
+  -webkit-overflow-scrolling:touch; /* iPad smooth scroll */
+  white-space:pre-wrap;
+  word-break:break-word;
+  font-size:14px;
+  line-height:1.35;
+}
+
+.note-modal__actions{ text-align:right; margin-top:12px; }
+#noteModalClose{
+  padding:8px 14px; border:0; border-radius:8px;
+  background:#111; color:#fff; cursor:pointer;
+}
+#noteModalClose:active{ transform:scale(0.98); }
+/* Hide the View button on devices that support hover (desktops) */
+@media (hover: hover) and (pointer: fine) {
+  .note-view-btn { display: none; }
+  .cell-notes { padding-right: 0; } /* no extra space when button is hidden */
+}
+
+/* Align the text to the center for specific columns */
+.issues-grid-header .header-item:nth-child(1),
+.issues-grid-header .header-item:nth-child(2),
+.issues-grid-header .header-item:nth-child(3),
+.issues-grid-header .header-item:nth-child(4),
+.issues-grid-header .header-item:nth-child(5),
+.issues-grid-header .header-item:nth-child(9),
+.issues-grid-header .header-item:nth-child(10),
+.issues-grid-header .header-item:nth-child(11),
+.issues-grid-body .grid-cell:nth-child(1),
+.issues-grid-body .grid-cell:nth-child(2),
+.issues-grid-body .grid-cell:nth-child(3),
+.issues-grid-body .grid-cell:nth-child(4),
+.issues-grid-body .grid-cell:nth-child(5),
+.issues-grid-body .grid-cell:nth-child(9),
+.issues-grid-body .grid-cell:nth-child(10),
+.issues-grid-body .grid-cell:nth-child(11) {
+  text-align: center;
+}
+/* Badge styling for Priority and Status columns */
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 999px; /* This makes it a pill shape */
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+/* Priority Colors */
+.badge.low {
+  background-color: #e6f4ea;
+  color: #34a853;
+}
+.badge.medium {
+  background-color: #fef7e0;
+  color: #fbbc04;
+}
+.badge.high {
+  background-color: #fce8e6;
+  color: #ea4335;
+}
+
+/* Status Colors */
+.badge.s-open {
+  background-color: #e8f0fe;
+  color: #1a73e8;
+}
+.badge.s-in_progress {
+  background-color: #f1e6f7;
+  color: #a142f4;
+}
+.badge.s-resolved {
+  background-color: #e6f4ea;
+  color: #34a853;
+}
+.badge.s-archived {
+  background-color: #e8eaed;
+  color: #5f6368;
+}
+/* Auto-capitalize the first letter of problem description and notes */
+.issues-grid-body .grid-cell:nth-child(7)::first-letter,
+.issues-grid-body .grid-cell:nth-child(8)::first-letter {
+    text-transform: uppercase;
+}
+/* ===== Issue Hub action chips ===== */
+.row-actions{
+  display:flex; gap:8px; align-items:center; flex-wrap:wrap;
+}
+
+.action-chip{
+  display:inline-flex; align-items:center; gap:6px;
+  border:0; border-radius:999px; padding:6px 10px;
+  font-size:12px; line-height:1; cursor:pointer;
+  background:#eee; color:#111;
+  transition: transform .08s ease, opacity .2s ease;
+  white-space:nowrap;
+}
+.action-chip i{ font-size:12px; }
+.action-chip:active{ transform:scale(0.98); }
+.action-chip:disabled{ opacity:.6; cursor:not-allowed; }
+
+/* variants */
+.action-chip.is-start{ background:#e0ecff; color:#0b4fc0; }
+.action-chip.is-resolve{ background:#e8f8ee; color:#117e3a; }
+.action-chip.is-archive{ background:#f2e7ff; color:#5e2db0; }
+.action-chip.is-reopen{ background:#fff4e0; color:#a65a00; }
+.action-chip.is-unarchive{ background:#e7f7ff; color:#046a7a; }
+
+/* loading dot */
+.action-chip.is-loading{
+  position:relative;
+  pointer-events:none;
+}
+.action-chip.is-loading::after{
+  content:"";
+  width:10px; height:10px; border-radius:50%;
+  border:2px solid currentColor; border-right-color:transparent;
+  display:inline-block; margin-left:4px;
+  animation:spin .9s linear infinite;
+}
+@keyframes spin{ to{ transform:rotate(360deg);} }
+
+/* desktop: show text; small screens: icons-only if tight */
+@media (max-width: 680px){
+  .action-chip span{ display:none; }
+}
+/* lock Actions column width */
+.cell-actions{ min-width:260px; } 
+.issues-grid-header .header-item:last-child{ min-width:260px; }
+/* delete chip */
+.action-chip.is-delete{
+  background:#ffe5e5;
+  color:#b00020;
+}
+/* soft-delete / trash actions */
+.action-chip.is-restore{
+  background:#eaf7ef;
+  color:#0a5f47;
+}
+.action-chip.is-delete-forever{
+  background:#ffebeb;
+  color:#8a0000;
+  border:1px solid rgba(138,0,0,.15);
 }

@@ -119,35 +119,36 @@ def register_issue_routes(app, get_db):
         # POST (create)
         try:
             data = request.get_json(force=True) or {}
-            description = data.get('description')
+            # Correctly get keys from the frontend payload
+            description = data.get('title')
             priority = data.get('priority')
             status = data.get('status')
-            area = data.get('area', '')
-            equipment_location = data.get('equipment_location', '')
+            area = data.get('category', '') # This is the 'area'
+            equipment_location = data.get('location', '') # This is the 'equipmentName'
             notes = data.get('notes', '')
             target_date = data.get('target_date')
-            assigned_to = data.get('assigned_to', '')
+            assigned_to = data.get('assignee', '')
 
             if not description or not priority or not status:
                 return jsonify({"error": "Missing required fields: description, priority, status"}), 400
 
-            issue_id = get_next_padded_id(db, entity="issue", width=3, prefix="IS-")  # -> IS-001, IS-002, ...
+            issue_id = get_next_padded_id(db, entity="issue", width=3, prefix="IS-")
 
             pg = is_postgres(db)
             cur = db.cursor()
             if pg:
                 cur.execute(
                     """
-                    INSERT INTO issues (id, description, priority, status, area, equipment_location, notes, target_date, assigned_to, last_updated)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP);
+                    INSERT INTO issues (id, description, priority, status, area, equipment_location, notes, target_date, assigned_to)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
                     """,
                     (issue_id, description, priority, status, area, equipment_location, notes, target_date, assigned_to)
                 )
             else:
                 cur.execute(
                     """
-                    INSERT INTO issues (id, description, priority, status, area, equipment_location, notes, target_date, assigned_to, last_updated)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP);
+                    INSERT INTO issues (id, description, priority, status, area, equipment_location, notes, target_date, assigned_to)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
                     """,
                     (issue_id, description, priority, status, area, equipment_location, notes, target_date, assigned_to)
                 )

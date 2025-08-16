@@ -50,3 +50,233 @@
   margin-top: 20px;
   text-align: right; /* Align refresh button to the right */
 }
+/* Styling for the Employees section */
+.employees-card h3 {
+    margin-bottom: 0.5rem;
+}
+
+.employees-card p {
+    font-size: 0.9rem;
+    color: var(--muted);
+    margin-bottom: 1rem;
+}
+
+.emp-input-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-top: 15px;
+}
+
+.emp-input-row input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #f8fafc;
+    color: #1f2937;
+}
+
+.emp-input-row button {
+    padding: 10px 16px;
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.emp-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 15px;
+}
+
+.emp-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #e2e8f0;
+    font-weight: 500;
+}
+
+.emp-list li:last-child {
+    border-bottom: none;
+}
+
+.emp-remove {
+    background-color: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+.collapsible-section {
+    margin-bottom: 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.75rem;
+    overflow: hidden;
+}
+
+.collapsible-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background-color: #f8fafc;
+    cursor: pointer;
+    border-bottom: 1px solid #e2e8f0;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.collapsible-header:hover {
+    background-color: #f0f4f8;
+}
+
+.collapsible-header h3, .collapsible-header h4 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #1f2937;
+}
+
+.collapsible-header .toggle-icon {
+    transition: transform 0.3s ease-in-out;
+}
+
+.collapsible-header.active .toggle-icon {
+    transform: rotate(180deg);
+}
+
+.collapsible-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out;
+    padding: 0 1.5rem;
+}
+
+.collapsible-content.active {
+    max-height: 500px;
+    padding: 1.5rem;
+}
+
+.nested-section .collapsible-header {
+    background-color: #ffffff;
+    border-bottom: none;
+    padding: 0.75rem 1rem;
+}
+
+.nested-section .collapsible-header h4 {
+    font-size: 1.1rem;
+}
+
+.nested-section .collapsible-content {
+    padding: 0 1rem;
+}
+
+.nested-section .collapsible-content.active {
+    padding: 1rem;
+}
+
+.reset-button {
+    background-color: #dc3545;
+    color: white;
+    padding: 0.75rem 1.25rem;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.reset-button:hover {
+    background-color: #c82333;
+    transform: translateY(-1px);
+}
+
+.reset-button:active {
+    transform: translateY(0);
+}
+
+.reset-description {
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin-top: 0.5rem;
+}
+
+/* New styles for the System Status card */
+.system-status-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.status-list {
+    margin-top: 15px;
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.status-dot {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 8px;
+    border: 1px solid rgba(0,0,0,0.1);
+}
+
+.status-dot.ok {
+    background-color: #4CAF50;
+}
+
+.status-dot.error {
+    background-color: #F44336;
+}
+
+.status-dot.unknown {
+    background-color: #9E9E9E;
+}
+
+.status-label {
+    font-weight: 600;
+    color: #1f2937;
+    margin-right: 5px;
+}
+
+.status-message {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.refresh-button {
+    background-color: #1a73e8;
+    color: white;
+    padding: 0.75rem 1.25rem;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: background-color 0.2s ease-in-out;
+    margin-top: 1rem;
+    float: right;
+}
+
+.refresh-button:hover {
+    background-color: #1764c9;
+}

@@ -8,6 +8,7 @@
   <div class="tabs">
     <button id="tab-gameroom" class="tab active">Gameroom</button>
     <button id="tab-facility" class="tab">Facility</button>
+    <button id="tab-games" class="tab">Games</button>
   </div>
 
   <div class="controls-row">
@@ -18,48 +19,69 @@
       <option value="in_progress">In Progress</option>
       <option value="resolved">Resolved</option>
       <option value="archived">Archived</option>
+      <option value="trash">Trash</option>
     </select>
     <button id="refreshBtn">Refresh</button>
   </div>
 
-  <div class="card new-issue-card">
-    <h3>New Issue</h3>
-    <form id="newIssueForm">
-      <input type="hidden" id="categoryInput" name="category" value="gameroom" />
-      <div class="form-grid">
-        <div>
-          <label>Title *</label>
-          <input id="titleInput" required placeholder="Short name (ex: Skee-Ball #3 jam)">
+  <div class="card collapsible-section">
+    <div class="collapsible-header" id="newIssueToggle">
+      <h3>New Issue</h3>
+      <i class="fas fa-chevron-down toggle-icon"></i>
+    </div>
+    <div class="collapsible-content">
+      <form id="newIssueForm">
+        <input type="hidden" id="categoryInput" name="category" value="gameroom" />
+        <div class="form-grid">
+          <div>
+            <label>Problem Description *</label>
+            <input id="problemDescriptionInput" required placeholder="Short name (ex: Skee-Ball #3 jam)">
+          </div>
+            <div>
+              <label>Equipment Name</label>
+              <input
+                id="equipmentNameInput"
+                placeholder="Select or type a game name"
+                list="games-list"
+                autocomplete="off">
+
+              <datalist id="games-list"></datalist>
+            </div>
+          <div>
+            <label>Priority</label>
+            <select id="priorityInput">
+              <option value="low">low</option>
+              <option value="medium" selected>medium</option>
+              <option value="high">high</option>
+            </select>
+          </div>
+          <div>
+            <label>Status</label>
+            <select id="newStatusInput">
+              <option value="open" selected>Open</option>
+              <option value="in_progress">In Progress</option>
+            </select>
+          </div>
+            <div>
+              <label>Assigned Employee</label>
+              <select id="assignedEmployeeInput">
+                <option value="">— Unassigned —</option>
+              </select>
+            </div>
+          <div>
+            <label>Target Date</label>
+            <input id="targetDateInput" type="date">
+          </div>
+          <div class="full-width">
+            <label>Notes</label>
+            <textarea id="notesInput" rows="3" placeholder="Extra info…"></textarea>
+          </div>
         </div>
-        <div>
-          <label>Location</label>
-          <input id="locationInput" placeholder="Where is it?">
+        <div class="button-row">
+          <button type="submit">Add Issue</button>
         </div>
-        <div>
-          <label>Priority</label>
-          <select id="priorityInput">
-            <option value="low">low</option>
-            <option value="medium" selected>medium</option>
-            <option value="high">high</option>
-          </select>
-        </div>
-        <div>
-          <label>Assignee</label>
-          <input id="assigneeInput" placeholder="Who’s on it?">
-        </div>
-        <div>
-          <label>Reporter</label>
-          <input id="reporterInput" placeholder="Who logged it?">
-        </div>
-        <div class="full-width">
-          <label>Details</label>
-          <textarea id="detailsInput" rows="3" placeholder="Extra info…"></textarea>
-        </div>
-      </div>
-      <div class="button-row">
-        <button type="submit">Add Issue</button>
-      </div>
-    </form>
+      </form>
+    </div>
   </div>
 
   <div class="card issues-card">
@@ -78,6 +100,7 @@
           <div class="header-item sortable-header" data-sort="status">Status</div>
           <div class="header-item">Target Date</div>
           <div class="header-item sortable-header" data-sort="assignee">Assigned Employee</div>
+          <div class="header-item">Actions</div>
         </div>
         <div id="issuesBody" class="issues-grid-body">
           <div class="grid-row">
@@ -87,9 +110,69 @@
       </div>
     </div>
   </div>
-
-  
-
-  
 </div>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('newIssueForm');
+    if (!form) return;
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // build payload using your actual input IDs
+      const body = {
+        title:        (document.getElementById('problemDescriptionInput')?.value || '').trim(),
+        priority:      document.getElementById('priorityInput')?.value || 'medium',
+        status:        document.getElementById('newStatusInput')?.value || 'open',
+        category:      document.getElementById('categoryInput')?.value || 'gameroom',
+        location:     (document.getElementById('equipmentNameInput')?.value || '').trim(),
+        notes:        (document.getElementById('notesInput')?.value || '').trim(),
+        target_date:   document.getElementById('targetDateInput')?.value || null,
+        assignee:     (document.getElementById('assignedEmployeeInput')?.value || '').trim(),
+      };
+
+      try {
+        const res = await fetch('/api/issues', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+
+        if (!res.ok) {
+          let msg = 'Add failed';
+          try { const err = await res.json(); if (err?.error) msg = err.error; } catch {}
+          alert(msg);
+          return;
+        }
+
+        // clear the form
+        form.reset();
+
+        // try to refresh the table (works whether function is global or module)
+        if (window.refreshIssuesTableData) {
+          window.refreshIssuesTableData();
+        } else {
+          try {
+            const mod = await import('/static/js/modules/issuesTable.js');
+            if (mod?.refreshIssuesTableData) mod.refreshIssuesTableData();
+          } catch (_) {}
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Network error while adding issue.');
+      }
+    });
+  });
+  </script>
+  <!-- Full Note Popup -->
+  <div id="noteModal" class="note-modal" aria-hidden="true">
+    <div class="note-modal__backdrop" data-close="1"></div>
+    <div class="note-modal__dialog" role="dialog" aria-modal="true" aria-label="Full note">
+      <div class="note-modal__body" id="noteModalBody"></div>
+      <div class="note-modal__actions">
+        <button id="noteModalClose" type="button">Close</button>
+      </div>
+    </div>
+  </div>
 {% endblock %}
