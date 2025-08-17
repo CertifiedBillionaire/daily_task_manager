@@ -19,3 +19,4 @@ temp_uploads/
 # Backups / temp
 *.backup
 .env
+misc_orphaned/
