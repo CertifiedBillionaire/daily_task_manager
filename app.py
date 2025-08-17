@@ -31,6 +31,15 @@ from issues_api import register_issue_routes
 # --- REFINED IMPORT NAME ---
 from issue_hub_bp import register_issue_hub_blueprint
 from flask import render_template
+from flask import request, jsonify
+# --- AI imports ---
+import os
+from flask import request, jsonify
+import google.generativeai as genai
+
+# configure Gemini
+genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
+MODEL_NAME = "gemini-2.5-flash"   # fast + cheap; switch to gemini-1.5-pro if you want deeper reasoning
 
 # --- 2) App setup ----------------------------------------------------------
 app = Flask(__name__)
@@ -458,6 +467,55 @@ def handle_tpt_settings():
 @app.route("/issuehub")
 def issuehub():
     return render_template("issue_hub.html")
+
+
+
+
+
+@app.post("/api/ai/ask")
+def ai_ask():
+    data = request.get_json(silent=True) or {}
+    prompt = (data.get("prompt") or "").strip()
+    context = data.get("context") or {}
+
+    if not prompt:
+        return jsonify({"error": "Missing prompt"}), 400
+
+    # light system hint
+    system_hint = (
+        "You are the assistant for 'Ultimate Task Manager' (arcade ops). "
+        "Be concise and actionable."
+    )
+    ctx_lines = []
+    if context.get("url"):  ctx_lines.append(f"URL: {context['url']}")
+    if context.get("page"): ctx_lines.append(f"Page: {context['page']}")
+    ctx_text = "\n".join(ctx_lines)
+
+    # if key missing, return a safe demo reply instead of 500
+    if not os.environ.get("GEMINI_API_KEY"):
+        return jsonify({"reply": f"(demo) I got: {prompt}"}), 200
+
+    try:
+        model = genai.GenerativeModel(MODEL_NAME)
+        resp = model.generate_content(
+            [
+                {"role": "user", "parts": [system_hint]},
+                {"role": "user", "parts": [f"{ctx_text}\n\nUser: {prompt}"]},
+            ],
+            generation_config={
+                "temperature": 0.3,
+                "top_p": 0.9,
+                "max_output_tokens": 512,
+            },
+        )
+        text = (getattr(resp, "text", "") or "").strip() or "(No reply)"
+        return jsonify({"reply": text}), 200
+    except Exception:
+        # fallback so the UI still works
+        return jsonify({"reply": f"(fallback) I got: {prompt}"}), 200
+
+
+
 # --- 7) Module Registration ------------------------------------------------
 # Register page blueprints
 register_issue_hub_blueprint(app, get_db, ensure_id_sequences) # Pass the functions here

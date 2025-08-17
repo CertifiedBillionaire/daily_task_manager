@@ -29,7 +29,6 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/components/issues_toolbar.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/components/toast.css') }}">
   
-
   <!-- Sections / Pages -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/sections/dashboard_content.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/sections/game_inventory.css') }}">
@@ -37,38 +36,48 @@
 
   <!-- Mobile overrides last -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/base/mobile.css') }}">
+
+  <!-- Tiny style touch for the AI omnibar -->
+  <style>
+    .app-title{font-family:Montserrat,system-ui,-apple-system,Segoe UI,Roboto,Arial;font-weight:700;letter-spacing:.2px;font-size:18px;opacity:.9}
+    .ai-omnibar{display:flex;align-items:center;gap:8px;width:min(720px,90vw);background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:6px 10px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+    .ai-omnibar input{flex:1;border:0;outline:0;font-size:14px}
+    .ai-omnibar .ai-send{border:0;background:#111827;color:#fff;padding:8px 10px;border-radius:8px;cursor:pointer}
+    .ai-reply{position:absolute;top:64px;left:50%;transform:translateX(-50%);width:min(720px,92vw);background:#fff;border:1px solid #e5e7eb;border-radius:12px;box-shadow:0 16px 40px rgba(0,0,0,.18);padding:12px 14px;z-index:10000;white-space:pre-wrap;line-height:1.35;font-size:14px}
+    .header-center{position:relative}
+  </style>
 </head>
 
 <body>
   <div class="app-container">
     <header class="main-header">
       <div class="header-left">
-        <a href="/" class="logo-link">
-          <div class="logo-area">
-            <img src="{{ url_for('static', filename='images/STRUXEN.png') }}" alt="Chuck E. Cheese Logo" class="logo-image">
-          </div>
-        </a>
-        <div class="info-widgets"></div>
-        <div class="header-actions">
-          <button class="primary" data-open-add-issue>+ Add Issue</button>
-          <button class="secondary" data-open-inspect>Inspect a Game</button>
-        </div>
+        <span class="app-title">Ultimate Task Manager</span>
       </div>
 
       <div class="header-center">
-        <div class="search-bar">
-          <input type="text" id="mainSearchBar" placeholder="Search games or issues..." class="search-input">
-          <i class="fas fa-search search-icon"></i>
-        </div>
+        <!-- AI Omnibar -->
+        <form id="ai-omnibar" class="ai-omnibar" autocomplete="off">
+          <i class="fas fa-robot ai-icon" aria-hidden="true"></i>
+          <input id="aiPrompt" type="text" placeholder="Ask AI about issues, games, employees…" aria-label="Ask AI" />
+          <button class="ai-send" type="submit" aria-label="Send">
+            <i class="fas fa-paper-plane"></i>
+          </button>
+        </form>
+        <!-- Lightweight inline reply panel -->
+        <div id="aiReplyPanel" class="ai-reply" hidden></div>
       </div>
 
       <div class="header-right">
-        <button class="icon-button" id="notificationButton"><i class="fas fa-bell"></i></button>
-        <button class="icon-button" id="hamburger-menu"><i class="fas fa-bars"></i></button>
+        <button class="icon-button" id="notificationButton" aria-label="Notifications">
+          <i class="fas fa-bell"></i>
+        </button>
+        <button class="icon-button" id="hamburger-menu" aria-label="Menu">
+          <i class="fas fa-bars"></i>
+        </button>
       </div>
     </header>
 
-    <!-- IMPORTANT: Sidebar must be inside .main-layout-area for flex layout -->
     <div class="main-layout-area">
       {% include 'sidebar.html' %}
       <main class="main-content">
@@ -76,7 +85,7 @@
       </main>
     </div>
 
-    <!-- Modals (can live inside app-container so z-index stacking is simpler) -->
+    <!-- Modals -->
     {% include 'modals/custom_popup.html' %}
     {% include 'modals/issue_summary_popup.html' %}
     {% include 'modals/opening_checklist_modal.html' %}
@@ -84,44 +93,57 @@
     {% include "modals/inspect_game.html" %}
   </div>
 
-  <!-- Scripts -->
-  <script type="module" src="{{ url_for('static', filename='js/app.js') }}"></script>
-
   <div id="toast-container"></div>
 
-  <script type="module">
-    import { initAddIssueQuick } from "/static/js/modules/addIssueQuick.js";
-    async function getGames(){ const r = await fetch('/api/games'); return await r.json(); }
-    initAddIssueQuick({
-      openButtonSelector: '[data-open-add-issue]',
-      gamesProvider: getGames,
-      onSaved: (issue)=>{
-        console.log('Saved issue:', issue);
-        if (window.refreshIssuesTableData) window.refreshIssuesTableData();
-      }
-    });
-  </script>
+  <!-- App bootstrap -->
+  <script type="module" src="{{ url_for('static', filename='js/app.js') }}"></script>
 
-  <script type="module">
-    import { initInspectGame } from "/static/js/modules/inspectGame.js";
-    async function getGames(){
-      const r = await fetch('/api/games');
-      return await r.json();
-    }
-    initInspectGame({
-      openSelector: '[data-open-inspect]',
-      gamesProvider: getGames,
-      onIssueSaved: (issue)=>{
-        console.log('Inspect saved issue:', issue);
-        if (window.refreshIssuesTableData) window.refreshIssuesTableData();
-      }
-    });
-  </script>
+  <!-- Notifications bell -->
   <script type="module" src="{{ url_for('static', filename='js/modules/notifications.js') }}"></script>
 
-  <!-- If issue_hub.js uses ES modules, change to type="module" -->
+  <!-- Issue Hub scripts -->
   <script src="{{ url_for('static', filename='js/modules/issue_hub.js') }}"></script>
   <script type="module" src="{{ url_for('static', filename='js/pages/issueHubForm.js') }}"></script>
+
+  <!-- Conditionally load Add Issue Quick only if a trigger exists -->
+  <script type="module">
+    const addIssueBtn = document.querySelector('[data-open-add-issue]');
+    if (addIssueBtn) {
+      const { initAddIssueQuick } = await import("/static/js/modules/addIssueQuick.js");
+      const getGames = async () => (await fetch('/api/games')).json();
+      initAddIssueQuick({
+        openButtonSelector: '[data-open-add-issue]',
+        gamesProvider: getGames,
+        onSaved: (issue) => {
+          console.log('Saved issue:', issue);
+          if (window.refreshIssuesTableData) window.refreshIssuesTableData();
+        }
+      });
+    }
+  </script>
+
+  <!-- Conditionally load Inspect Game only if a trigger exists -->
+  <script type="module">
+    const inspectBtn = document.querySelector('[data-open-inspect]');
+    if (inspectBtn) {
+      const { initInspectGame } = await import("/static/js/modules/inspectGame.js");
+      const getGames = async () => (await fetch('/api/games')).json();
+      initInspectGame({
+        openSelector: '[data-open-inspect]',
+        gamesProvider: getGames,
+        onIssueSaved: (issue) => {
+          console.log('Inspect saved issue:', issue);
+          if (window.refreshIssuesTableData) window.refreshIssuesTableData();
+        }
+      });
+    }
+  </script>
+
+  <!-- AI Omnibar (single source of truth) -->
+  <script type="module">
+    import { initAiOmnibar } from "/static/js/modules/aiOmnibar.js";
+    initAiOmnibar({ endpoint: "/api/ai/ask" });
+  </script>
 
   {% block scripts %}{% endblock %}
 </body>
