@@ -1,1 +1,21 @@
+# OS / Editor
+.DS_Store
+.vscode/
+*.log
+
+# Python
+__pycache__/
+*.pyc
+.env
+.venv/
+venv/
+
+# DB & runtime stuff
+app.db
+instance/
+temp_uploads/
+*.sqlite3
+
+# Backups / temp
+*.backup
 .env
