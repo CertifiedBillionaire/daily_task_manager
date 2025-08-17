@@ -331,3 +331,298 @@
   outline-offset: 3px;
   border-radius: 6px;
 }
+/* In static/css/layout/header_layout.css */
+
+/* Define the new look for the AI bar container */
+.ai-omnibar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: min(600px, 80vw);
+  background-color: #f7f8fa; /* Key for blending */
+  border: 1px solid #e0e0e0;
+  border-radius: 9999px;
+  padding: 8px 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* Style the input field inside the bar */
+.ai-omnibar input {
+  flex-grow: 1;
+  background-color: transparent; /* Makes the input's background match the container */
+  border: none; /* Removes any default border */
+  outline: none; /* Crucial for removing the outline on different browsers */
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  color: #333;
+}
+
+/* Style the placeholder text */
+.ai-omnibar input::placeholder {
+  color: #a0a0a0; /* A soft, lighter gray color */
+}
+
+/* Style the icon at the beginning of the bar */
+.ai-omnibar .ai-icon {
+  color: #888; /* A neutral color for the icon */
+}
+
+/* Hide the send button that was in the original design */
+.ai-omnibar .ai-send {
+  display: none;
+}
+/* In static/css/layout/header_layout.css */
+
+/* General container for the AI omnibar */
+.ai-omnibar {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Adds space between elements */
+  width: min(600px, 80vw);
+  background-color: #f7f8fa;
+  border: 1px solid #e0e0e0; /* A very light border for definition */
+  border-radius: 9999px; /* Pill shape */
+  padding: 8px 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05); /* Even softer shadow */
+}
+
+/* Style for the AI robot icon */
+.ai-omnibar .ai-icon {
+  color: #757575; /* A darker gray for better visibility */
+  font-size: 16px; /* Slightly larger icon */
+}
+
+/* Style for the input field */
+.ai-omnibar input {
+  flex-grow: 1;
+  border: none;
+  outline: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px; /* Slightly larger text */
+  color: #333; /* Darker text */
+}
+
+/* Style for the placeholder text */
+.ai-omnibar input::placeholder {
+  color: #a0a0a0;
+  font-style: normal; /* Removed italics for a cleaner look */
+}
+
+/* Style for the send button */
+.ai-omnibar .ai-send {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #007bff; /* A more prominent blue color */
+  color: #fff;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.ai-omnibar .ai-send:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+/* Style for the send button's icon */
+.ai-omnibar .ai-send .fas {
+  font-size: 14px;
+}
+.ai-omnibar input:focus {
+  outline: none;
+  border: none;
+}
+/* In static/css/layout/header_layout.css */
+
+/* Blends the input box with its container */
+.ai-omnibar input {
+  flex-grow: 1;
+  background-color: transparent; /* Makes the background match the container */
+  border: none; /* Removes any default border */
+  outline: none; /* Removes the standard outline */
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  color: #333;
+}
+
+/* * This is the crucial part. It targets the input only when it is in focus 
+ * and forcefully removes any lingering outline or border.
+ */
+.ai-omnibar input:focus {
+  outline: none !important;
+  border: none !important;
+}
+
+/* In static/css/layout/header_layout.css */
+
+/* Blends the entire AI omnibar container */
+.ai-omnibar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: min(600px, 80vw);
+  background-color: #f7f8fa;
+  border: none; /* Removed the default border */
+  border-radius: 9999px;
+  padding: 8px 16px;
+  box-shadow: none; /* Removed the default box shadow */
+}
+
+/* Styles for the icon, input, and button */
+.ai-omnibar .ai-icon {
+  color: #757575;
+  font-size: 16px;
+}
+
+.ai-omnibar input {
+  flex-grow: 1;
+  background-color: transparent;
+  border: none;
+  outline: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  color: #333;
+}
+
+.ai-omnibar input::placeholder {
+  color: #a0a0a0;
+  font-style: normal;
+}
+
+.ai-omnibar .ai-send {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #F34335FF;
+  color: #fff;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.ai-omnibar .ai-send:hover {
+  background-color: #B71C0CFF;
+}
+
+.ai-omnibar .ai-send .fas {
+  font-size: 14px;
+}
+
+/* Ensures there is no outline when the bar is clicked */
+.ai-omnibar:focus-within {
+  box-shadow: none;
+  border: none;
+  outline: none;
+}
+/* Floating AI dock (bottom-right) */
+.ai-dock {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  width: min(360px, 92vw);
+  max-height: 60vh;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  box-shadow: 0 16px 50px rgba(0,0,0,.22);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transform: translateY(calc(100% + 16px));
+  opacity: 0;
+  pointer-events: none;
+  transition: transform .2s ease, opacity .2s ease;
+  z-index: 10050;
+}
+.ai-dock.open {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.ai-dock__hd {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-bottom: 1px solid #eee;
+}
+.ai-dock__hd .title {
+  font-weight: 600;
+}
+.ai-dock__hd .spacer { flex: 1; }
+.ai-dock__hd button {
+  border: 0;
+  background: #f3f4f6;
+  border-radius: 8px;
+  padding: 6px 8px;
+  cursor: pointer;
+}
+
+.ai-dock__bd {
+  padding: 10px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ai-msg {
+  display: inline-block;
+  max-width: 82%;
+  padding: 8px 10px;
+  border-radius: 12px;
+  white-space: pre-wrap;
+  line-height: 1.25;
+  word-wrap: break-word;
+  font-size: 14px;
+}
+.ai-msg.user {
+  align-self: flex-end;
+  background: #e0f2fe;
+  border: 1px solid #bae6fd;
+}
+.ai-msg.bot {
+  align-self: flex-start;
+  background: #f4f4f5;
+  border: 1px solid #e5e7eb;
+}
+.ai-msg.err {
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+}
+
+.ai-dock__fab {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  border: 0;
+  background: #111827;
+  color: #fff;
+  box-shadow: 0 14px 30px rgba(0,0,0,.25);
+  cursor: pointer;
+  z-index: 10051;
+  display: grid;
+  place-items: center;
+}
+.ai-dock.open + .ai-dock__fab {
+  transform: translateY(76px); /* nudge the fab down when dock is open */
+  transition: transform .2s ease;
+}
+
+/* Optional small “typing…” bubble */
+.ai-typing {
+  font-size: 12px;
+  opacity: .7;
+  align-self: flex-start;
+  padding: 2px 6px;
+}

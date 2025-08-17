@@ -1,0 +1,33 @@
+/* --- Bigger AI dock overrides --- */
+.ai-dock {
+  width: min(520px, 96vw);   /* was 360px */
+  max-height: 78vh;          /* was 60vh  */
+}
+
+.ai-dock__hd {
+  padding: 14px 16px;        /* a bit roomier */
+}
+
+.ai-dock__bd {
+  padding: 14px;
+  gap: 10px;
+}
+
+.ai-msg {
+  font-size: 15px;           /* was 14px */
+  padding: 10px 12px;
+  max-width: 90%;            /* was 82% */
+}
+
+.ai-dock__fab {
+  width: 56px;               /* was 46px */
+  height: 56px;
+  font-size: 18px;           /* icon looks nicer bigger */
+}
+
+/* Optional: make it even wider on big desktops */
+@media (min-width: 1280px) {
+  .ai-dock { width: 560px; }
+}
+.ai-dock.ai-dock--lg { width: min(640px, 96vw); max-height: 82vh; }
+.ai-dock.ai-dock--lg .ai-msg { font-size: 16px; }

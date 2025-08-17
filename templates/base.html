@@ -28,7 +28,8 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/components/issues_table_menu.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/components/issues_toolbar.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/components/toast.css') }}">
-  
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components/ai_dock.css') }}">
+
   <!-- Sections / Pages -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/sections/dashboard_content.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/sections/game_inventory.css') }}">
@@ -38,14 +39,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/base/mobile.css') }}">
 
   <!-- Tiny style touch for the AI omnibar -->
-  <style>
-    .app-title{font-family:Montserrat,system-ui,-apple-system,Segoe UI,Roboto,Arial;font-weight:700;letter-spacing:.2px;font-size:18px;opacity:.9}
-    .ai-omnibar{display:flex;align-items:center;gap:8px;width:min(720px,90vw);background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:6px 10px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
-    .ai-omnibar input{flex:1;border:0;outline:0;font-size:14px}
-    .ai-omnibar .ai-send{border:0;background:#111827;color:#fff;padding:8px 10px;border-radius:8px;cursor:pointer}
-    .ai-reply{position:absolute;top:64px;left:50%;transform:translateX(-50%);width:min(720px,92vw);background:#fff;border:1px solid #e5e7eb;border-radius:12px;box-shadow:0 16px 40px rgba(0,0,0,.18);padding:12px 14px;z-index:10000;white-space:pre-wrap;line-height:1.35;font-size:14px}
-    .header-center{position:relative}
-  </style>
+
 </head>
 
 <body>
@@ -60,10 +54,10 @@
       <div class="header-center">
         <!-- AI Omnibar -->
         <form id="ai-omnibar" class="ai-omnibar" autocomplete="off">
-          <i class="fas fa-robot ai-icon" aria-hidden="true"></i>
-          <input id="aiPrompt" type="text" placeholder="Ask AI about issues, games, employees…" aria-label="Ask AI" />
+          <i class="fas fa-brain ai-icon" aria-hidden="true"></i>
+          <input id="aiPrompt" type="text" placeholder="Ask AI" aria-label="Ask AI" />
           <button class="ai-send" type="submit" aria-label="Send">
-            <i class="fas fa-paper-plane"></i>
+            <i class="fas fa-arrow-right"></i>
           </button>
         </form>
         <!-- Lightweight inline reply panel -->
@@ -143,8 +137,12 @@
 
   <!-- AI Omnibar (single source of truth) -->
   <script type="module">
-    import { initAiOmnibar } from "/static/js/modules/aiOmnibar.js";
-    initAiOmnibar({ endpoint: "/api/ai/ask" });
+    import { initAiDock } from "/static/js/modules/aiDock.js";
+    initAiDock({
+      endpoint: "/api/ai/ask",          // your Flask route
+      formSelector: "#ai-omnibar",       // the header form you already have
+      inputSelector: "#aiPrompt"         // the header input you already have
+    });
   </script>
 
   {% block scripts %}{% endblock %}

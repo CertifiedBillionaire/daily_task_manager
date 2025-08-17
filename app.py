@@ -12,68 +12,23 @@ from psycopg2 import sql
 from flask import Flask, render_template, request, jsonify, g
 from werkzeug.utils import secure_filename
 
-# your modules
+# local modules
 import tpt_processor
 from games_db import ensure_games_table
 from games_api import register_game_routes
 from issues_api import register_issue_routes
 from issue_hub_bp import register_issue_hub_blueprint
 
-# AI (Gemini)
-import google.generativeai as genai
-
-# configure Gemini
+# env + AI (Gemini)
 from dotenv import load_dotenv
-load_dotenv()
+load_dotenv()  # load .env for local dev; Render uses Environment Variables
+
+import google.generativeai as genai
 genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
-MODEL_NAME = "gemini-1.5-flash"   # switch to "gemini-1.5-pro" later if needed
+MODEL_NAME = "gemini-2.5-pro"  # Use gemini-2.5-pro for more powerful reasoning
 
 # --- 2) App setup ----------------------------------------------------------
 app = Flask(__name__)
-
-# --- Health Check API ------------------------------------------------------
-@app.route('/api/health')
-def health_check():
-    status = {}
-
-    # 1. Database check (SQLite path by default)
-    db_path = 'app.db'
-    try:
-        conn = sqlite3.connect(db_path)
-        cursor = conn.cursor()
-        cursor.execute("SELECT 1")
-        status['database'] = {'status': 'ok', 'message': 'Database connection successful.'}
-    except Exception as e:
-        status['database'] = {'status': 'error', 'message': f'Database error: {str(e)}'}
-    finally:
-        try:
-            conn.close()
-        except Exception:
-            pass
-
-    # 2. Storage check (is a dir writable?)
-    storage_path = 'data'
-    try:
-        if os.path.exists(storage_path) and os.access(storage_path, os.W_OK):
-            status['storage'] = {'status': 'ok', 'message': 'Storage directory is writable.'}
-        else:
-            status['storage'] = {'status': 'error', 'message': 'Storage directory not found or not writable.'}
-    except Exception as e:
-        status['storage'] = {'status': 'error', 'message': f'Storage error: {str(e)}'}
-
-    # 3. Key route check (IssueHub list w/ params)
-    key_route_url = f"{request.url_root.rstrip('/')}/api/issuehub/list?category=gameroom&status=all"
-    try:
-        response = requests.get(key_route_url, timeout=5)
-        if response.status_code == 200:
-            status['issue_api'] = {'status': 'ok', 'message': 'Issue API route accessible.'}
-        else:
-            status['issue_api'] = {'status': 'error', 'message': f'Issue API route returned status {response.status_code}.'}
-    except requests.exceptions.RequestException as e:
-        status['issue_api'] = {'status': 'error', 'message': f'Issue API route error: {str(e)}'}
-
-    overall_status = 'ok' if all(s['status'] == 'ok' for s in status.values()) else 'error'
-    return jsonify({'overall': overall_status, 'services': status})
 
 # DB url: set on Render. If missing, we default to local SQLite.
 DATABASE_URL = os.environ.get("DATABASE_URL")
@@ -433,7 +388,51 @@ def handle_tpt_settings():
     except Exception as e:
         return jsonify({"error": f"Failed to save settings: {e}"}), 500
 
-# --- 7) Issue Hub page + AI endpoint --------------------------------------
+# --- 7) Health Check API ---------------------------------------------------
+@app.route('/api/health')
+def health_check():
+    status = {}
+
+    # 1) Database
+    db_path = 'app.db'
+    try:
+        conn = sqlite3.connect(db_path)
+        cur = conn.cursor()
+        cur.execute("SELECT 1")
+        status['database'] = {'status': 'ok', 'message': 'Database connection successful.'}
+    except Exception as e:
+        status['database'] = {'status': 'error', 'message': f'Database error: {str(e)}'}
+    finally:
+        try:
+            conn.close()
+        except Exception:
+            pass
+
+    # 2) Storage
+    storage_path = 'data'
+    try:
+        if os.path.exists(storage_path) and os.access(storage_path, os.W_OK):
+            status['storage'] = {'status': 'ok', 'message': 'Storage directory is writable.'}
+        else:
+            status['storage'] = {'status': 'error', 'message': 'Storage directory not found or not writable.'}
+    except Exception as e:
+        status['storage'] = {'status': 'error', 'message': f'Storage error: {str(e)}'}
+
+    # 3) Issue API
+    key_route_url = f"{request.url_root.rstrip('/')}/api/issuehub/list?category=gameroom&status=all"
+    try:
+        r = requests.get(key_route_url, timeout=5)
+        if r.status_code == 200:
+            status['issue_api'] = {'status': 'ok', 'message': 'Issue API route accessible.'}
+        else:
+            status['issue_api'] = {'status': 'error', 'message': f'Issue API route returned status {r.status_code}.'}
+    except requests.exceptions.RequestException as e:
+        status['issue_api'] = {'status': 'error', 'message': f'Issue API route error: {str(e)}'}
+
+    overall = 'ok' if all(s['status'] == 'ok' for s in status.values()) else 'error'
+    return jsonify({'overall': overall, 'services': status})
+
+# --- 8) AI endpoint --------------------------------------------------------
 @app.post("/api/ai/ask")
 def ai_ask():
     data = request.get_json(silent=True) or {}
@@ -443,44 +442,154 @@ def ai_ask():
     if not prompt:
         return jsonify({"error": "Missing prompt"}), 400
 
-    # light system hint
+    # Demo path if key is missing (keeps UI usable)
+    if not os.environ.get("GEMINI_API_KEY"):
+        return jsonify({"reply": f"(demo) I got: {prompt}"}), 200
+
+    # ——— build message ———
     system_hint = (
-        "You are the assistant for 'Ultimate Task Manager' (arcade ops). "
-        "Be concise and actionable."
+        "You are an assistant for the Ultimate Task Manager application. "
+        "Your purpose is to help an arcade operations manager with their daily tasks. "
+        "Respond concisely in 1-2 sentences. "
+        "Do not ask clarifying questions unless the user explicitly asks. "
+        "Do not echo the user's prompt back. "
+        "If the user types a single word like 'test', reply with 'Ready.'"
+        "Your responses should be concise and actionable. "
     )
     ctx_lines = []
     if context.get("url"):  ctx_lines.append(f"URL: {context['url']}")
     if context.get("page"): ctx_lines.append(f"Page: {context['page']}")
     ctx_text = "\n".join(ctx_lines)
+    user_msg = f"{ctx_text}\n\nUser: {prompt}" if ctx_text else prompt
 
-    # if key missing, return a safe demo reply instead of 500
-    if not os.environ.get("GEMINI_API_KEY"):
-        return jsonify({"reply": f"(demo) I got: {prompt}"}), 200
+    model_name = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+
+    def _extract_text(resp) -> str:
+        """Return concatenated text parts or '' if none."""
+        try:
+            for c in (getattr(resp, "candidates", []) or []):
+                parts = getattr(getattr(c, "content", None), "parts", []) or []
+                texts = [getattr(p, "text", "") for p in parts if getattr(p, "text", "")]
+                if texts:
+                    return "".join(texts).strip()
+        except Exception:
+            pass
+        return ""
+
+    # Create model (handle older SDKs without system_instruction)
+    try:
+        model = genai.GenerativeModel(model_name, system_instruction=system_hint)
+    except TypeError:
+        model = genai.GenerativeModel(model_name)
+        user_msg = f"{system_hint}\n\n{user_msg}"
+
+    gen_cfg = {"temperature": 0.3, "top_p": 0.9, "max_output_tokens": 1024}
 
     try:
-        model = genai.GenerativeModel(MODEL_NAME)
-        resp = model.generate_content(
-            [
-                {"role": "user", "parts": [system_hint]},
-                {"role": "user", "parts": [f"{ctx_text}\n\nUser: {prompt}"]},
-            ],
-            generation_config={
-                "temperature": 0.3,
-                "top_p": 0.9,
-                "max_output_tokens": 512,
-            },
-        )
-        text = (getattr(resp, "text", "") or "").strip() or "(No reply)"
-        return jsonify({"reply": text}), 200
-    except Exception:
-        # fallback so the UI still works
-        return jsonify({"reply": f"(fallback) I got: {prompt}"}), 200
+        # 1st attempt
+        resp = model.generate_content(user_msg, generation_config=gen_cfg)
+        text = _extract_text(resp)
 
-# --- 8) Module Registration ------------------------------------------------
+        # If empty, inspect finish_reason and retry once
+        if not text:
+            finish_reason = None
+            try:
+                finish_reason = getattr(resp.candidates[0], "finish_reason", None)
+            except Exception:
+                pass
+
+            # If MAX_TOKENS (2), try again with a larger cap
+            if finish_reason == 2:
+                resp = model.generate_content(
+                    user_msg,
+                    generation_config={**gen_cfg, "max_output_tokens": 2048},
+                )
+                text = _extract_text(resp)
+
+            # As a last resort, try a stable backup model
+            if not text and model_name != "gemini-1.5-flash":
+                try:
+                    backup = genai.GenerativeModel("gemini-1.5-flash")
+                    resp = backup.generate_content(user_msg, generation_config=gen_cfg)
+                    text = _extract_text(resp)
+                except Exception:
+                    pass
+
+        if not text:
+            # Surface a friendly error with the finish_reason for debugging
+            fr = None
+            try:
+                fr = getattr(resp.candidates[0], "finish_reason", None)
+            except Exception:
+                pass
+            return jsonify({"error": f"AI returned no text (finish_reason={fr}). Try again or shorten your prompt."}), 502
+        def _strip_reflection(reply: str, user: str) -> str:
+            if not reply or not user:
+                return reply
+            r, u = reply.strip(), user.strip()
+            # If the reply starts with the exact prompt, remove it.
+            if r.lower().startswith(u.lower()):
+                r = r[len(u):].lstrip(" \n:,-")
+            return r
+
+        text = _strip_reflection(text, prompt)
+        return jsonify({"reply": text}), 200
+
+    except Exception as e:
+        app.logger.exception("AI error")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.get("/api/dashboard/metrics")
+def dashboard_metrics():
+    db = get_db()
+    cur = db.cursor()
+    # counts from issues table
+    cur.execute("SELECT COUNT(*) FROM issues WHERE status='open';")
+    open_issues = cur.fetchone()[0]
+
+    cur.execute("SELECT COUNT(*) FROM issues WHERE status='in_progress';")
+    in_progress = cur.fetchone()[0]
+
+    # stale in_progress: last_updated before today
+    cur.execute("""
+        SELECT COUNT(*) FROM issues
+        WHERE status='in_progress'
+          AND date(last_updated) < date('now', 'localtime')
+    """)
+    stale_in_progress = cur.fetchone()[0]
+
+    # overdue targets (not resolved/archived)
+    cur.execute("""
+        SELECT COUNT(*) FROM issues
+        WHERE target_date IS NOT NULL
+          AND DATE(target_date) < DATE('now','localtime')
+          AND status NOT IN ('resolved','archived','trash')
+    """)
+    overdue_targets = cur.fetchone()[0]
+
+    # down games (assumes games table has status column)
+    try:
+        cur.execute("SELECT COUNT(*) FROM games WHERE lower(status)='down';")
+        down_games = cur.fetchone()[0]
+    except Exception:
+        down_games = 0  # if column doesn't exist yet
+
+    return jsonify({
+        "open_issues": open_issues,
+        "in_progress": in_progress,
+        "stale_in_progress": stale_in_progress,
+        "overdue_targets": overdue_targets,
+        "down_games": down_games,
+    })
+
+
+
+# --- 9) Module Registration ------------------------------------------------
 register_issue_hub_blueprint(app, get_db, ensure_id_sequences)  # page blueprint
 register_game_routes(app, get_db)                               # APIs
 register_issue_routes(app, get_db)
 
-# --- 9) Entrypoint ---------------------------------------------------------
+# --- 10) Entrypoint --------------------------------------------------------
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
