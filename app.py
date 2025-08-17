@@ -1,26 +1,15 @@
 # =========================================================================
 # ARCADE MANAGER - FLASK APP (ROOT)
-# Main application: page routes, shared services (DB, weather, TPT), and
-# bootstrapping. All Games and Issues API endpoints are registered from
-# their own modules to keep this file small.
-#
-# Connected files:
-# - games_db.py            (ensure_games_table)
-# - games_api.py           (register_game_routes)
-# - issues_api.py          (register_issue_routes)
-# - issue_hub_bp.py        (register_issue_hub)  <-- new blueprint
-# - templates/*.html       (pages)
-# - static/js/* (frontend modules)
 # =========================================================================
 
 # --- 1) Imports ------------------------------------------------------------
 import os
 import sqlite3
+import requests
 
 import psycopg2
 from psycopg2 import sql
 from flask import Flask, render_template, request, jsonify, g
-import requests
 from werkzeug.utils import secure_filename
 
 # your modules
@@ -28,44 +17,42 @@ import tpt_processor
 from games_db import ensure_games_table
 from games_api import register_game_routes
 from issues_api import register_issue_routes
-# --- REFINED IMPORT NAME ---
 from issue_hub_bp import register_issue_hub_blueprint
-from flask import render_template
-from flask import request, jsonify
-# --- AI imports ---
-import os
-from flask import request, jsonify
+
+# AI (Gemini)
 import google.generativeai as genai
 
 # configure Gemini
+from dotenv import load_dotenv
+load_dotenv()
 genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
-MODEL_NAME = "gemini-2.5-flash"   # fast + cheap; switch to gemini-1.5-pro if you want deeper reasoning
+MODEL_NAME = "gemini-1.5-flash"   # switch to "gemini-1.5-pro" later if needed
 
 # --- 2) App setup ----------------------------------------------------------
 app = Flask(__name__)
 
-
-
-# --- Health Check API ---
+# --- Health Check API ------------------------------------------------------
 @app.route('/api/health')
 def health_check():
     status = {}
 
-    # 1. Database Check (assuming SQLite and app.db)
-    db_path = 'app.db' # Adjust this if your DB path is different
+    # 1. Database check (SQLite path by default)
+    db_path = 'app.db'
     try:
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
-        cursor.execute("SELECT 1") # Simple query to check connection
+        cursor.execute("SELECT 1")
         status['database'] = {'status': 'ok', 'message': 'Database connection successful.'}
     except Exception as e:
         status['database'] = {'status': 'error', 'message': f'Database error: {str(e)}'}
     finally:
-        if 'conn' in locals() and conn:
+        try:
             conn.close()
+        except Exception:
+            pass
 
-    # 2. Storage Check (e.g., check if 'data' directory is writable)
-    storage_path = 'data' # Adjust to a relevant storage directory
+    # 2. Storage check (is a dir writable?)
+    storage_path = 'data'
     try:
         if os.path.exists(storage_path) and os.access(storage_path, os.W_OK):
             status['storage'] = {'status': 'ok', 'message': 'Storage directory is writable.'}
@@ -74,12 +61,10 @@ def health_check():
     except Exception as e:
         status['storage'] = {'status': 'error', 'message': f'Storage error: {str(e)}'}
 
-    # 3. Key Route Check (e.g., check your /api/issuehub/list endpoint)
-    # Important: For a real application, use a full URL, e.g., "http://localhost:5000/api/issuehub/list"
-    # If running locally, make sure your app is running when this check is performed.
-    key_route_url = f"{request.url_root.rstrip('/')}/api/issuehub/list" 
+    # 3. Key route check (IssueHub list w/ params)
+    key_route_url = f"{request.url_root.rstrip('/')}/api/issuehub/list?category=gameroom&status=all"
     try:
-        response = requests.get(key_route_url, timeout=5) # 5-second timeout
+        response = requests.get(key_route_url, timeout=5)
         if response.status_code == 200:
             status['issue_api'] = {'status': 'ok', 'message': 'Issue API route accessible.'}
         else:
@@ -87,12 +72,7 @@ def health_check():
     except requests.exceptions.RequestException as e:
         status['issue_api'] = {'status': 'error', 'message': f'Issue API route error: {str(e)}'}
 
-    overall_status = 'ok'
-    for service in status.values():
-        if service['status'] == 'error':
-            overall_status = 'error'
-            break
-
+    overall_status = 'ok' if all(s['status'] == 'ok' for s in status.values()) else 'error'
     return jsonify({'overall': overall_status, 'services': status})
 
 # DB url: set on Render. If missing, we default to local SQLite.
@@ -112,7 +92,6 @@ def get_db():
             g.db = sqlite3.connect("app.db")
             g.db.row_factory = sqlite3.Row
     return g.db
-
 
 @app.teardown_appcontext
 def close_db(e=None):
@@ -141,7 +120,6 @@ def ensure_id_sequences(db_conn):
         db_conn.commit()
 
         if is_postgres:
-            # Postgres upsert
             cur.execute(
                 "INSERT INTO id_sequences (entity, counter) VALUES ('issue', 0) "
                 "ON CONFLICT (entity) DO NOTHING;"
@@ -151,7 +129,6 @@ def ensure_id_sequences(db_conn):
                 "ON CONFLICT (entity) DO NOTHING;"
             )
         else:
-            # SQLite upsert
             cur.execute(
                 "INSERT OR IGNORE INTO id_sequences (entity, counter) VALUES ('issue', 0);"
             )
@@ -176,7 +153,7 @@ def init_db():
 
     cur = db_conn.cursor()
     try:
-        # legacy issues table (kept so old pages still work if you use them)
+        # legacy issues table
         cur.execute(
             """
             CREATE TABLE IF NOT EXISTS issues (
@@ -252,6 +229,31 @@ with app.app_context():
     else:
         print("SKIP_DB_INIT=true → skipped DB init")
 
+# --- helper: upsert a setting for both Postgres/SQLite ---------------------
+def upsert_setting(db_conn, key, value):
+    is_postgres = hasattr(db_conn, "dsn")
+    cur = db_conn.cursor()
+    try:
+        if is_postgres:
+            cur.execute(
+                """
+                INSERT INTO settings (key, value) VALUES (%s, %s)
+                ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value;
+                """,
+                (key, value),
+            )
+        else:
+            cur.execute(
+                """
+                INSERT INTO settings (key, value) VALUES (?, ?)
+                ON CONFLICT(key) DO UPDATE SET value = excluded.value;
+                """,
+                (key, value),
+            )
+        db_conn.commit()
+    finally:
+        cur.close()
+
 # --- 4) Page routes --------------------------------------------------------
 @app.route("/")
 def index():
@@ -280,6 +282,10 @@ def ai_assistant():
 @app.route("/settings")
 def settings_page():
     return render_template("settings_page.html")
+
+@app.route("/issuehub")
+def issuehub():
+    return render_template("issue_hub.html")
 
 # --- 5) Utility/maintenance routes ----------------------------------------
 @app.route("/clear_issues_temp")
@@ -396,7 +402,6 @@ def handle_tpt_settings():
             cur.execute("SELECT key, value FROM settings")
             rows = cur.fetchall()
             for row in rows:
-                # row can be tuple (pg) or sqlite Row
                 k = row[0]
                 v = row[1]
                 settings[k] = v
@@ -419,59 +424,16 @@ def handle_tpt_settings():
     target = data.get("targetTpt")
     include_bb = str(data.get("includeBirthdayBlaster")).lower()
 
-    cur = db_conn.cursor()
     try:
-        cur.execute(
-            sql.SQL(
-                """
-                INSERT INTO settings (key, value) VALUES (%s, %s)
-                ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value;
-                """
-            ),
-            ("lowestDesiredTpt", lowest),
-        )
-        cur.execute(
-            sql.SQL(
-                """
-                INSERT INTO settings (key, value) VALUES (%s, %s)
-                ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value;
-                """
-            ),
-            ("highestDesiredTpt", highest),
-        )
-        cur.execute(
-            sql.SQL(
-                """
-                INSERT INTO settings (key, value) VALUES (%s, %s)
-                ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value;
-                """
-            ),
-            ("targetTpt", target),
-        )
-        cur.execute(
-            sql.SQL(
-                """
-                INSERT INTO settings (key, value) VALUES (%s, %s)
-                ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value;
-                """
-            ),
-            ("includeBirthdayBlaster", include_bb),
-        )
-        db_conn.commit()
+        upsert_setting(db_conn, "lowestDesiredTpt", lowest)
+        upsert_setting(db_conn, "highestDesiredTpt", highest)
+        upsert_setting(db_conn, "targetTpt", target)
+        upsert_setting(db_conn, "includeBirthdayBlaster", include_bb)
         return jsonify({"message": "TPT settings saved successfully!"})
     except Exception as e:
-        db_conn.rollback()
         return jsonify({"error": f"Failed to save settings: {e}"}), 500
-    finally:
-        cur.close()
-@app.route("/issuehub")
-def issuehub():
-    return render_template("issue_hub.html")
 
-
-
-
-
+# --- 7) Issue Hub page + AI endpoint --------------------------------------
 @app.post("/api/ai/ask")
 def ai_ask():
     data = request.get_json(silent=True) or {}
@@ -514,15 +476,11 @@ def ai_ask():
         # fallback so the UI still works
         return jsonify({"reply": f"(fallback) I got: {prompt}"}), 200
 
-
-
-# --- 7) Module Registration ------------------------------------------------
-# Register page blueprints
-register_issue_hub_blueprint(app, get_db, ensure_id_sequences) # Pass the functions here
-
-# Register API modules
-register_game_routes(app, get_db)
+# --- 8) Module Registration ------------------------------------------------
+register_issue_hub_blueprint(app, get_db, ensure_id_sequences)  # page blueprint
+register_game_routes(app, get_db)                               # APIs
 register_issue_routes(app, get_db)
-# --- 8) Entrypoint ---------------------------------------------------------
+
+# --- 9) Entrypoint ---------------------------------------------------------
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
