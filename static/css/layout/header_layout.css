@@ -317,3 +317,17 @@
   border: 0; padding: 6px 10px; border-radius: 8px; cursor: pointer;
   background: #f3f4f6;
 }
+.main-header .app-title {
+  text-decoration: none;
+  color: inherit;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem; /* or whatever you had */
+  letter-spacing: .2px;
+}
+
+.main-header .app-title:focus-visible {
+  outline: 2px solid #6366f1;     /* indigo-ish */
+  outline-offset: 3px;
+  border-radius: 6px;
+}

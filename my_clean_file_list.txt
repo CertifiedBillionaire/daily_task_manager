@@ -74,6 +74,8 @@ Clean directory listing for: /Users/dattboyrobert21/daily_task_manager
                 📄 addNewIssue.js
                 📄 addNewIssueForm.js
                 📄 adventureZoneChecklist.js
+                📄 aiBar.js
+                📄 aiOmnibar.js
                 📄 bathroomChecklist.js
                 📄 checklistData.js
                 📄 constants.js
@@ -96,8 +98,10 @@ Clean directory listing for: /Users/dattboyrobert21/daily_task_manager
                 📄 menuBoardChecklist.js
                 📄 modal.js
                 📄 modalListeners.js
+                📄 notifications.js
                 📄 openingChecklist.js
                 📄 pmCard.js
+                📄 rollover_nudge.js
                 📄 safetySecurityChecklist.js
                 📄 settings.js
                 📄 settings_status.js
@@ -109,6 +113,8 @@ Clean directory listing for: /Users/dattboyrobert21/daily_task_manager
                 📄 tableResizer.js.backup
                 📄 thankYouBoxChecklist.js
                 📄 toast.js
+            📂 pages/
+                📄 issueHubForm.js
     📂 temp_uploads/
     📂 templates/
         📄 ai_assistant_page.html
