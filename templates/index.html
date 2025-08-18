@@ -7,101 +7,63 @@
     <div class="dashboard-overview-header">
       <div class="content-header-left">
         <h2>Arcade Operations Overview</h2>
-        <p id="currentDayDate">Sunday, July 27, 2025</p>
-      </div>
-      <div class="urgent-issue">
-        <i class="fas fa-exclamation-triangle"></i>
-        <span id="urgentIssue">No Urgent Issues</span>
       </div>
     </div>
   </div>
+  <style>
+    /* === Simple Modal: iPad-friendly sizing & header layout === */
+    .simple-modal__panel {
+      width: min(92vw, 900px);
+      max-width: 900px;
+    }
+    @media (min-width: 768px) {
+      .simple-modal__panel { width: min(90vw, 960px); max-width: 960px; }
+    }
+    .simple-modal__header { display: flex; align-items: center; gap: 12px; }
+    .simple-modal__header h3 { margin: 0; }
+    .simple-modal__close { margin-left: auto; }
+
+    /* === Add Issue modal form enhancements === */
+    .ai-form .ai-row { margin-bottom: 12px; }
+    .ai-form .ai-grid { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 12px; }
+    @media (min-width: 640px) { .ai-form .ai-grid { grid-template-columns: 1fr 1fr; } }
+    .ai-form label { font-weight: 600; display:block; margin-bottom: 6px; }
+    .ai-form textarea { width: 100%; resize: vertical; }
+
+    .ai-actions { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 8px; }
+    .ai-btn { padding: 12px 18px; font-weight: 600; border: none; border-radius: 8px; cursor: pointer; }
+    .ai-btn-primary { font-size: 1rem; }
+    .ai-link-btn { display: inline-block; padding: 10px 14px; border-radius: 8px; text-decoration: none; border: 1px solid #c9c9c9; }
+    .ai-link-btn:hover { background: #f4f4f4; }
+    
+    /* NEW: Style for the Type chips */
+    .chip-row { display: flex; gap: 8px; margin-top: 4px; }
+    .chip { 
+        padding: 8px 16px; 
+        border: 1px solid #ccc; 
+        border-radius: 20px; 
+        background-color: #f0f0f0; 
+        cursor: pointer; 
+        transition: background-color 0.2s; 
+    }
+    .chip:hover { background-color: #e0e0e0; }
+    .chip.active { 
+        background-color: #007bff; 
+        color: white; 
+        border-color: #007bff; 
+    }
+  </style>
 
   <div class="dashboard-grid">
-    <!-- Opening Checklist -->
-    <div class="dashboard-card action-card color-yellow" id="startOpeningChecklist" data-id="opening-checklist" data-color="yellow">
-      <div class="card-menu-container">
-        <button class="card-menu-button">
-          <i class="fa-solid fa-ellipsis-vertical"></i>
-        </button>
-        <div class="card-menu">
-          <ul>
-            <li data-action="reset-checklist">Reset Progress</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="card-content-top">
-        <div class="card-icon"><i class="fa-solid fa-list-check"></i></div>
-        <div class="card-text-group">
-          <h3>Start Opening Checklist</h3>
-          <p class="card-description">Begin your daily opening routine.</p>
-        </div>
-      </div>
-
-      <div class="card-desktop-menu">
-        <span data-action="reset-checklist">• Reset Progress</span>
-      </div>
-
-      <div class="card-progress">19/19 Done</div>
-    </div>
-
-    <!-- Inspect a Game -->
-    <div class="dashboard-card action-card color-blue" id="inspectArcadeGame">
-      <div class="card-menu-container">
-        <button class="card-menu-button">
-          <i class="fa-solid fa-ellipsis-vertical"></i>
-        </button>
-        <div class="card-menu">
-          <ul>
-            <li data-action="inspect-all">Inspect All</li>
-            <li data-action="reset-progress">Reset Progress</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="card-content-top">
-        <div class="card-icon"><i class="fa-solid fa-book"></i></div>
-        <div class="card-text-group">
-          <h3>Inspect a Game</h3>
-          <p class="card-description">Perform a detailed check on a single game.</p>
-        </div>
-      </div>
-
-      <div class="card-desktop-menu">
-        <span data-action="inspect-all">• Inspect All</span>
-        <span data-action="reset-progress">• Reset Progress</span>
-      </div>
-
-      <div class="card-progress">0/53 Done</div>
-    </div>
-
-    <!-- Log a New Issue (live counts + click opens quick-add modal) -->
     <div class="dashboard-card action-card color-orange card-clickable" id="addNewIssueCard" tabindex="0" aria-label="Log a New Issue">
-      <!-- floating + button -->
-      <button class="card-fab" id="addIssueFab" type="button" aria-label="Add new issue">
-        <i class="fa-solid fa-plus"></i>
-      </button>
-
       <div class="card-content-top">
         <div class="card-icon"><i class="fa-solid fa-circle-plus"></i></div>
         <div class="card-text-group">
           <h3>Log a New Issue</h3>
-          <p class="card-description">Quickly log a new issue.</p>
-        </div>
-      </div>
-
-      <div class="card-metrics">
-        <div class="metric">
-          <div class="metric-label">Open</div>
-          <div class="metric-value" id="issuesOpenCount">—</div>
-        </div>
-        <div class="metric">
-          <div class="metric-label">Awaiting Parts</div>
-          <div class="metric-chip" id="issuesAwaitingPartsCount">—</div>
+          <p class="card-description">Add a new issue with all details.</p>
         </div>
       </div>
     </div>
-    <!-- Log PMs -->
     <div class="dashboard-card action-card color-green" id="addPMCard">
       <div class="card-content-top">
         <div class="card-icon"><i class="fa-solid fa-list-check"></i></div>
@@ -112,7 +74,6 @@
       </div>
     </div>
 
-    <!-- Update Down Games -->
     <div class="dashboard-card action-card color-red card-clickable" id="downGamesCard" tabindex="0" aria-label="Update Down Games">
       <div class="card-content-top">
         <div class="card-icon"><i class="fa-solid fa-gamepad"></i></div>
@@ -134,7 +95,6 @@
     </div>
   </div>
 
-  <!-- Simple modal: Update Down Games -->
   <div id="downGamesModal" class="simple-modal" hidden>
     <div class="simple-modal__overlay" data-close></div>
     <div class="simple-modal__panel" role="dialog" aria-modal="true" aria-labelledby="dgm-title">
@@ -146,56 +106,88 @@
     </div>
   </div>
 
-  <!-- Simple modal: Quick Add Issue -->
   <div id="addIssueModal" class="simple-modal" hidden>
-    <div class="simple-modal__overlay" data-close></div>
-    <div class="simple-modal__panel" role="dialog" aria-modal="true" aria-labelledby="ai-title">
-      <div class="simple-modal__header">
-        <h3 id="ai-title">Log a New Issue</h3>
-        <a href="/issues" class="ai-link">Open full Issues page</a>
-        <button class="simple-modal__close" type="button" aria-label="Close" data-close>&times;</button>
+      <div class="simple-modal__overlay" data-close></div>
+      <div class="simple-modal__panel" role="dialog" aria-modal="true" aria-labelledby="ai-title">
+          <div class="simple-modal__header">
+              <h3 id="ai-title">Log a New Issue</h3>
+              <button class="simple-modal__close" type="button" aria-label="Close" data-close>&times;</button>
+          </div>
+          <div class="simple-modal__body">
+              <form id="newIssueForm" novalidate>
+                  <input type="hidden" id="categoryInput" name="category" value="gameroom" />
+                  <div class="form-grid">
+
+                      <div class="full-width">
+                          <label>Type</label>
+                          <div class="chip-row" id="issueTypeChips">
+                              <button class="chip active" type="button" data-type="game">Game</button>
+                              <button class="chip" type="button" data-type="facility">Facility</button>
+                              <button class="chip" type="button" data-type="attraction">Attraction</button>
+
+                          </div>
+                      </div>
+
+                      <div>
+                          <label for="problemDescriptionInput">Problem Description *</label>
+                          <input id="problemDescriptionInput" name="problemDescription" type="text" required placeholder="Short name (ex: Skee-Ball #3 jam)">
+                      </div>
+
+                      <div>
+                          <label for="equipmentNameInput">Equipment Name</label>
+                          <input
+                              id="equipmentNameInput"
+                              name="equipmentName"
+                              type="text"
+                              placeholder="Select or type a game name"
+                              list="games-list"
+                              autocomplete="off"
+                              required>
+                      </div>
+
+                      <div>
+                          <label for="priorityInput">Priority</label>
+                          <select id="priorityInput" name="priority">
+                              <option value="low">low</option>
+                              <option value="medium" selected>medium</option>
+                              <option value="high">high</option>
+                          </select>
+                      </div>
+
+                      <div>
+                          <label for="newStatusInput">Status</label>
+                          <select id="newStatusInput" name="status">
+                              <option value="open" selected>Open</option>
+                              <option value="in_progress">In Progress</option>
+                          </select>
+                      </div>
+
+                      <div>
+                          <label for="assignedEmployeeInput">Assigned Employee</label>
+                          <select id="assignedEmployeeInput" name="assignedEmployee">
+                              <option value="">— Unassigned —</option>
+                          </select>
+                      </div>
+
+                      <div>
+                          <label for="targetDateInput">Target Date</label>
+                          <input id="targetDateInput" name="targetDate" type="date" placeholder="mm/dd/yyyy" required>
+                      </div>
+
+                      <div class="full-width">
+                          <label for="notesInput">Notes</label>
+                          <textarea id="notesInput" name="notes" rows="3" placeholder="Extra info…"></textarea>
+                      </div>
+                  </div>
+
+                  <div class="button-row" style="display:flex; justify-content:flex-end; gap:10px;">
+                      <button type="submit">Add Issue</button>
+                  </div>
+
+                  <datalist id="games-list"></datalist>
+              </form>
+          </div>
       </div>
-      <div class="simple-modal__body">
-        <form id="ai-form" class="ai-form" autocomplete="off">
-          <div class="ai-row">
-            <label for="ai-desc">Description <span class="req">*</span></label>
-            <textarea id="ai-desc" rows="3" placeholder="What’s wrong?" required></textarea>
-          </div>
-
-          <div class="ai-grid">
-            <div class="ai-col">
-              <label for="ai-priority">Priority</label>
-              <select id="ai-priority">
-                <option value="Medium">Medium</option>
-                <option value="High">High</option>
-                <option value="IMMEDIATE">IMMEDIATE</option>
-                <option value="Low">Low</option>
-                <option value="CLEANING">CLEANING</option>
-              </select>
-            </div>
-            <div class="ai-col">
-              <label for="ai-area">Area</label>
-              <input id="ai-area" type="text" placeholder="e.g., Game Room">
-            </div>
-          </div>
-
-          <div class="ai-grid">
-            <div class="ai-col">
-              <label for="ai-equip">Equipment/Location</label>
-              <input id="ai-equip" type="text" placeholder="e.g., Pac-Man, Aisle 3">
-            </div>
-            <div class="ai-col">
-              <label for="ai-notes">Notes</label>
-              <input id="ai-notes" type="text" placeholder="Optional notes">
-            </div>
-          </div>
-
-          <div class="ai-actions">
-            <button id="ai-submit" type="submit" class="ai-btn">Add Issue</button>
-          </div>
-        </form>
-      </div>
-    </div>
   </div>
 {% endblock content %}
 
@@ -204,5 +196,4 @@
   <script type="module" src="{{ url_for('static', filename='js/modules/dashboardDownGamesCard.js') }}"></script>
   <script type="module" src="{{ url_for('static', filename='js/modules/downGamesQuickUpdate.js') }}"></script>
   <script type="module" src="{{ url_for('static', filename='js/modules/dashboardIssuesCard.js') }}"></script>
-  <script type="module" src="{{ url_for('static', filename='js/modules/dashboardIssuesQuickAdd.js') }}"></script>
-{% endblock %}
+  {% endblock %}

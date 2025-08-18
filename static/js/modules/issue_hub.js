@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('statusFilter').value = launchFilter;
     localStorage.removeItem('issuehub.launch.filter');
   }
-    // focus a specific row if ?focus=IH### is present
+  // focus a specific row if ?focus=IH### is present
   const _params = new URLSearchParams(location.search);
   let _pendingFocusId = _params.get('focus');
   if (_pendingFocusId) {
@@ -21,29 +21,32 @@ document.addEventListener('DOMContentLoaded', () => {
   let sortKey = 'created_at';
   let sortDirection = 'desc';
   let currentStatus = 'all'; // open | in_progress | resolved | archived | trash | all
-  let editingId = null;      // current inline-edit row id
+  let editingId = null; // current inline-edit row id
 
   // =========================
   // els
   // =========================
   const tg = document.getElementById('tab-gameroom');
   const tf = document.getElementById('tab-facility');
+  const ta = document.getElementById('tab-attraction'); // NEW: Get reference to the attraction tab
   const t_games = document.getElementById('tab-games');
 
-  const categoryInput   = document.getElementById('categoryInput');
-  const statusFilter    = document.getElementById('statusFilter');
-  const refreshBtn      = document.getElementById('refreshBtn');
+  const categoryInput = document.getElementById('categoryInput');
+  const statusFilter = document.getElementById('statusFilter');
+  const refreshBtn = document.getElementById('refreshBtn');
+  const trashAllBtn = document.getElementById('trashAllBtn');
+
 
   // Games tab controls (optional row)
-  const gamesFilterWrap  = document.getElementById('gamesFilter');
+  const gamesFilterWrap = document.getElementById('gamesFilter');
   const gamesFilterInput = document.getElementById('gamesFilterInput');
-  const gamesFilterGo    = document.getElementById('gamesFilterGo');
+  const gamesFilterGo = document.getElementById('gamesFilterGo');
 
-  const issuesBody              = document.getElementById('issuesBody');
+  const issuesBody = document.getElementById('issuesBody');
 
   // Notes modal (must exist in HTML)
-  const noteModal      = document.getElementById('noteModal');
-  const noteModalBody  = document.getElementById('noteModalBody');
+  const noteModal = document.getElementById('noteModal');
+  const noteModalBody = document.getElementById('noteModalBody');
   const noteModalClose = document.getElementById('noteModalClose');
 
   // =========================
@@ -51,36 +54,85 @@ document.addEventListener('DOMContentLoaded', () => {
   // =========================
   function escapeHtml(s = '') {
     return String(s)
-      .replaceAll('&','&amp;')
-      .replaceAll('<','&lt;')
-      .replaceAll('>','&gt;')
-      .replaceAll('"','&quot;')
-      .replaceAll("'","&#39;");
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#39;');
   }
+
   function decodeEntities(s) { // for notes modal
     const el = document.createElement('textarea');
     el.innerHTML = s || '';
     return el.value;
   }
+
   function toast(msg, type = 'Info', ms = 2000) {
     if (window.showToast) window.showToast(msg, type, ms);
     else console.log(`${type}: ${msg}`);
   }
 
-  const formatIssueId = (id) => (typeof id !== 'number' ? id : `IH-${String(id).padStart(3,'0')}`);
-  const PRIORITY_ORDER = { low: 1, medium: 2, high: 3 };
+  function formatDateInput(s) {
+    if (!s) return '';
+    const d = new Date(s);
+    if (isNaN(d.getTime())) return '';
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  }
+  // === Counts Bar (Open / Resolved / Archived) based on itemsCache ===
+  function normStatus(s) {
+    return String(s || '').toLowerCase().replace(/\s+/g, '_');
+  }
+
+  function updateCountsFromCache() {
+    const open = itemsCache.filter(it => normStatus(it.status) === 'open').length;
+    const resolved = itemsCache.filter(it => {
+      const st = normStatus(it.status);
+      return st === 'resolved' || st === 'closed';
+    }).length;
+    const archived = itemsCache.filter(it => normStatus(it.status) === 'archived').length;
+
+    const set = (id, val) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = String(val);
+    };
+    set('countOpen', open);
+    set('countResolved', resolved);
+    set('countArchived', archived);
+  }
+
+  const formatIssueId = (id) => (typeof id !== 'number' ? id : `IH-${String(id).padStart(3, '0')}`);
+  const PRIORITY_ORDER = {
+    low: 1,
+    medium: 2,
+    high: 3
+  };
   const formatDateTime = (s) => {
     if (!s) return '';
     const d = new Date(s);
-    return new Intl.DateTimeFormat('en-US', { year:'numeric', month:'short', day:'numeric' }).format(d);
+    return new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    }).format(d);
   };
-  const prettyArea = (c) => (c ? (c === 'gameroom' ? 'Gameroom' : 'Facility') : '');
+  // UPDATED: Added new case for 'attraction'
+  const prettyArea = (c) => {
+    if (!c) return '';
+    c = c.toLowerCase();
+    if (c === 'gameroom' || c === 'games') return 'Gameroom';
+    if (c === 'facility') return 'Facility';
+    if (c === 'attraction') return 'Attraction';
+    return '';
+  };
 
   function applySort(arr) {
     const d = sortDirection === 'desc' ? -1 : 1;
     return arr.sort((a, b) => {
       let av, bv;
-      if (['created_at','updated_at','target_date'].includes(sortKey)) {
+      if (['created_at', 'updated_at', 'target_date'].includes(sortKey)) {
         av = a[sortKey] ? new Date(a[sortKey]).getTime() : 0;
         bv = b[sortKey] ? new Date(b[sortKey]).getTime() : 0;
       } else if (sortKey === 'priority') {
@@ -111,14 +163,17 @@ document.addEventListener('DOMContentLoaded', () => {
       </select>
     `;
   }
-  function buildTextInput(val, cls='') {
+
+  function buildTextInput(val, cls = '') {
     return `<input type="text" class="${cls}" value="${escapeHtml(val||'')}" />`;
   }
+
   function buildTextarea(val) {
     return `<textarea class="ie-notes" rows="2">${escapeHtml(val||'')}</textarea>`;
   }
+
   function buildLocationInput(val) {
-    if (currentCategory === 'gameroom') {
+    if (currentCategory === 'gameroom' || currentCategory === 'attraction') {
       return `<input type="text" class="ie-location" list="games-list" value="${escapeHtml(val||'')}" placeholder="Select or type a game" />`;
     }
     return buildTextInput(val, 'ie-location');
@@ -144,29 +199,36 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
     editingId = id;
-    if (currentCategory === 'gameroom') await fetchAndPopulateGames();
+    if (currentCategory === 'gameroom' || currentCategory === 'attraction') await fetchAndPopulateGames();
     row.setAttribute('data-editing', '1');
 
-    const cPriority  = row.querySelector('[data-field="priority"]');
-    const cLocation  = row.querySelector('[data-field="location"]');
-    const cTitle     = row.querySelector('[data-field="title"]');
+    const cPriority = row.querySelector('[data-field="priority"]');
+    const cLocation = row.querySelector('[data-field="location"]');
+    const cTitle = row.querySelector('[data-field="title"]');
     const cNotesCell = row.querySelector('[data-field="details"]');
-    const cAssignee  = row.querySelector('[data-field="assignee"]');
-    const cActions   = row.querySelector('.cell-actions');
+    const cAssignee = row.querySelector('[data-field="assignee"]');
+    const cActions = row.querySelector('.cell-actions');
 
     const currentPriority = (row.querySelector('[data-field="priority"] .badge')?.textContent || 'medium').trim().toLowerCase();
 
     const currentLocation = cLocation?.textContent?.trim() || '';
-    const currentTitle    = cTitle?.textContent?.trim() || '';
+    const currentTitle = cTitle?.textContent?.trim() || '';
     const currentNotesEsc = cNotesCell?.dataset?.note || '';
-    const currentNotes    = decodeEntities(currentNotesEsc);
+    const currentNotes = decodeEntities(currentNotesEsc);
     const currentAssignee = cAssignee?.textContent?.trim() || '';
 
-    if (cPriority)  cPriority.innerHTML  = buildPrioritySelect(currentPriority);
-    if (cLocation)  cLocation.innerHTML  = buildLocationInput(currentLocation);
-    if (cTitle)     cTitle.innerHTML     = buildTextInput(currentTitle, 'ie-title');
+    if (cPriority) cPriority.innerHTML = buildPrioritySelect(currentPriority);
+    if (cLocation) cLocation.innerHTML = buildLocationInput(currentLocation);
+    if (cTitle) cTitle.innerHTML = buildTextInput(currentTitle, 'ie-title');
     if (cNotesCell) cNotesCell.innerHTML = buildTextarea(currentNotes);
-    if (cAssignee)  cAssignee.innerHTML  = await buildAssigneeSelect(currentAssignee);
+    if (cAssignee) cAssignee.innerHTML = await buildAssigneeSelect(currentAssignee);
+
+    const cTarget = row.querySelector('[data-field="target_date"]');
+    if (cTarget) {
+      const raw = cTarget.dataset.rawDate || '';
+      const val = formatDateInput(raw);
+      cTarget.innerHTML = `<input type="date" class="ie-target-date" value="${val}">`;
+    }
 
     if (cActions) {
       cActions.innerHTML = `
@@ -181,10 +243,14 @@ document.addEventListener('DOMContentLoaded', () => {
   async function updateFields(id, fields) {
     const res = await fetch('/api/issuehub/update_fields', {
       method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ id, ...fields })
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ ...fields,
+        id
+      })
     });
-    const data = await res.json().catch(()=>({}));
+    const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(data.error || 'Update failed');
     return data;
   }
@@ -212,36 +278,39 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch {}
   }
 
- async function fetchAndPopulateGames() {
-   const dl = document.getElementById('games-list');
-   if (!dl) return;
-   try {
-     const res = await fetch('/api/games');
-     const data = await res.json();
-     dl.innerHTML = '';
-     (data || []).forEach(game => {
-       const option = document.createElement('option');
-       option.value = game.name;
-       dl.appendChild(option);
-     });
-   } catch (err) {
-     console.error('Error fetching game list:', err);
-   }
- }
+  async function fetchAndPopulateGames() {
+    const dl = document.getElementById('games-list');
+    if (!dl) return;
+    try {
+      const res = await fetch('/api/games');
+      const data = await res.json();
+      dl.innerHTML = '';
+      (data || []).forEach(game => {
+        const option = document.createElement('option');
+        option.value = game.name;
+        dl.appendChild(option);
+      });
+    } catch (err) {
+      console.error('Error fetching game list:', err);
+    }
+  }
 
   function setTab(cat) {
     currentCategory = cat;
     if (categoryInput) categoryInput.value = cat;
 
-    tg?.classList.toggle('active', cat === 'gameroom');
-    tf?.classList.toggle('active', cat === 'facility');
-    t_games?.classList.toggle('active', cat === 'games');
+    const tabs = document.querySelectorAll('.tab');
+    tabs.forEach(tab => tab.classList.remove('active'));
+
+    const activeTab = document.querySelector(`.tab[data-category="${cat}"]`);
+    if (activeTab) {
+      activeTab.classList.add('active');
+    }
 
     if (gamesFilterWrap) gamesFilterWrap.style.display = (cat === 'games') ? 'flex' : 'none';
-    // ⬇️ clear the Games filter when switching away
     if (cat !== 'games' && gamesFilterInput) gamesFilterInput.value = '';
 
-    if (cat === 'gameroom' || cat === 'games') {
+    if (cat === 'gameroom' || cat === 'games' || cat === 'attraction') {
       fetchAndPopulateGames();
     } else {
       const dl = document.getElementById('games-list');
@@ -251,35 +320,48 @@ document.addEventListener('DOMContentLoaded', () => {
     loadList();
   }
 
-  // --- init from URL (?tab=gameroom|facility|games) ---
   function initFromURL() {
     const sp = new URLSearchParams(location.search);
-    const urlTab = sp.get('tab'); // 'gameroom' | 'facility' | 'games'
+    const urlTab = sp.get('tab');
 
-    if (['gameroom','facility','games'].includes(urlTab)) {
-      setTab(urlTab);           // setTab() already calls loadList()
+    if (['gameroom', 'facility', 'games', 'attraction'].includes(urlTab)) {
+      setTab(urlTab);
     } else {
-
-      initFromURL();
- 
       loadList();
     }
 
-    // keep your current behavior
     populateEmployees();
   }
-
-
+ 
+  // --- New functions moved to issue_hub2.js ---
 
   tg?.addEventListener('click', () => setTab('gameroom'));
   tf?.addEventListener('click', () => setTab('facility'));
   t_games?.addEventListener('click', () => setTab('games'));
+  ta?.addEventListener('click', () => setTab('attraction'));
   refreshBtn?.addEventListener('click', loadList);
-  statusFilter?.addEventListener('change', loadList);
+
+  statusFilter?.addEventListener('change', () => {
+    loadList();
+    if (trashAllBtn) {
+      if (statusFilter.value === 'trash') {
+        trashAllBtn.style.display = 'inline-block';
+        trashAllBtn.textContent = 'Delete All';
+      } else {
+        trashAllBtn.style.display = 'none';
+      }
+    }
+  });
+
   gamesFilterGo?.addEventListener('click', loadList);
   gamesFilterInput?.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') { e.preventDefault(); loadList(); }
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      loadList();
+    }
   });
+  
+  // No event listener for trashAllBtn in this file anymore
 
   // sort header UI
   (function setupHeaderSort() {
@@ -297,7 +379,10 @@ document.addEventListener('DOMContentLoaded', () => {
       h.addEventListener('click', () => {
         const key = h.dataset.sort;
         if (sortKey === key) sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
-        else { sortKey = key; sortDirection = 'asc'; }
+        else {
+          sortKey = key;
+          sortDirection = 'asc';
+        }
         updateHeaderArrows();
         renderRows(applySort(itemsCache.slice()));
         focusRowFromURL();
@@ -328,7 +413,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         return;
       }
-      const qp = new URLSearchParams({ location: gameName, status: s });
+      const qp = new URLSearchParams({
+        location: gameName,
+        status: s
+      });
       url = `/api/issuehub/by_game?${qp.toString()}`;
     } else {
       url = `/api/issuehub/list?category=${encodeURIComponent(currentCategory)}&status=${encodeURIComponent(s)}`;
@@ -339,6 +427,17 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await res.json();
       itemsCache = data.items || [];
       renderRows(applySort(itemsCache.slice()));
+      updateCountsFromCache();
+
+      // NEW: Update trashAllBtn visibility and text after loading the list
+      if (trashAllBtn) {
+          if (statusFilter.value === 'trash') {
+              trashAllBtn.style.display = 'inline-block';
+              trashAllBtn.textContent = 'Delete All';
+          } else {
+              trashAllBtn.style.display = 'none';
+          }
+      }
 
       // 🔎 If we were asked to focus a specific issue, flash & scroll to it
       if (_pendingFocusId) {
@@ -356,6 +455,10 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="grid-cell" style="grid-column: 1 / -1; padding:8px; text-align:center;">Error loading.</div>
           </div>`;
       }
+      ['countOpen', 'countResolved', 'countArchived'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = '—';
+      });
     }
   }
 
@@ -376,17 +479,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     issuesBody.innerHTML = items.map(it => {
       const priority = (it.priority || '').toString();
-      const created  = formatDateTime(it.created_at);
-      const updated  = formatDateTime(it.updated_at);
-      const area     = prettyArea(it.category);
-      const equip    = escapeHtml(it.location || '');
-      const problem  = escapeHtml(it.title || '');
-      const target   = it.target_date ? formatDateTime(it.target_date) : '';
+      const created = formatDateTime(it.created_at);
+      const updated = formatDateTime(it.updated_at);
+      const area = prettyArea(it.category);
+      const equip = escapeHtml(it.location || '');
+      const problem = escapeHtml(it.title || '');
+      const target = it.target_date ? formatDateTime(it.target_date) : '';
       const assigned = escapeHtml(it.assignee || '');
-      const statusRaw     = (it.status || '').toLowerCase();
+      const statusRaw = (it.status || '').toLowerCase();
       const statusDisplay = (it.status || '').replace(/_/g, ' ');
       const priBadge = `<span class="badge ${priority.toLowerCase()}">${escapeHtml(priority)}</span>`;
-      const stBadge  = `<span class="badge s-${statusRaw}">${escapeHtml(statusDisplay)}</span>`;
+      const stBadge = `<span class="badge s-${statusRaw}">${escapeHtml(statusDisplay)}</span>`;
 
       const rawNotes = (it.notes ?? it.details ?? '') + '';
       const notesEsc = escapeHtml(rawNotes);
@@ -449,7 +552,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <button class="note-view-btn" type="button" aria-label="View full note">View</button>
           </div>
           <div class="grid-cell">${stBadge}</div>
-          <div class="grid-cell">${target}</div>
+          <div class="grid-cell" data-field="target_date" data-raw-date="${escapeHtml(it.target_date || '')}">${target}</div>
           <div class="grid-cell" data-field="assignee">${assigned}</div>
           <div class="grid-cell cell-actions">${actions}</div>
         </div>
@@ -463,18 +566,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!focus) return;
 
     // try to match by numeric id against data-id on the row
-    const numeric = focus.replace(/\D/g,'');
-    let row = numeric
-      ? issuesBody?.querySelector(`.grid-row[data-id="${CSS.escape(numeric)}"]`)
-      : null;
+    const numeric = focus.replace(/\D/g, '');
+    let row = numeric ? issuesBody?.querySelector(`.grid-row[data-id="${CSS.escape(numeric)}"]`) : null;
 
     // fallback: match by the visible "Issue ID" cell text (IH-### or IH###)
     if (!row && issuesBody) {
-      const want = focus.toUpperCase().replace(/[^A-Z0-9-]/g,'');
+      const want = focus.toUpperCase().replace(/[^A-Z0-9-]/g, '');
       row = [...issuesBody.querySelectorAll('.grid-row')].find(r => {
         const text = (r.querySelector('.cell-issue-id')?.textContent || '')
-                      .toUpperCase().replace(/\s+/g,'');
-        return text.includes(want) || text.replace('-','') === want.replace('-','');
+          .toUpperCase().replace(/\s+/g, '');
+        return text.includes(want) || text.replace('-', '') === want.replace('-', '');
       }) || null;
     }
 
@@ -482,7 +583,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // reuse your existing flash CSS helper if present
     if (typeof ensureFlashCSS === "function") ensureFlashCSS();
     row.classList.add('row-flash');
-    row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    row.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center'
+    });
     setTimeout(() => row.classList.remove('row-flash'), 1500);
 
     // clear the param so it won't re-trigger on refresh
@@ -519,9 +623,15 @@ document.addEventListener('DOMContentLoaded', () => {
       await loadList();
     }
     const row = issuesBody?.querySelector(`.grid-row[data-id="${CSS.escape(existingId)}"]`);
-    if (!row) { toast('Issue exists but not visible in this view.', 'Info', 2000); return; }
+    if (!row) {
+      toast('Issue exists but not visible in this view.', 'Info', 2000);
+      return;
+    }
     row.classList.add('row-flash');
-    row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    row.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center'
+    });
     setTimeout(() => row.classList.remove('row-flash'), 1500);
 
     const cell = row.querySelector('.cell-notes');
@@ -538,53 +648,77 @@ document.addEventListener('DOMContentLoaded', () => {
     // Trash
     if (action === 'trash') {
       const res = await fetch('/api/issuehub/trash', {
-        method: 'POST', headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ id })
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          id
+        })
       });
-      const data = await res.json().catch(()=>({}));
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || 'Move to Trash failed');
-      loadList(); return;
+      loadList();
+      return;
     }
     // Restore
     if (action === 'restore') {
       const res = await fetch('/api/issuehub/restore', {
-        method: 'POST', headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ id })
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          id
+        })
       });
-      const data = await res.json().catch(()=>({}));
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || 'Restore failed');
-      loadList(); return;
+      loadList();
+      return;
     }
     // Delete forever
     if (action === 'delete_forever') {
       const res = await fetch('/api/issuehub/delete', {
-        method: 'POST', headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ id })
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          id
+        })
       });
-      const data = await res.json().catch(()=>({}));
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || 'Delete failed');
-      loadList(); return;
+      loadList();
+      return;
     }
 
     // Status changes
-    let payload = { id };
-    if (action === 'start')        payload.status = 'in_progress';
+    let payload = {
+      id
+    };
+    if (action === 'start') payload.status = 'in_progress';
     else if (action === 'resolve') {
       payload.status = 'resolved';
       const note = prompt('Resolution note (what fixed it)?');
-      if (!note) { throw new Error('Resolution note required.'); }
+      if (!note) {
+        throw new Error('Resolution note required.');
+      }
       payload.resolution = note;
-    }
-    else if (action === 'reopen')    payload.status = 'open';
-    else if (action === 'archive')   payload.status = 'archived';
+    } else if (action === 'reopen') payload.status = 'open';
+    else if (action === 'archive') payload.status = 'archived';
     else if (action === 'unarchive') payload.status = 'open';
     else return;
 
     const res = await fetch('/api/issuehub/update_status', {
-      method: 'POST', headers: {'Content-Type':'application/json'},
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify(payload)
     });
-    const data = await res.json().catch(()=>({}));
+    const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(data.error || 'Update failed');
     loadList();
   }
@@ -612,17 +746,21 @@ document.addEventListener('DOMContentLoaded', () => {
       const loc = row.querySelector('.ie-location')?.value?.trim();
       const ttl = row.querySelector('.ie-title')?.value?.trim();
       const nts = row.querySelector('.ie-notes')?.value?.trim();
-      let asg   = row.querySelector('.ie-assignee')?.value;
+      let asg = row.querySelector('.ie-assignee')?.value;
       if (asg == null) asg = row.querySelector('.ie-assignee-fallback')?.value;
 
       const payload = {};
-      if (pri)        payload.priority  = pri;
+      if (pri) payload.priority = pri;
       if (loc != null) payload.location = loc;
-      if (ttl != null) payload.title    = ttl;
-      if (nts != null) payload.notes    = nts;
+      if (ttl != null) payload.title = ttl;
+      if (nts != null) payload.notes = nts;
       if (asg != null) payload.assignee = asg;
 
-      btn.disabled = true; btn.classList.add('is-loading');
+      const tdate = row.querySelector('.ie-target-date')?.value;
+      if (tdate !== undefined) payload.target_date = tdate || null; // YYYY-MM-DD or null
+
+      btn.disabled = true;
+      btn.classList.add('is-loading');
       try {
         await updateFields(id, payload);
         editingId = null;
@@ -631,22 +769,24 @@ document.addEventListener('DOMContentLoaded', () => {
       } catch (err) {
         toast(err.message || 'Update failed', 'Error', 2200);
       } finally {
-        btn.classList.remove('is-loading'); btn.disabled = false;
+        btn.classList.remove('is-loading');
+        btn.disabled = false;
       }
       return;
     }
 
     // confirmations (destructive)
     const confirms = {
-      archive:        'Archive this issue?',
-      unarchive:      'Unarchive this issue?',
-      trash:          'Move this issue to Trash?',
+      archive: 'Archive this issue?',
+      unarchive: 'Unarchive this issue?',
+      trash: 'Move this issue to Trash?',
       delete_forever: 'Delete forever? This cannot be undone.'
     };
     if (confirms[action] && !confirm(confirms[action])) return;
 
     // normal chip actions
-    btn.disabled = true; btn.classList.add('is-loading');
+    btn.disabled = true;
+    btn.classList.add('is-loading');
     try {
       await performAction(id, action);
       const msgMap = {
@@ -663,7 +803,8 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (e2) {
       toast(e2.message || 'Action failed', 'Error', 2000);
     } finally {
-      btn.classList.remove('is-loading'); btn.disabled = false;
+      btn.classList.remove('is-loading');
+      btn.disabled = false;
     }
   });
 
@@ -676,6 +817,7 @@ document.addEventListener('DOMContentLoaded', () => {
     noteModal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
   }
+
   function closeNoteModal() {
     if (!noteModal) return;
     noteModal.setAttribute('aria-hidden', 'true');

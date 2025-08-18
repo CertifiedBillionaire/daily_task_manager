@@ -8,7 +8,6 @@ import { closeModal } from './modal.js';
 
 // This is the main job that starts everything in this file.
 export function initModalListeners() {
-    
     // We listen for a click anywhere on the whole page.
     document.addEventListener('click', (event) => {
         // We find the pop-up that is open right now.
@@ -24,9 +23,8 @@ export function initModalListeners() {
         
         // We check if the click was on the 'X' button OR if the click was outside the pop-up box.
         if (event.target === closeButton || !activeModal.contains(event.target)) {
-            // We tell the pop-up to close.
-            closeModal(opening-checklist-modal);
+            // We tell the pop-up to close. Pass the actual active modal element.
+            closeModal(activeModal);
         }
     });
-
 }

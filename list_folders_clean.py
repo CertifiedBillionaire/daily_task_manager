@@ -1,3 +1,5 @@
+#list_folders_clean.py
+
 import os
 
 # --- SETTINGS ---

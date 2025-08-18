@@ -335,7 +335,7 @@ def issuehub_create():
     """
     POST JSON:
     {
-      "category": "gameroom" | "facility",
+      "category": "gameroom" | "facility" | "attraction",
       "title": "text",
       "details": "text?" OR "notes": "text?",
       "location": "text?",
@@ -378,8 +378,9 @@ def issuehub_create():
     # ---- validate + normalize ----
     category = (data.get("category") or "").strip().lower()
     title    = (data.get("title") or "").strip()
-    if category not in ("gameroom", "facility"):
-        return jsonify({"error": "category must be 'gameroom' or 'facility'"}), 400
+    # NEW: The category validation check has been updated to include 'attraction'
+    if category not in ("gameroom", "facility", "attraction"):
+        return jsonify({"error": "category must be 'gameroom', 'facility', or 'attraction'"}), 400
     if not title:
         return jsonify({"error": "title is required"}), 400
 
@@ -484,6 +485,7 @@ def issuehub_create():
         return jsonify({"error": f"failed to create: {e}"}), 500
     finally:
         cur.close()
+
 
 
 

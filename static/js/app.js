@@ -181,5 +181,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
 
+
+
+    // --- Open Issues counter (top) ---
+    async function refreshOpenIssuesCounter() {
+    const el = document.querySelector('[data-open-issues-count]');
+    if (!el) return; // no hook yet; we'll add it next step
+    try {
+        const res = await fetch('/api/issues/count?cacheBust=' + Date.now(), { cache: 'no-store' });
+        const data = await res.json();
+        el.textContent = (typeof data.count === 'number') ? String(data.count) : '0';
+    } catch (e) {
+        console.warn('Open issues count failed:', e);
+    }
+    }
+
+    document.addEventListener('DOMContentLoaded', refreshOpenIssuesCounter);
+    window.addEventListener('issues:changed', refreshOpenIssuesCounter);
+
+
 });
 /* --- END ENTIRE FILE REPLACEMENT --- */

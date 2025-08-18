@@ -238,6 +238,17 @@ function buildEditorRowFor(row, values) {
         assigned_to:        tr.querySelector('#ie_assigned').value.trim(),
         target_date:        tr.querySelector('#ie_target').value || null
       };
+      // Normalize/compat for API expectations
+      // Ensure empty string becomes null
+      if (payload.target_date === '') payload.target_date = null;
+
+      // Some backends expect camelCase; send both just in case
+      payload.targetDate = payload.target_date;
+
+      // Status name compatibility
+      if (payload.status === 'Waiting Parts') payload.status = 'Awaiting Parts';
+      if (payload.status === 'Resolved') payload.status = 'Closed';
+
       saveIssue(issueId, payload);
     });
 

@@ -2,8 +2,6 @@ Clean directory listing for: /Users/dattboyrobert21/daily_task_manager
 ========================================
 
 📂 ./
-    📄 
-    📄 .pub
     📄 README.md
     📄 app.db
     📄 app.py
@@ -23,6 +21,9 @@ Clean directory listing for: /Users/dattboyrobert21/daily_task_manager
         📄 tasks.json
     📂 data/
         📄 issues.json
+    📂 misc_orphaned/
+        📄 esc4_file
+        📄 esc4_file.pub
     📂 static/
         📂 css/
             📄 pe-icon-7-helper.css
@@ -33,6 +34,7 @@ Clean directory listing for: /Users/dattboyrobert21/daily_task_manager
                 📄 mobile.css
                 📄 scrollbars.css
             📂 components/
+                📄 ai_dock.css
                 📄 cards.css
                 📄 forms.css
                 📄 issues_table_menu.css
@@ -44,6 +46,7 @@ Clean directory listing for: /Users/dattboyrobert21/daily_task_manager
                 📄 toast.css
             📂 layout/
                 📄 header_layout.css
+                📄 header_layout.css.backup.css
                 📄 main_layout.css
                 📄 sidebar_layout.css
             📂 pages/
@@ -75,6 +78,7 @@ Clean directory listing for: /Users/dattboyrobert21/daily_task_manager
                 📄 addNewIssueForm.js
                 📄 adventureZoneChecklist.js
                 📄 aiBar.js
+                📄 aiDock.js
                 📄 aiOmnibar.js
                 📄 bathroomChecklist.js
                 📄 checklistData.js
@@ -126,7 +130,6 @@ Clean directory listing for: /Users/dattboyrobert21/daily_task_manager
         📄 settings_page.html
         📄 sidebar.html
         📄 test_page.html
-        📄 tpt_calculator.html
         📂 modals/
             📄 add_issue_quick.html
             📄 custom_popup.html

@@ -23,7 +23,6 @@
   <!-- Components -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/components/cards.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/components/popups.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/components/forms.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/components/table.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/components/issues_table_menu.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/components/issues_toolbar.css') }}">
@@ -47,7 +46,14 @@
     <header class="main-header">
       <div class="header-left">
         <a href="{{ url_for('index') }}" class="app-title" aria-label="Go to dashboard">
-          Ultimate Task Manager
+          <img
+            src="{{ url_for('static', filename='images/Ultimate Task Manager.png') }}"
+            alt="Ultimate Task Manager logo"
+            class="app-logo"
+            style="height:100px;width:auto;vertical-align:middle;margin-right:8px;"
+            loading="lazy"
+          >
+          <span class="app-name">Ultimate Task Manager</span>
         </a>
       </div>
 
@@ -65,9 +71,11 @@
       </div>
 
       <div class="header-right">
+        <span id="header-date" class="header-date"></span>
         <button class="icon-button" id="notificationButton" aria-label="Notifications">
           <i class="fas fa-bell"></i>
         </button>
+        <a href="/settings" class="icon-btn" id="settings-btn" aria-label="Settings" title="Settings"><i class="fa-solid fa-gear"></i></a>
         <button class="icon-button" id="hamburger-menu" aria-label="Menu">
           <i class="fas fa-bars"></i>
         </button>
@@ -99,6 +107,8 @@
 
   <!-- Issue Hub scripts -->
   <script src="{{ url_for('static', filename='js/modules/issue_hub.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/modules/issue_hub2.js') }}"></script>
+
   <script type="module" src="{{ url_for('static', filename='js/pages/issueHubForm.js') }}"></script>
 
   <!-- Conditionally load Add Issue Quick only if a trigger exists -->
@@ -144,7 +154,18 @@
       inputSelector: "#aiPrompt"         // the header input you already have
     });
   </script>
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const el = document.getElementById('header-date');
+    if (!el) return;
+    const now = new Date();
+    el.textContent = now.toLocaleDateString(undefined, {
+      weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'
+    });
+  });
+  </script>
 
+  
   {% block scripts %}{% endblock %}
 </body>
 </html>

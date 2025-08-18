@@ -6,10 +6,11 @@
 import os
 import sqlite3
 import requests
+import pandas as pd
 
 import psycopg2
 from psycopg2 import sql
-from flask import Flask, render_template, request, jsonify, g
+from flask import Flask, render_template, request, jsonify, g, redirect, url_for
 from werkzeug.utils import secure_filename
 
 # local modules
@@ -224,11 +225,13 @@ def game_inventory():
 
 @app.route("/tpt_calculator")
 def tpt_calculator_page():
-    return render_template("tpt_calculator.html")
+    # Disabled: feature parked
+    return ("TPT calculator is disabled", 410)
 
 @app.route("/issues")
 def issues_page():
-    return render_template("issues.html")
+    # Old Issues page retired → redirect to Issue Hub
+    return redirect(url_for("issuehub"), code=302)
 
 @app.route("/ai_assistant")
 def ai_assistant():
@@ -302,49 +305,24 @@ def get_weather():
         print(f"Weather key error: {e}")
         return jsonify({"error": "Weather data format error", "details": str(e)}), 500
 
+
 @app.route("/api/calculate_tpt", methods=["POST"])
 def calculate_tpt():
-    if "tpt_file" not in request.files:
-        return jsonify({"error": "No file part in the request"}), 400
+    # Disabled: feature parked
+    return jsonify({"error": "TPT calculator is disabled"}), 410
 
-    file = request.files["tpt_file"]
-    if file.filename == "":
-        return jsonify({"error": "No selected file"}), 400
+# --- NEW: TPT calculate endpoint used by the TPT page JS ---
 
-    filename = secure_filename(file.filename)
-    temp_dir = "temp_uploads"
-    os.makedirs(temp_dir, exist_ok=True)
-    temp_file_path = os.path.join(temp_dir, filename)
-    file.save(temp_file_path)
+@app.post("/api/tpt/calculate")
+def api_tpt_calculate():
+    # Disabled: feature parked
+    return jsonify({"error": "TPT calculator is disabled"}), 410
 
-    try:
-        file_ext = filename.rsplit(".", 1)[1].lower()
-        file_type = "csv" if file_ext == "csv" else "excel"
-
-        lowest_tpt = float(request.form.get("lowest_tpt"))
-        highest_tpt = float(request.form.get("highest_tpt"))
-        include_blaster = request.form.get("include_birthday_blaster") == "true"
-
-        results = tpt_processor.calculate_tpt_data(
-            temp_file_path, file_type, lowest_tpt, highest_tpt, include_blaster, filename
-        )
-
-        os.remove(temp_file_path)
-
-        if "error" in results:
-            return jsonify(results), 400
-        else:
-            results["file_name"] = filename
-            return jsonify(results), 200
-
-    except (TypeError, ValueError) as e:
-        if os.path.exists(temp_file_path):
-            os.remove(temp_file_path)
-        return jsonify({"error": f"Invalid TPT settings provided: {str(e)}. Please check your input values."}), 400
-    except Exception as e:
-        if os.path.exists(temp_file_path):
-            os.remove(temp_file_path)
-        return jsonify({"error": f"Server error: {str(e)}. Check Flask console."}), 500
+# --- TPT: preview columns (Detect Columns button) ---
+@app.route('/api/tpt/preview', methods=['POST'])
+def api_tpt_preview():
+    # Disabled: feature parked
+    return jsonify({"error": "TPT preview is disabled"}), 410
 
 @app.route("/api/tpt_settings", methods=["GET", "POST"])
 def handle_tpt_settings():
@@ -388,49 +366,150 @@ def handle_tpt_settings():
     except Exception as e:
         return jsonify({"error": f"Failed to save settings: {e}"}), 500
 
+
+# already imported earlier in your file for the other route
+from issues_db import _debug_active_breakdown  # type: ignore
+
+@app.route("/api/issues/_debug_counts", methods=["GET"])
+def api_debug_counts():
+    try:
+        return jsonify(_debug_active_breakdown())
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# --- Open Issues Count API ---
+from flask import jsonify
+from issues_db import count_all_open_issues
+
+@app.route("/api/issues/count", methods=["GET"])
+def api_count_open_issues():
+    try:
+        total = count_all_open_issues()
+        return jsonify({"count": int(total)})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 # --- 7) Health Check API ---------------------------------------------------
-@app.route('/api/health')
-def health_check():
-    status = {}
+# --- Health Check API (rich + cached) --------------------------------------
+import time
 
-    # 1) Database
-    db_path = 'app.db'
+_HEALTH_CACHE = {"ts": 0.0, "payload": None}
+_HEALTH_TTL = 60.0  # seconds
+
+def _ok(msg):    return {"status": "ok",    "message": msg}
+def _err(msg):   return {"status": "error", "message": msg}
+def _skip(msg):  return {"status": "skip",  "message": msg}  # used if not configured
+
+def _check_db():
     try:
-        conn = sqlite3.connect(db_path)
-        cur = conn.cursor()
-        cur.execute("SELECT 1")
-        status['database'] = {'status': 'ok', 'message': 'Database connection successful.'}
-    except Exception as e:
-        status['database'] = {'status': 'error', 'message': f'Database error: {str(e)}'}
-    finally:
-        try:
+        if DATABASE_URL:                  # Postgres on Render
+            conn = psycopg2.connect(DATABASE_URL)
+            cur = conn.cursor()
+            cur.execute("SELECT 1")
+            cur.fetchone()
+            cur.close()
             conn.close()
-        except Exception:
-            pass
-
-    # 2) Storage
-    storage_path = 'data'
-    try:
-        if os.path.exists(storage_path) and os.access(storage_path, os.W_OK):
-            status['storage'] = {'status': 'ok', 'message': 'Storage directory is writable.'}
-        else:
-            status['storage'] = {'status': 'error', 'message': 'Storage directory not found or not writable.'}
+            return _ok("PostgreSQL reachable.")
+        else:                             # Local SQLite
+            conn = sqlite3.connect("app.db")
+            cur = conn.cursor()
+            cur.execute("SELECT 1")
+            cur.fetchone()
+            cur.close()
+            conn.close()
+            return _ok("SQLite reachable.")
     except Exception as e:
-        status['storage'] = {'status': 'error', 'message': f'Storage error: {str(e)}'}
+        return _err(f"DB error: {e}")
 
-    # 3) Issue API
-    key_route_url = f"{request.url_root.rstrip('/')}/api/issuehub/list?category=gameroom&status=all"
+def _check_storage():
+    path = "data"
     try:
-        r = requests.get(key_route_url, timeout=5)
-        if r.status_code == 200:
-            status['issue_api'] = {'status': 'ok', 'message': 'Issue API route accessible.'}
-        else:
-            status['issue_api'] = {'status': 'error', 'message': f'Issue API route returned status {r.status_code}.'}
-    except requests.exceptions.RequestException as e:
-        status['issue_api'] = {'status': 'error', 'message': f'Issue API route error: {str(e)}'}
+        if os.path.exists(path) and os.access(path, os.W_OK):
+            return _ok("Storage is writable.")
+        return _err("Storage dir missing or not writable.")
+    except Exception as e:
+        return _err(f"Storage error: {e}")
 
-    overall = 'ok' if all(s['status'] == 'ok' for s in status.values()) else 'error'
-    return jsonify({'overall': overall, 'services': status})
+def _check_route(url):
+    try:
+        r = requests.get(url, timeout=5)
+        if r.status_code == 200:
+            return _ok(f"{url} OK")
+        return _err(f"{url} status {r.status_code}")
+    except requests.RequestException as e:
+        return _err(f"{url} error: {e}")
+
+def _check_issue_api():
+    base = request.url_root.rstrip("/")
+    url = f"{base}/api/issuehub/list?category=gameroom&status=all"
+    return _check_route(url)
+
+def _check_games_api():
+    base = request.url_root.rstrip("/")
+    url = f"{base}/api/games"
+    return _check_route(url)
+
+def _check_weather():
+    key = os.environ.get("OPENWEATHER_API_KEY")
+    if not key:
+        return _skip("No OPENWEATHER_API_KEY set.")
+    try:
+        # Very small call; adjust your coordinates if needed
+        url = (
+            "https://api.openweathermap.org/data/2.5/weather"
+            f"?lat={LATITUDE}&lon={LONGITUDE}&appid={key}&units=imperial"
+        )
+        r = requests.get(url, timeout=5)
+        if r.status_code == 200:
+            return _ok("OpenWeather reachable.")
+        return _err(f"OpenWeather status {r.status_code}")
+    except requests.RequestException as e:
+        return _err(f"OpenWeather error: {e}")
+
+def _check_ai():
+    key = os.environ.get("GEMINI_API_KEY")
+    if not key:
+        return _skip("No GEMINI_API_KEY set.")
+    try:
+        # Light “ping” – don’t rely on response.text (sometimes empty on finish_reason=2)
+        model = genai.GenerativeModel(MODEL_NAME)
+        resp = model.generate_content("ping", generation_config={"max_output_tokens": 1})
+        # If no exception was thrown, we consider it reachable.
+        return _ok("Gemini reachable.")
+    except Exception as e:
+        return _err(f"Gemini error: {e}")
+
+def _compute_health_payload():
+    services = {
+        "database":   _check_db(),
+        "storage":    _check_storage(),
+        "issue_api":  _check_issue_api(),
+        "games_api":  _check_games_api(),
+        "weather":    _check_weather(),
+        "ai":         _check_ai(),
+    }
+    overall = "ok" if all(s["status"] in ("ok", "skip") for s in services.values()) else "error"
+    return {"overall": overall, "services": services, "ttl": _HEALTH_TTL}
+
+@app.get("/api/health")
+def health_check():
+    now = time.monotonic()
+    if _HEALTH_CACHE["payload"] and (now - _HEALTH_CACHE["ts"] < _HEALTH_TTL):
+        return jsonify(_HEALTH_CACHE["payload"])
+    payload = _compute_health_payload()
+    _HEALTH_CACHE["payload"] = payload
+    _HEALTH_CACHE["ts"] = now
+    return jsonify(payload)
+
+@app.get("/api/health/refresh")
+def health_refresh():
+    # Force a fresh run (handy when debugging or after fixing a service)
+    payload = _compute_health_payload()
+    _HEALTH_CACHE["payload"] = payload
+    _HEALTH_CACHE["ts"] = time.monotonic()
+    return jsonify(payload)
+
 
 # --- 8) AI endpoint --------------------------------------------------------
 @app.post("/api/ai/ask")
@@ -451,9 +530,7 @@ def ai_ask():
         "You are an assistant for the Ultimate Task Manager application. "
         "Your purpose is to help an arcade operations manager with their daily tasks. "
         "Respond concisely in 1-2 sentences. "
-        "Do not ask clarifying questions unless the user explicitly asks. "
         "Do not echo the user's prompt back. "
-        "If the user types a single word like 'test', reply with 'Ready.'"
         "Your responses should be concise and actionable. "
     )
     ctx_lines = []

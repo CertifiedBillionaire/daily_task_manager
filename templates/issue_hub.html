@@ -6,14 +6,35 @@
     <h1 style="margin:0 0 8px;">Issue Hub</h1>
     <p style="margin:0 0 16px; opacity:.8;">Log problems fast. Two lanes: <b>Gameroom</b> and <b>Facility</b>.</p>
 
-    <!-- Tabs -->
-    <div class="tabs">
-      <button id="tab-gameroom" class="tab active">Gameroom</button>
-      <button id="tab-facility" class="tab">Facility</button>
-      <button id="tab-games" class="tab">Games</button>
+    <style>
+      .counts-bar { display:flex; gap:12px; flex-wrap:wrap; margin:8px 0 16px; }
+      .count-badge { display:flex; align-items:center; gap:8px; padding:8px 12px; border:1px solid #e2e2e2; border-radius:10px; background:#fff; }
+      .count-label { font-weight:600; opacity:.8; }
+      .count-value { font-weight:700; min-width: 2ch; text-align:right; }
+    </style>
+
+    <div class="counts-bar" id="issuesCounts">
+      <div class="count-badge" aria-label="Open issues count">
+        <span class="count-label">Open</span>
+        <span class="count-value" id="countOpen" data-open-issues-count>—</span>
+      </div>
+      <div class="count-badge" aria-label="Resolved issues count">
+        <span class="count-label">Resolved</span>
+        <span class="count-value" id="countResolved">—</span>
+      </div>
+      <div class="count-badge" aria-label="Archived issues count">
+        <span class="count-label">Archived</span>
+        <span class="count-value" id="countArchived">—</span>
+      </div>
     </div>
 
-    <!-- Status + Refresh -->
+    <div class="tabs">
+      <button id="tab-gameroom" class="tab active" data-category="gameroom">Gameroom</button>
+      <button id="tab-facility" class="tab" data-category="facility">Facility</button>
+      <button id="tab-attraction" class="tab" data-category="attraction">Attraction</button>
+      <button id="tab-games" class="tab" data-category="games">Games</button>
+    </div>
+
     <div class="controls-row">
       <label for="statusFilter">Status:</label>
       <select id="statusFilter">
@@ -25,9 +46,10 @@
         <option value="trash">Trash</option>
       </select>
       <button id="refreshBtn">Refresh</button>
+      <button id="trashAllBtn" style="display:none;">Trash All</button>
+
     </div>
 
-    <!-- Games filter (only used on the Games tab; JS shows/hides) -->
     <div id="gamesFilter" style="display:none; gap:8px; align-items:center; margin:8px 0 16px;">
       <label for="gamesFilterInput">Game:</label>
       <input
@@ -39,7 +61,6 @@
       <button id="gamesFilterGo" type="button">View</button>
     </div>
 
-    <!-- New Issue -->
     <div class="card collapsible-section">
       <div class="collapsible-header" id="newIssueToggle">
         <h3>New Issue</h3>
@@ -103,13 +124,11 @@
             <button type="submit">Add Issue</button>
           </div>
 
-          <!-- Shared datalist for game names (used by Equipment + Games filter) -->
           <datalist id="games-list"></datalist>
         </form>
       </div>
     </div>
 
-    <!-- Issues Table -->
     <div class="card issues-card">
       <h3>Issues</h3>
       <div class="table-scroll-wrapper">
@@ -137,11 +156,7 @@
       </div>
     </div>
 
-  </div><!-- /.page -->
-</div><!-- /.issue-hub -->
-
-<!-- Full Note Popup (used by JS module) -->
-<div id="noteModal" class="note-modal" aria-hidden="true">
+  </div></div><div id="noteModal" class="note-modal" aria-hidden="true">
   <div class="note-modal__backdrop" data-close="1"></div>
   <div class="note-modal__dialog" role="dialog" aria-modal="true" aria-label="Full note">
     <div class="note-modal__body" id="noteModalBody"></div>
@@ -151,6 +166,5 @@
   </div>
 </div>
 
-<script type="module" src="{{ url_for('static', filename='js/modules/rollover_nudge.js') }}"></script>
 
 {% endblock %}
