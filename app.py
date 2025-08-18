@@ -7,6 +7,8 @@ import os
 import sqlite3
 import requests
 import pandas as pd
+from datetime import datetime, date
+import json
 
 import psycopg2
 from psycopg2 import sql
@@ -23,13 +25,14 @@ from issue_hub_bp import register_issue_hub_blueprint
 # env + AI (Gemini)
 from dotenv import load_dotenv
 load_dotenv()  # load .env for local dev; Render uses Environment Variables
-
+from datetime import datetime, date as _date
 import google.generativeai as genai
 genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
 MODEL_NAME = "gemini-2.5-pro"  # Use gemini-2.5-pro for more powerful reasoning
 
 # --- 2) App setup ----------------------------------------------------------
 app = Flask(__name__)
+
 
 # DB url: set on Render. If missing, we default to local SQLite.
 DATABASE_URL = os.environ.get("DATABASE_URL")
@@ -96,6 +99,40 @@ def ensure_id_sequences(db_conn):
     finally:
         cur.close()
 
+# --- NEW: DB helper for PM logs table --------------------------------------
+def ensure_pm_logs_table(db_conn):
+    is_postgres = hasattr(db_conn, "dsn")
+    cur = db_conn.cursor()
+    try:
+        # Create pm_logs table
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS pm_logs (
+                id SERIAL PRIMARY KEY,
+                game_id TEXT NOT NULL,
+                pm_date DATE NOT NULL,
+                notes TEXT,
+                completed_by TEXT,
+                date_logged TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+            );
+        """)
+
+        # Add foreign key constraint (Postgres only, with IF NOT EXISTS)
+        if is_postgres:
+            try:
+                cur.execute(sql.SQL("""
+                    ALTER TABLE pm_logs
+                    ADD COLUMN IF NOT EXISTS game_id TEXT REFERENCES games(id) ON DELETE CASCADE;
+                """))
+            except Exception as e:
+                print(f"Warning: PM logs migration skipped: {e}")
+        
+        db_conn.commit()
+    except Exception as e:
+        print(f"Error creating pm_logs table: {e}")
+        db_conn.rollback()
+    finally:
+        cur.close()
+
 def init_db():
     """
     Creates core tables (issues, settings, tasks) and the games table.
@@ -106,6 +143,8 @@ def init_db():
 
     # ensure games table (module handles both engines)
     ensure_games_table(db_conn)
+    # ensure pm_logs table
+    ensure_pm_logs_table(db_conn)
 
     cur = db_conn.cursor()
     try:
@@ -244,6 +283,20 @@ def settings_page():
 @app.route("/issuehub")
 def issuehub():
     return render_template("issue_hub.html")
+
+# --- NEW: PM Tracking page route -------------------------------------------
+@app.route('/pm')
+def pm_tracking_page():
+    return render_template('pm_page.html')
+
+# Debug: list all routes so we can confirm /api/pms and /api/pms/add exist
+@app.get("/api/_debug/routes")
+def _debug_routes():
+    try:
+        routes = sorted([r.rule for r in app.url_map.iter_rules()])
+    except Exception:
+        routes = []
+    return jsonify({"routes": routes})
 
 # --- 5) Utility/maintenance routes ----------------------------------------
 @app.route("/clear_issues_temp")
@@ -661,6 +714,145 @@ def dashboard_metrics():
     })
 
 
+
+# --- NEW: PM Tracking APIs ------------------------------------------------
+@app.route('/api/pms', methods=['GET'])
+def get_pms():
+    db = get_db()
+    cur = db.cursor()
+    try:
+        # CAST makes join safe even if pm_logs.game_id is TEXT
+        cur.execute("""
+            SELECT
+                p.pm_date               AS pm_date,
+                COALESCE(p.notes, '')   AS notes,
+                COALESCE(p.completed_by,'') AS completed_by,
+                COALESCE(g.name, '')    AS game_name
+            FROM pm_logs p
+            LEFT JOIN games g ON CAST(p.game_id AS INTEGER) = g.id
+            ORDER BY p.pm_date DESC, p.id DESC;
+        """)
+        rows = cur.fetchall()
+        cols = [d[0] for d in cur.description]
+        data = [dict(zip(cols, r)) for r in rows]
+        return jsonify({"items": data})
+    except Exception as e:
+        app.logger.error("Error fetching PM history: %s", e)
+        return jsonify({"error": "Failed to fetch PM history"}), 500
+    finally:
+        cur.close()
+
+@app.route('/api/pms/add', methods=['POST'])
+def add_pm():
+    db = get_db()
+    data = request.get_json(silent=True) or {}
+    game_id = data.get('pmGame')
+    pm_date_str = data.get('pmDate')
+    notes = data.get('pmNotes') or ''
+    completed_by = data.get('pmCompletedBy') or ''
+
+    if not game_id or not pm_date_str:
+        return jsonify({"error": "Missing required fields"}), 400
+
+    is_postgres = hasattr(db, "dsn")
+    placeholders = "%s, %s, %s, %s" if is_postgres else "?, ?, ?, ?"
+    sql_stmt = f"INSERT INTO pm_logs (game_id, pm_date, notes, completed_by) VALUES ({placeholders})"
+
+    try:
+        try:
+            game_id_int = int(game_id)
+        except (TypeError, ValueError):
+            game_id_int = game_id  # fallback; CAST in SELECT handles it
+
+        cur = db.cursor()
+        cur.execute(sql_stmt, (game_id_int, pm_date_str, notes, completed_by))
+        db.commit()
+        return jsonify({"success": True, "message": "PM logged successfully!"})
+    except Exception as e:
+        db.rollback()
+        app.logger.error("Error adding PM log: %s", e)
+        return jsonify({"error": "Failed to log PM"}), 500
+    finally:
+        try:
+            cur.close()
+        except Exception:
+            pass
+
+@app.get("/api/pms/last_by_game")
+def api_pm_last_by_game():
+    db = get_db()
+    cur = db.cursor()
+    try:
+        # 1) All games
+        cur.execute("SELECT id, name FROM games ORDER BY name;")
+        games = cur.fetchall()
+        # Normalize rows → list of dicts
+        gcols = [d[0] for d in cur.description]
+        games = [dict(zip(gcols, r)) for r in games]
+
+        # 2) Last PM per game (handles TEXT or INT game_id)
+        cur.execute("""
+            SELECT CAST(game_id AS INTEGER) AS gid, MAX(pm_date) AS last_pm
+            FROM pm_logs
+            GROUP BY CAST(game_id AS INTEGER)
+        """)
+        rows = cur.fetchall()
+        rcols = [d[0] for d in cur.description]
+        last_map = {}
+        for r in rows:
+            drow = dict(zip(rcols, r))
+            last_map[drow["gid"]] = drow["last_pm"]  # date or str YYYY-MM-DD
+
+        today = _date.today()
+        items = []
+        for g in games:
+            gid = g["id"]
+            gname = g["name"]
+            raw = last_map.get(gid)
+            last_dt = None
+            if raw:
+                # Postgres returns date; SQLite usually returns str 'YYYY-MM-DD'
+                if isinstance(raw, _date):
+                    last_dt = raw
+                elif isinstance(raw, str):
+                    try:
+                        last_dt = datetime.strptime(raw[:10], "%Y-%m-%d").date()
+                    except Exception:
+                        last_dt = None
+
+            if last_dt is None:
+                status = "due"           # never PM'd → due
+                days_since = None
+            else:
+                days_since = (today - last_dt).days
+                if days_since >= 90:
+                    status = "due"
+                elif days_since >= 75:
+                    status = "soon"
+                else:
+                    status = "ok"
+
+            items.append({
+                "game_id": gid,
+                "game_name": gname,
+                "last_pm_date": (last_dt.isoformat() if last_dt else None),
+                "days_since": (int(days_since) if days_since is not None else None),
+                "status": status
+            })
+
+        # Sort: due → soon → ok, then name
+        order = {"due": 0, "soon": 1, "ok": 2}
+        items.sort(key=lambda x: (order.get(x["status"], 9), (x["game_name"] or "").lower()))
+        return jsonify({"items": items})
+    except Exception as e:
+        db.rollback()
+        app.logger.error("api_pm_last_by_game error: %s", e)
+        return jsonify({"error": f"{e}"}), 500
+    finally:
+        try:
+            cur.close()
+        except Exception:
+            pass
 
 # --- 9) Module Registration ------------------------------------------------
 register_issue_hub_blueprint(app, get_db, ensure_id_sequences)  # page blueprint

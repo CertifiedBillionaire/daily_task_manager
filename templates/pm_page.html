@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+
+{% block title %}PM Tracking{% endblock %}
+
+{% block content %}
+<style>
+  /* --- PM Page Specific Styles --- */
+  .pm-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  /* Status Badges */
+  .pm-count-badge {
+    padding: 4px 8px;
+    border-radius: 999px;
+    border: 1px solid;
+    font-weight: 600;
+  }
+
+  .pm-count-badge.due {
+    background: #fee2e2;
+    border-color: #fecaca;
+    color: #991b1b;
+  }
+
+  .pm-count-badge.soon {
+    background: #fef9c3;
+    border-color: #fde68a;
+    color: #846d0a;
+  }
+
+  .pm-count-badge.ok {
+    background: #dcfce7;
+    border-color: #bbf7d0;
+    color: #047857;
+  }
+
+  /* Card-style list for PM status items */
+  .pm-status-list {
+    margin-top: 16px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+  }
+
+  .pm-status-item {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,.08);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: relative;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .pm-status-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 16px rgba(0,0,0,.12);
+  }
+
+  .pm-status-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+  }
+
+  .pm-status-item-header h4 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+  }
+
+  .pm-status-info {
+    font-size: 14px;
+    color: #4b5563;
+  }
+
+  .pm-status-days {
+      font-weight: 600;
+      text-transform: uppercase;
+  }
+
+  /* Colors for PM status items */
+  .pm-status-item.due {
+    border-left: 5px solid #ef4444; /* Red border */
+  }
+
+  .pm-status-item.soon {
+    border-left: 5px solid #f59e0b; /* Yellow border */
+  }
+
+  .pm-status-item.ok {
+    border-left: 5px solid #22c55e; /* Green border */
+  }
+
+  /* Button styles */
+  .btn-primary {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  /* Table styles */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,.08);
+  }
+
+  .data-table th {
+    background-color: #f0f4f8;
+    color: #6c7a89;
+    font-weight: 600;
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 2px solid #e5e7eb;
+  }
+
+  .data-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .data-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .data-table tbody tr:hover {
+    background-color: #f9fafb;
+  }
+
+</style>
+<div class="page-wrap" style="padding: 16px;">
+  <div class="pm-header">
+    <h1 style="margin:0;">Preventative Maintenance Log</h1>
+    <button id="btnOpenPmModal" class="btn btn-primary">Log a New PM</button>
+  </div>
+
+  <div id="pmStatusCard" class="card" style="padding:16px; margin-bottom:12px;">
+    <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+      <strong>PM Status (90-day rule)</strong>
+      <span id="pmCountDue" class="pm-count-badge due">Due: 0</span>
+      <span id="pmCountSoon" class="pm-count-badge soon">Soon: 0</span>
+      <span id="pmCountOk" class="pm-count-badge ok">OK: 0</span>
+    </div>
+    <div id="pmStatusList" class="pm-status-list"></div>
+  </div>
+
+  <div class="card" style="padding:16px;">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Game</th>
+          <th>Date PM'd</th>
+          <th>Notes</th>
+          <th>Completed By</th>
+        </tr>
+      </thead>
+      <tbody id="pmTableBody"></tbody>
+    </table>
+    <div id="pmEmpty" style="padding:10px; color:#666; display:none;">No PMs yet. Log one to get started.</div>
+  </div>
+</div>
+
+<div id="pmModal" class="simple-modal" style="display:none;">
+    <div class="simple-modal__overlay" data-close></div>
+    <div class="simple-modal__panel" style="max-width:520px; margin:8% auto;">
+        <div class="simple-modal__header">
+            <h2 style="margin:0; font-size:20px;">Log PM</h2>
+            <button id="pmClose" class="simple-modal__close" type="button" aria-label="Close">&times;</button>
+        </div>
+        <div class="simple-modal__body">
+            <form id="pmForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="pmGame">Game *</label>
+                        <select id="pmGame" name="pmGame" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="pmDate">Date</label>
+                        <input id="pmDate" name="pmDate" type="date" required>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="pmNotes">Notes</label>
+                        <textarea id="pmNotes" name="pmNotes" rows="3" placeholder="What did you clean / tighten / replace?"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="pmCompletedBy">Completed by</label>
+                        <input id="pmCompletedBy" name="pmCompletedBy" type="text" placeholder="Your name">
+                    </div>
+                </div>
+                <div class="button-row">
+                    <button type="button" id="pmCancel" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+{% block scripts %}
+{{ super() }}
+  <script type="module" src="{{ url_for('static', filename='js/modules/pmTracker.js') }}"></script>
+{% endblock scripts %}
