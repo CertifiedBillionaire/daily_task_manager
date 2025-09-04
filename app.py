@@ -854,6 +854,11 @@ def api_pm_last_by_game():
         except Exception:
             pass
 
+@app.get("/daily-tasks")
+def daily_tasks_page():
+    return render_template("daily_tasks.html")            
+
+
 # --- 9) Module Registration ------------------------------------------------
 register_issue_hub_blueprint(app, get_db, ensure_id_sequences)  # page blueprint
 register_game_routes(app, get_db)                               # APIs

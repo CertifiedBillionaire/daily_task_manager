@@ -12,6 +12,7 @@ Clean directory listing for: /Users/dattboyrobert21/daily_task_manager
     📄 issues_api.py
     📄 issues_db.py
     📄 list_folders_clean.py
+    📄 pm_bp.py
     📄 requirements.txt
     📄 tpt_processor.py
     📂 ProjectScope/
@@ -36,7 +37,6 @@ Clean directory listing for: /Users/dattboyrobert21/daily_task_manager
             📂 components/
                 📄 ai_dock.css
                 📄 cards.css
-                📄 forms.css
                 📄 issues_table_menu.css
                 📄 issues_toolbar.css
                 📄 popups.css
@@ -63,6 +63,7 @@ Clean directory listing for: /Users/dattboyrobert21/daily_task_manager
             📄 Pe-icon-7-weather.woff
         📂 images/
             📄 STRUXEN.png
+            📄 Ultimate Task Manager.png
             📄 chuck_e_cheese_logo.png
             📄 gradient_background.jpg
             📄 gradient_side_background.jpg
@@ -80,13 +81,13 @@ Clean directory listing for: /Users/dattboyrobert21/daily_task_manager
                 📄 aiBar.js
                 📄 aiDock.js
                 📄 aiOmnibar.js
+                📄 api_helpers.js
                 📄 bathroomChecklist.js
                 📄 checklistData.js
                 📄 constants.js
                 📄 contextMenu.js
                 📄 dashboardDownGamesCard.js
                 📄 dashboardIssuesCard.js
-                📄 dashboardIssuesQuickAdd.js
                 📄 downGamesQuickUpdate.js
                 📄 gameInlineEditor.js
                 📄 gameRoomChecklist.js
@@ -95,6 +96,7 @@ Clean directory listing for: /Users/dattboyrobert21/daily_task_manager
                 📄 issueInlineEditor.js
                 📄 issueOptions.js
                 📄 issue_hub.js
+                📄 issue_hub2.js
                 📄 issuesTable.js
                 📄 issuesToolbar.js
                 📄 kioskChecklist.js
@@ -105,6 +107,7 @@ Clean directory listing for: /Users/dattboyrobert21/daily_task_manager
                 📄 notifications.js
                 📄 openingChecklist.js
                 📄 pmCard.js
+                📄 pmTracker.js
                 📄 rollover_nudge.js
                 📄 safetySecurityChecklist.js
                 📄 settings.js
@@ -127,6 +130,7 @@ Clean directory listing for: /Users/dattboyrobert21/daily_task_manager
         📄 index.html
         📄 issue_hub.html
         📄 issues.html
+        📄 pm_page.html
         📄 settings_page.html
         📄 sidebar.html
         📄 test_page.html

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Daily Tasks{% endblock %}
+
+{% block content %}
+<main class="container" style="padding:16px;">
+  <h1>Daily Tasks</h1>
+
+  <section id="task-create" style="margin:12px 0;">
+    <label>
+      Date:
+      <input id="dt-date" type="date">
+    </label>
+    <label>
+      Title:
+      <input id="dt-title" type="text" placeholder="e.g., PM two games">
+    </label>
+    <label>
+      Priority:
+      <select id="dt-priority">
+        <option value="3">High (3)</option>
+        <option value="2" selected>Medium (2)</option>
+        <option value="1">Low (1)</option>
+      </select>
+    </label>
+    <button id="dt-add">Add Task</button>
+  </section>
+
+  <section>
+    <h2>Today</h2>
+    <div id="tasks-list" aria-live="polite"></div>
+  </section>
+</main>
+
+<script src="/static/js/modules/dailyTasks.js"></script>
+{% endblock %}
